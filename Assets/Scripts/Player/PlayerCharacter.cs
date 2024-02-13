@@ -17,6 +17,7 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private float _mouseSensitivity;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
+    [SerializeField] private float _respawnTime = 2f;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -29,6 +30,7 @@ public sealed class PlayerCharacter : Pawn
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
     public bool IsDead { get; private set; }
+    public float RespawnTime => _respawnTime;
 
     private void Awake()
     {
@@ -50,6 +52,7 @@ public sealed class PlayerCharacter : Pawn
         _timeSinceLastDeath = new TimeSince(Time.time);
         Died?.Invoke();
         GetComponent<Animator>()?.SetBool("dead", true);
+        _modifiers.Clear();
     }
 
     public void Respawn()
@@ -78,7 +81,7 @@ public sealed class PlayerCharacter : Pawn
         {
             var input = GatherInput();
             UpdateAlive(input);
-        }     
+        }
     }
 
     private PlayerInput GatherInput()
@@ -110,7 +113,7 @@ public sealed class PlayerCharacter : Pawn
 
     private void UpdateDead()
     {
-        if (_timeSinceLastDeath > 5f)
+        if (_timeSinceLastDeath > _respawnTime)
             Respawn();
     }
 
@@ -173,7 +176,7 @@ public sealed class PlayerCharacter : Pawn
         Vector3 desiredVelocity = CanWalk() ?
             transform.TransformDirection(input.Direction) * GetSpeed() :
             Vector3.zero;
-        
+
         _velocityXZ = Vector3.MoveTowards(_velocityXZ, desiredVelocity, 25f * Time.deltaTime);
 
         if (_controller.isGrounded == true)
