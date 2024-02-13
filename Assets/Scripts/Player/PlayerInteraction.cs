@@ -11,6 +11,7 @@ public sealed class PlayerInteraction : MonoBehaviour
     [SerializeField] private PlayerCharacter _player;
     [SerializeField] private Camera _camera;
     [SerializeField] private LayerMask _interactableLayer;
+    [SerializeField] private float _interactionRange = 2.5f;
 
     private GameObject _currentTarget;
     private readonly List<Interaction> _avaliableInteractions = new List<Interaction>();
@@ -31,7 +32,7 @@ public sealed class PlayerInteraction : MonoBehaviour
     {
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 3f, _interactableLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, _interactionRange, _interactableLayer))
         {
             if (hit.transform.gameObject != _currentTarget)
             {
