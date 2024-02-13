@@ -20,7 +20,11 @@ public sealed class PlayerInteraction : MonoBehaviour
         if (_avaliableInteractions.Count <= index)
             return;
 
+        if (_avaliableInteractions[index].IsAvaliable(_player) == false)
+            return;
+
         _avaliableInteractions[index].Perform(_player);
+        OnTargetChanged(_currentTarget);
     }
 
     private void Update()
@@ -61,7 +65,7 @@ public sealed class PlayerInteraction : MonoBehaviour
         foreach (var interaction in target.GetComponents<Interaction>())
         {
             if (interaction.IsAvaliable(_player) == false)
-                return;
+                continue;
 
             interactions.Add(interaction);
         }
