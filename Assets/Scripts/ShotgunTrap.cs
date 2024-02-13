@@ -55,7 +55,7 @@ public sealed class ShotgunTrap : MonoBehaviour
     private void Shoot()
     {
         if (_playerTrigger.HasPlayerInside == true)
-            _playerTrigger.PlayerInside.Kill();
+            _playerTrigger.PlayerInside.Kill(DeathType.Physical);
 
         _shootSound.Play(_shootAudioSource);
         Delayed.Do(() => _door.Close(), 0.2f); // 0.7f

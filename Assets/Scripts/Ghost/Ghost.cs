@@ -56,15 +56,17 @@ public sealed class Ghost : MonoBehaviour
 
     private void UpdateChasing()
     {
+        _agent.stoppingDistance = 1f;
         _agent.SetDestination(_target.transform.position);
 
-        if (Vector3.Distance(_target.transform.position, transform.position) < 1f)
+        if (Vector3.Distance(_target.transform.position, transform.position) < 2.5f)
         {
-            _target.Kill();
+            _target.ApplyDamage(1f * Time.deltaTime);
+            //_target.Kill();
         }
     }
 
-    private void OnTargetDied()
+    private void OnTargetDied(DeathType deathType)
     {
         StartRespawning();
     }

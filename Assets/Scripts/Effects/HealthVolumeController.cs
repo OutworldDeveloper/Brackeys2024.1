@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Volume))]
-public sealed class DeathVolume : MonoBehaviour
+public sealed class HealthVolumeController : MonoBehaviour
 {
 
     [SerializeField] private PlayerCharacter _character;
@@ -18,20 +18,19 @@ public sealed class DeathVolume : MonoBehaviour
 
     private void OnEnable()
     {
-        _character.Died += OnCharacterDied;
+        _character.Damaged += OnCharacterDamaged;
         _character.Respawned += OnCharacterRespawned;
     }
 
     private void OnDisable()
     {
-        _character.Died -= OnCharacterDied;
+        _character.Damaged -= OnCharacterDamaged;
         _character.Respawned -= OnCharacterRespawned;
     }
 
-    private void OnCharacterDied(DeathType deathType)
+    private void OnCharacterDamaged()
     {
-        if (deathType == DeathType.Physical)
-            _volume.weight = 1f;
+        _volume.weight = 1 - _character.Health / _character.MaxHealth;
     }
 
     private void OnCharacterRespawned()

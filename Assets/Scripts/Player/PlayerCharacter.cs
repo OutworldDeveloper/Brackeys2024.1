@@ -8,8 +8,9 @@ using UnityEngine.Serialization;
 public sealed class PlayerCharacter : Pawn
 {
 
-    public event Action Died;
+    public event Action<DeathType> Died;
     public event Action Respawned;
+    public event Action Damaged;
 
     [SerializeField] private Transform _head;
     [SerializeField] private PlayerInteraction _interactor;
@@ -18,6 +19,7 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _respawnTime = 2f;
+    [SerializeField] private float _maxHealth = 5f;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -31,6 +33,8 @@ public sealed class PlayerCharacter : Pawn
     public Inventory Inventory => _inventory;
     public bool IsDead { get; private set; }
     public float RespawnTime => _respawnTime;
+    public float MaxHealth => _maxHealth;
+    public float Health { get; private set; }
 
     private void Awake()
     {
@@ -39,6 +43,8 @@ public sealed class PlayerCharacter : Pawn
 
     private void Start()
     {
+        Health = _maxHealth;
+
         _spawnPosition = transform.position;
         _spawnRotation = transform.rotation;
 
@@ -46,11 +52,11 @@ public sealed class PlayerCharacter : Pawn
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    public void Kill()
+    public void Kill(DeathType type)
     {
         IsDead = true;
         _timeSinceLastDeath = new TimeSince(Time.time);
-        Died?.Invoke();
+        Died?.Invoke(type);
         GetComponent<Animator>()?.SetBool("dead", true);
         _modifiers.Clear();
     }
@@ -63,12 +69,27 @@ public sealed class PlayerCharacter : Pawn
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
         _head.localRotation = Quaternion.identity;
+        Health = _maxHealth;
     }
 
     public void ApplyModifier(CharacterModifier modifier, float duration)
     {
         modifier.Init(duration);
         _modifiers.Add(modifier);
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        if (IsDead == true)
+            return;
+
+        Health = Mathf.Max(0f, Health - damage);
+        Damaged?.Invoke();
+
+        if (Health <= 0f)
+        {
+            Kill(DeathType.Psionic);
+        }
     }
 
     public override void PossessedTick()
@@ -266,6 +287,12 @@ public sealed class PlayerCharacter : Pawn
         public bool WantsInteract => InteractionIndex != -1;
     }
 
+}
+
+public enum DeathType
+{
+    Physical,
+    Psionic
 }
 
 public abstract class CharacterModifier

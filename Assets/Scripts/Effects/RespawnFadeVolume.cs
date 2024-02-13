@@ -32,7 +32,7 @@ public class RespawnFadeVolume : MonoBehaviour
         FadeIn();
     }
 
-    private void OnCharacterDied()
+    private void OnCharacterDied(DeathType deathType)
     {
         Delayed.Do(FadeOut, Mathf.Max(_character.RespawnTime - 0.25f, 0.5f));
     }
