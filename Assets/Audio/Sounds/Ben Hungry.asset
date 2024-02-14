@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clips:
   - {fileID: 8300000, guid: 1fe4052ffb6654f4e97dc9452bce9e17, type: 3}
+  _pitchMin: 0.8
+  _pitchMax: 0.85
+  _volumeMin: 1
+  _volumeMax: 1

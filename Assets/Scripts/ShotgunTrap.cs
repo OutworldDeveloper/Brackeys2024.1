@@ -11,11 +11,27 @@ public sealed class ShotgunTrap : MonoBehaviour
     [SerializeField] private AudioSource _shootAudioSource;
     [SerializeField] private PlayerTrigger _playerTrigger;
     [SerializeField] private Collider _doorBlocker;
+    [SerializeField] private AudioSource _toggleAudioSource;
+    [SerializeField] private Sound _deactivateSound;
+    [SerializeField] private Sound _activateSound;
 
     private bool IsDeactivated;
+    private bool IsDeactivatedForever;
+
+    public void DeactivateForever()
+    {
+        IsDeactivatedForever = true;
+        Deactivate();
+    }
 
     public void Activate()
     {
+        if (IsDeactivatedForever == true)
+            return;
+
+        if (IsDeactivated == false)
+            return;
+
         IsDeactivated = false;
 
         if (_door.IsOpen == true)
@@ -24,12 +40,19 @@ public sealed class ShotgunTrap : MonoBehaviour
         }
 
         _doorBlocker.enabled = true;
+
+        _activateSound.Play(_toggleAudioSource);
     }
 
     public void Deactivate()
     {
+        if (IsDeactivated == true)
+            return;
+
         IsDeactivated = true;
         _doorBlocker.enabled = false;
+
+        _deactivateSound.Play(_toggleAudioSource);
     }
 
     private void OnEnable()
