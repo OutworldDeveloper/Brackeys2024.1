@@ -80,7 +80,8 @@ public sealed class Ben : MonoBehaviour
 
         if (_trapSwitch.IsOpen == true)
         {
-            Say(_killSelfAdviceSound, "If you don't have enough time, why not kill yourself?", 3f);
+            Say(_killSelfAdviceSound, "If you don't have enough time, why not kill yourself?", 3f); 
+            // Don't be afraid of the ghost, he might be useful right now
             return;
         }
 

@@ -9,6 +9,7 @@ public sealed class Ghost : MonoBehaviour
 {
 
     [SerializeField] private float _respawnTime;
+    [SerializeField] private AudioSource _ambientAudioSource;
     [SerializeField] private AudioSource _damageAudioSource;
 
     private NavMeshAgent _agent;
@@ -28,6 +29,7 @@ public sealed class Ghost : MonoBehaviour
 
     private void Start()
     {
+        _ambientAudioSource.volume = 0f;
         _damageAudioSource.volume = 0f;
         _startPosition = transform.position;
         _startRotation = transform.rotation;
@@ -61,7 +63,13 @@ public sealed class Ghost : MonoBehaviour
         _state = GhostState.Respawning;
     }
 
-    private void UpdateIdle() { }
+    private void UpdateIdle()   
+    {
+        if (_ambientAudioSource.volume > 0f)
+        {
+            _ambientAudioSource.volume -= Time.deltaTime;
+        }
+    }
 
     private void UpdateChasing()
     {
@@ -83,6 +91,11 @@ public sealed class Ghost : MonoBehaviour
         else
         {
             _damageAudioSource.volume = Mathf.Max(0f, _damageAudioSource.volume - Time.deltaTime * 0.5f);
+        }
+
+        if (_ambientAudioSource.volume < 1f)
+        {
+            _ambientAudioSource.volume += Time.deltaTime;
         }
     }
 

@@ -7,8 +7,7 @@ public sealed class FridgeChains : MonoBehaviour
 
     [SerializeField] private Door _door;
     [SerializeField] private Item _key;
-
-    public bool IsLocked { get; private set; }
+    public bool IsUnlocked { get; private set; }
 
     private void Start()
     {
@@ -22,6 +21,7 @@ public sealed class FridgeChains : MonoBehaviour
 
         player.Inventory.RemoveItem(_key);
         _door.Unblock();
+        IsUnlocked = true;
         return;
     }
 
