@@ -11,12 +11,14 @@ public sealed class TimedLever : MonoBehaviour
     [SerializeField] private float _stayingActiveDuration = 4f;
     [SerializeField] private Sound _activatedSound;
     [SerializeField] private Sound _deactivatedSound;
+    [SerializeField] private Sound _tickSound;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private UnityEvent _activated;
     [SerializeField] private UnityEvent _deactivated;
 
     public bool IsActivated { get; private set; }
     public TimeUntil _timeUntilDeactivation;
+    public TimeSince _timeSinceLastTickSound;
 
     private Sequence _activeSequence;
 
@@ -35,15 +37,27 @@ public sealed class TimedLever : MonoBehaviour
 
     private void Update()
     {
-        if (IsActivated == true && _timeUntilDeactivation < 0)
+        if (IsActivated == false)
+            return;
+
+        if (_timeUntilDeactivation < 0)
         {
             IsActivated = false;
             OnDeactivated();
+            return;
+        }
+
+        if (_timeSinceLastTickSound > 1)
+        {
+            _tickSound.Play(_audioSource);
+            _timeSinceLastTickSound = new TimeSince(Time.time);
         }
     }
 
     private void OnActivated()
     {
+        _timeSinceLastTickSound = new TimeSince(Time.time);
+
         _activeSequence?.Kill(true);
         _activeSequence = DOTween.Sequence().
             Append(_rotator.DOLocalRotate(new Vector3(180f, 0f, 0f), 0.2f)).

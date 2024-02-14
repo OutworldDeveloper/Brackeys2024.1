@@ -36,6 +36,7 @@ public sealed class ToggleDoorInteraction: Interaction
             return;
         }
 
+        _door.PlayLockedSound();
         Notification.Do("Locked!");
     }
 

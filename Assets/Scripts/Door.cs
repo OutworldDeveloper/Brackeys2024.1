@@ -22,6 +22,7 @@ public sealed class Door : MonoBehaviour
     [SerializeField] private Sound _openSound;
     [SerializeField] private Sound _closeSound;
     [SerializeField] private Sound _knockSound;
+    [SerializeField] private Sound _lockedSound;
 
     private bool _isOpen;
     private bool _isAnimating;
@@ -71,6 +72,11 @@ public sealed class Door : MonoBehaviour
     {
         SomeoneKnocked?.Invoke();
         _knockSound.Play(_audioSource);
+    }
+
+    public void PlayLockedSound()
+    {
+        _lockedSound?.Play(_audioSource);
     }
 
     public void Block()

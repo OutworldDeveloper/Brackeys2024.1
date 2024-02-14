@@ -10,6 +10,7 @@ public sealed class SafeLock : Pawn
     [SerializeField] private LockButton[] _buttons;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _pressSound;
+    [SerializeField] private Sound _selectSound;
 
     private int _selectedButtonIndex = -1;
     private TimeSince _timeSinceLastPress;
@@ -28,7 +29,7 @@ public sealed class SafeLock : Pawn
     public override void OnPossessed(Player player)
     {
         base.OnPossessed(player);
-        SelectButton(0);
+        SelectButton(0, false);
         Notification.Do("Press Escape to exit", 2f);
     }
 
@@ -85,7 +86,7 @@ public sealed class SafeLock : Pawn
         }
 
         _buttons[_selectedButtonIndex].OnPressed();
-        _pressSound.Play(_audioSource);
+        _pressSound?.Play(_audioSource);
         _timeSinceLastPress = new TimeSince(Time.time);
     }
 
@@ -100,15 +101,23 @@ public sealed class SafeLock : Pawn
         }
     }
 
-    private void SelectButton(int index)
+    private void SelectButton(int index, bool playSound = true)
     {
+        if (_selectedButtonIndex == index)
+            return;
+
         if (_selectedButtonIndex != -1)
             _buttons[_selectedButtonIndex].OnDeselected();
 
         _selectedButtonIndex = index;
 
         if (_selectedButtonIndex != -1)
+        {
+            if (playSound == true)
+                _selectSound?.Play(_audioSource);
+
             _buttons[_selectedButtonIndex].OnSelected();
+        }
     }
 
 }

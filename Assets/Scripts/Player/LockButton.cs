@@ -38,7 +38,8 @@ public sealed class LockButton : MonoBehaviour
     public void OnPressed()
     {
         _currentTween?.Kill();
-        _currentTween = transform.DOLocalMoveZ(_pressedPositionZ, 0.2f);
+        _currentTween = transform.DOLocalMoveZ(_pressedPositionZ, 0.2f).
+            SetLoops(2, LoopType.Yoyo);
     }
 
 }
