@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Shotgun Blast
   m_EditorClassIdentifier: 
   _clips:
-  - {fileID: 8300000, guid: 8fb77e33d11afcd4eb43f8e83f35c243, type: 3}
+  - {fileID: 8300000, guid: d825a431e75afb1459e43edd050b576a, type: 3}

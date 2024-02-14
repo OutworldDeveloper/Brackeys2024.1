@@ -58,7 +58,7 @@ public sealed class PlayerCharacter : Pawn
         IsDead = true;
         _timeSinceLastDeath = new TimeSince(Time.time);
         Died?.Invoke(type);
-        GetComponent<Animator>()?.SetBool("dead", true);
+        GetComponent<Animator>().SetBool("dead", true);
         _modifiers.Clear();
     }
 
@@ -66,7 +66,7 @@ public sealed class PlayerCharacter : Pawn
     {
         IsDead = false;
         Respawned?.Invoke();
-        GetComponent<Animator>()?.SetBool("dead", false);
+        GetComponent<Animator>().SetBool("dead", false);
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
         _head.localRotation = Quaternion.identity;
