@@ -30,6 +30,8 @@ public sealed class Door : MonoBehaviour
     private TimeSince _timeSinceAnimationStarted;
     private int _blockedTimes;
 
+    private TimeSince _timeSinceLastKnocked = new TimeSince(float.NegativeInfinity);
+
     public bool IsOpen => _isOpen;
     public bool IsLocked => (IsOpen == false && _key != null) || _blockedTimes > 0;
     public Item Key => _key;
@@ -70,6 +72,11 @@ public sealed class Door : MonoBehaviour
 
     public void Knock()
     {
+        if (_timeSinceLastKnocked < 1f)
+            return;
+
+        _timeSinceLastKnocked = new TimeSince(Time.time);
+
         SomeoneKnocked?.Invoke();
         _knockSound.Play(_audioSource);
     }

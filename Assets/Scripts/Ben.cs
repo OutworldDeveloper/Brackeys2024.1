@@ -21,6 +21,8 @@ public sealed class Ben : MonoBehaviour
     [SerializeField] private Door _trapSwitch;
     [SerializeField] private PlayerTrigger _trapRoomTrigger;
 
+    private TimeSince _timeSinceLastSpoke = new TimeSince(float.NegativeInfinity);
+
     public ItemTag FoodTag => _foodTag;
     public bool IsHungry { get; private set; } = true;
 
@@ -46,7 +48,7 @@ public sealed class Ben : MonoBehaviour
 
             character.Inventory.RemoveItem(item);
             IsHungry = false;
-            SayCode();
+            TrySayNextAdvice(true);
             return true;
         }
 
@@ -58,7 +60,7 @@ public sealed class Ben : MonoBehaviour
     {
         if (IsHungry == true)
         {
-            Say(_hungrySound, "Is he... hungry?", 1.5f);
+            TrySay(_hungrySound, "Is he... hungry?", 1.5f);
             return;
         }
 
@@ -68,20 +70,20 @@ public sealed class Ben : MonoBehaviour
             return;
         }
 
-        SayNextAdvice();
+        TrySayNextAdvice();
     }
 
-    private void SayNextAdvice()
+    private void TrySayNextAdvice(bool ignoreCooldown = false)
     {
         if (_safeLock.IsOpen == false)
         {
-            SayCode();
+            TrySay(_happySound, $"Is he saying... {_codeReward.Value}?", ignoreCooldown: ignoreCooldown);
             return;
         }
 
         if (_trapSwitch.IsOpen == true && _trapRoomTrigger.EverVisited == false)
         {
-            Say(_killSelfAdviceSound, "When there is not enough time, dying might be the only option.", 3f);
+            TrySay(_killSelfAdviceSound, "When there is not enough time, dying might be the only option.", 3f, ignoreCooldown);
             // If you don't have enough time, why not kill yourself?
             // When there is not enough time, dying might be the only option.
             // Don't be afraid of the ghost, he might be useful right now
@@ -110,20 +112,15 @@ public sealed class Ben : MonoBehaviour
         return true;
     }
 
-    private void Say(Sound sound, string text, float notificationDuration = 2.5f)
+    private void TrySay(Sound sound, string text, float notificationDuration = 2.5f, bool ignoreCooldown = false)
     {
+        if (_timeSinceLastSpoke < 3.4f && ignoreCooldown == false)
+            return;
+
+        _timeSinceLastSpoke = new TimeSince(Time.time);
+
         Delayed.Do(() => sound.Play(_audioSource), answerDelay);
         Delayed.Do(() => Notification.Do(text, notificationDuration), textDelay);
-    }
-
-    private void SayNothing()
-    {
-        Delayed.Do(() => Notification.Do("Nothing..."), textDelay);
-    }
-
-    private void SayCode()
-    {
-        Say(_happySound, $"Is he saying... {_codeReward.Value}?");
     }
 
 }
