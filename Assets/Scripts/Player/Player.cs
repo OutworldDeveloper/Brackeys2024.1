@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public sealed class Player : MonoBehaviour
 {
@@ -13,12 +14,14 @@ public sealed class Player : MonoBehaviour
     {
         _character.Damaged += OnCharacterDamaged;
         _character.Died += OnCharacterDied;
+        _character.Respawned += OnCharacterRespawned;
     }
 
     private void OnDisable()
     {
         _character.Damaged -= OnCharacterDamaged;
         _character.Died -= OnCharacterDied;
+        _character.Respawned -= OnCharacterRespawned;
     }
 
     private void Start()
@@ -83,6 +86,13 @@ public sealed class Player : MonoBehaviour
     private void OnCharacterDied(DeathType deathType)
     {
         Possess(_character);
+        _hud.SetActive(false);
     }
+
+    private void OnCharacterRespawned()
+    {
+        _hud.SetActive(true);
+    }
+
 
 }
