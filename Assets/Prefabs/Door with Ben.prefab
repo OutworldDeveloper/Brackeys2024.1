@@ -230,4 +230,9 @@ MonoBehaviour:
   _audioSource: {fileID: 1005401680}
   _hungrySound: {fileID: 11400000, guid: 0b79b95db5c19d8419d6b440c6fb09ec, type: 2}
   _happySound: {fileID: 11400000, guid: 37bd47b8b904c74489e23e850e82e4a6, type: 2}
+  _killSelfAdviceSound: {fileID: 11400000, guid: c66d57f0264e7c040b4b6bc754708466,
+    type: 2}
   _foodTag: {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
+  _codeReward: {fileID: 11400000, guid: abf112141b22b7040808904cc2954386, type: 2}
+  _safeLock: {fileID: 0}
+  _trapSwitch: {fileID: 0}

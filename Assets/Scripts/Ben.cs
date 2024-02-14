@@ -13,8 +13,12 @@ public sealed class Ben : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _hungrySound;
     [SerializeField] private Sound _happySound;
+    [SerializeField] private Sound _killSelfAdviceSound;
     [SerializeField] private ItemTag _foodTag;
     [SerializeField] private Code _codeReward;
+
+    [SerializeField] private SafeLock _safeLock;
+    [SerializeField] private Door _trapSwitch;
 
     public ItemTag FoodTag => _foodTag;
     public bool IsHungry { get; private set; } = true;
@@ -53,19 +57,34 @@ public sealed class Ben : MonoBehaviour
     {
         if (IsHungry == true)
         {
-            Delayed.Do(() => _hungrySound.Play(_audioSource), answerDelay);
-            Delayed.Do(() => Notification.Do("Is he... hungry?", 1.5f), textDelay);
+            Say(_hungrySound, "Is he... hungry?", 1.5f);
+            return;
         }
-        else
-        {
-            if (IsAngryGhostNear(out var ghost) == true)
-            {
-                Delayed.Do(() => MakeGhostLeave(ghost), answerDelay);
-                return;
-            }
 
-            SayCode();
+        if (IsAngryGhostNear(out var ghost) == true)
+        {
+            Delayed.Do(() => MakeGhostLeave(ghost), answerDelay);
+            return;
         }
+
+        SayNextAdvice();
+    }
+
+    private void SayNextAdvice()
+    {
+        if (_safeLock.IsOpen == false)
+        {
+            SayCode();
+            return;
+        }
+
+        if (_trapSwitch.IsOpen == true)
+        {
+            Say(_killSelfAdviceSound, "If you don't have enough time, why not kill yourself?", 3f);
+            return;
+        }
+
+        SayNothing();
     }
 
     private void MakeGhostLeave(Ghost ghost)
@@ -87,10 +106,20 @@ public sealed class Ben : MonoBehaviour
         return true;
     }
 
+    private void Say(Sound sound, string text, float notificationDuration = 2.5f)
+    {
+        Delayed.Do(() => sound.Play(_audioSource), answerDelay);
+        Delayed.Do(() => Notification.Do(text, notificationDuration), textDelay);
+    }
+
+    private void SayNothing()
+    {
+        Delayed.Do(() => Notification.Do("Nothing... ?"), textDelay);
+    }
+
     private void SayCode()
     {
-        Delayed.Do(() => _happySound.Play(_audioSource), answerDelay);
-        Delayed.Do(() => Notification.Do($"Is he saying... {_codeReward.Value}?", 2.5f), textDelay);
+        Say(_happySound, $"Is he saying... {_codeReward.Value}?");
     }
 
 }
