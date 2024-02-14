@@ -15,6 +15,7 @@ public sealed class PlayerInteraction : MonoBehaviour
 
     private GameObject _currentTarget;
     private readonly List<Interaction> _avaliableInteractions = new List<Interaction>();
+    private bool _hasTarget;
 
     public void TryPerform(int index)
     {
@@ -37,13 +38,15 @@ public sealed class PlayerInteraction : MonoBehaviour
             if (hit.transform.gameObject != _currentTarget)
             {
                 OnTargetChanged(hit.transform.gameObject);
+                _hasTarget = true;
             }
         }
         else
         {
-            if (_currentTarget != null)
+            if (_hasTarget == true)
             {
                 OnTargetChanged(null);
+                _hasTarget = false;
             }
         }
     }
