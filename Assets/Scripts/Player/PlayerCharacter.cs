@@ -73,10 +73,16 @@ public sealed class PlayerCharacter : Pawn
         Health = _maxHealth;
     }
 
-    public void ApplyModifier(CharacterModifier modifier, float duration)
+    public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier
     {
-        modifier.Init(duration);
+        modifier.Init(this, duration);
         _modifiers.Add(modifier);
+        return modifier;
+    }
+
+    public void TryRemoveModifier(CharacterModifier modifier) 
+    {
+        _modifiers.Remove(modifier);
     }
 
     public void ApplyDamage(float damage)
@@ -147,9 +153,13 @@ public sealed class PlayerCharacter : Pawn
         {
             var modifier = _modifiers[i];
 
-            if (modifier.TimeUntilExpires < 0)
+            if (modifier.IsInfinite == false && modifier.TimeUntilExpires < 0)
             {
                 _modifiers.RemoveAt(i);
+            }
+            else
+            {
+                modifier.Tick();
             }
         }
 
@@ -165,19 +175,6 @@ public sealed class PlayerCharacter : Pawn
         if (CanInteract() == true && input.WantsInteract == true)
         {
             _interactor.TryPerform(input.InteractionIndex);
-        }
-
-        const bool canThrowItems = false;
-        if (Input.GetKeyDown(KeyCode.Q) == true && canThrowItems == true)
-        {
-            var items = _inventory.Content;
-            if (items.Length > 0)
-            {
-                var item = items[0];
-                _inventory.RemoveItem(item);
-                item.transform.position = _head.position;
-                item.Push(_head.forward * 250f + _velocityXZ * 45f);
-            }
         }
     }
 
@@ -268,7 +265,7 @@ public sealed class PlayerCharacter : Pawn
 
         foreach (var modifier in _modifiers)
         {
-            var modifierMultipler = modifier.GetSpeedMultipler();
+            var modifierMultipler = modifier.GetSpeedMultiplier();
             multipler = Mathf.Min(multipler, modifierMultipler);
         }
 
@@ -306,15 +303,20 @@ public enum DeathType
 
 public abstract class CharacterModifier
 {
+    public PlayerCharacter Character { get; private set; }
     public TimeUntil TimeUntilExpires { get; private set; }
+    public bool IsInfinite { get; private set; }
 
-    public void Init(float duration)
+    public void Init(PlayerCharacter character, float duration)
     {
+        Character = character;
         TimeUntilExpires = new TimeUntil(Time.time + duration);
+        IsInfinite = duration < 0f;
     }
 
-    public virtual float GetSpeedMultipler() => 1f;
+    public virtual float GetSpeedMultiplier() => 1f;
     public virtual bool CanInteract() => true;
     public virtual bool CanJump() => true;
+    public virtual void Tick() { }
 
 }

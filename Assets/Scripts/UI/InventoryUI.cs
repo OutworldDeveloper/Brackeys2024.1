@@ -24,6 +24,9 @@ public sealed class InventoryUI : MonoBehaviour
 
     private void OnItemAdded(Item item)
     {
+        if (_itemDisplays.ContainsKey(item) == true) // Do not create visuals for already existing item
+            return;
+
         var display = Instantiate(_itemDisplayPrefab, transform, false);
         display.Init(item);
         _itemDisplays.Add(item, display);
@@ -31,6 +34,9 @@ public sealed class InventoryUI : MonoBehaviour
 
     private void OnItemRemoved(Item item)
     {
+        if (_player.Inventory.HasItem(item) == true) // Do not do anything if we still have item
+            return;
+
         if (_itemDisplays.TryGetValue(item, out var display) == false)
             return;
 

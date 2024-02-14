@@ -65,7 +65,7 @@ public sealed class ShotgunTrap : MonoBehaviour
 
 public sealed class ShotgunTrapModifier : CharacterModifier
 {
-    public override float GetSpeedMultipler()
+    public override float GetSpeedMultiplier()
     {
         return 0.1f;
     }

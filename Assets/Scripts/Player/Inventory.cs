@@ -24,17 +24,26 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
+    public bool HasItem(Item item)
+    {
+        foreach (var checkItem in _items)
+        {
+            if (checkItem == item)
+                return true;
+        }
+
+        return false;
+    }
+
     public void AddItem(Item item)
     {
         _items.Add(item);
-        item.OnPickedUp();
         ItemAdded?.Invoke(item);
     }
 
     public void RemoveItem(Item item)
     {
         _items.Remove(item);
-        item.OnDropped();
         ItemRemoved?.Invoke(item);
     }
 

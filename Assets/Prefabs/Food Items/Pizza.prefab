@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 778527528189617883}
   - component: {fileID: 5353872178230755348}
   - component: {fileID: 67713987962465283}
-  - component: {fileID: 5180403585896623848}
   m_Layer: 0
   m_Name: Pizza
   m_TagString: Untagged
@@ -112,20 +111,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
---- !u!114 &5180403585896623848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732943729636365457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: Pizza
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 02800fb9cff14da47a04572790384d8b,
-    type: 3}
-  Tags:
-  - {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
+  _item: {fileID: 11400000, guid: 6ce23633e4fff934d86ed1b015cd3869, type: 2}

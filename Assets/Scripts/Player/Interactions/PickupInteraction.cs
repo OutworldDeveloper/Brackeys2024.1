@@ -1,20 +1,16 @@
 ﻿using UnityEngine;
 
-public sealed class PickupInteraction : Interaction
+public class PickupInteraction : Interaction
 {
 
-    private Item _item;
-
-    private void Awake()
-    {
-        _item = GetComponent<Item>();
-    }
+    [SerializeField] private Item _item;
 
     public override string Text => $"Pickup {_item.DisplayName}";
 
     public override void Perform(PlayerCharacter player)
     {
         player.Inventory.AddItem(_item);
+        Destroy(gameObject);
     }
 
 }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PickupInteraction))]
-public class Item : MonoBehaviour
+[CreateAssetMenu(menuName = "Item")]
+public class Item : ScriptableObject
 {
     [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public Sprite Sprite { get; private set; }
@@ -13,27 +13,6 @@ public class Item : MonoBehaviour
     public bool HasTag(ItemTag tag)
     {
         return Tags.Contains(tag);
-    }
-
-    public void Push(Vector3 force)
-    {
-        throw new NotImplementedException();
-        GetComponent<Rigidbody>().AddForce(force);
-    }
-
-    public virtual void OnPickedUp()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public virtual void OnDropped()
-    {
-        gameObject.SetActive(true);
-    }
-
-    public void Destroy()
-    {
-        Destroy(gameObject);
     }
 
 }

@@ -76,7 +76,6 @@ public sealed class PlayerInteraction : MonoBehaviour
 
 public abstract class Interaction : MonoBehaviour
 {
-
     [field: SerializeField] public float InteractionDistance { get; private set; } = 3f;
 
     public abstract string Text { get; }
