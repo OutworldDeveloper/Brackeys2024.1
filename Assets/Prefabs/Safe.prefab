@@ -2285,7 +2285,7 @@ GameObject:
   - component: {fileID: 8732435106373400922}
   - component: {fileID: 1049900439402248454}
   - component: {fileID: 7906892433233405504}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SafeDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

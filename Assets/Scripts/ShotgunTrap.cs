@@ -10,6 +10,7 @@ public sealed class ShotgunTrap : MonoBehaviour
     [SerializeField] private Sound _shootSound;
     [SerializeField] private AudioSource _shootAudioSource;
     [SerializeField] private PlayerTrigger _playerTrigger;
+    [SerializeField] private Collider _doorBlocker;
 
     private bool IsDeactivated;
 
@@ -21,11 +22,14 @@ public sealed class ShotgunTrap : MonoBehaviour
         {
             ShootAndCloseDoor();
         }
+
+        _doorBlocker.enabled = true;
     }
 
     public void Deactivate()
     {
         IsDeactivated = true;
+        _doorBlocker.enabled = false;
     }
 
     private void OnEnable()
@@ -48,7 +52,7 @@ public sealed class ShotgunTrap : MonoBehaviour
         if (_playerTrigger.HasPlayerInside == false)
             return;
 
-        _playerTrigger.PlayerInside.ApplyModifier(new ShotgunTrapModifier(), 5f);
+        _playerTrigger.PlayerInside.ApplyModifier(new ShotgunTrapModifier(), 1f);
     }
 
     private void OnDoorOpened()
@@ -72,7 +76,7 @@ public sealed class ShotgunTrapModifier : CharacterModifier
 {
     public override float GetSpeedMultiplier()
     {
-        return 0.1f;
+        return 0.5f;
     }
 
     public override bool CanInteract()

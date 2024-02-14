@@ -12,6 +12,7 @@ public sealed class PlayerTrigger : MonoBehaviour
     [SerializeField] private PlayerEvent _enterEvent;
     [SerializeField] private PlayerEvent _exitEvent;
 
+    public bool EverVisited { get; private set; }
     public bool HasPlayerInside => PlayerInside != null;
     public PlayerCharacter PlayerInside { get; private set; }
 
@@ -20,6 +21,7 @@ public sealed class PlayerTrigger : MonoBehaviour
         if (other.TryGetComponent(out PlayerCharacter player) == true)
         {
             PlayerInside = player;
+            EverVisited = true;
             _enterEvent.Invoke(player);
         }
     }

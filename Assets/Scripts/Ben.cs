@@ -19,6 +19,7 @@ public sealed class Ben : MonoBehaviour
 
     [SerializeField] private SafeLock _safeLock;
     [SerializeField] private Door _trapSwitch;
+    [SerializeField] private PlayerTrigger _trapRoomTrigger;
 
     public ItemTag FoodTag => _foodTag;
     public bool IsHungry { get; private set; } = true;
@@ -78,14 +79,16 @@ public sealed class Ben : MonoBehaviour
             return;
         }
 
-        if (_trapSwitch.IsOpen == true)
+        if (_trapSwitch.IsOpen == true && _trapRoomTrigger.EverVisited == false)
         {
-            Say(_killSelfAdviceSound, "If you don't have enough time, why not kill yourself?", 3f); 
+            Say(_killSelfAdviceSound, "When there is not enough time, dying might be the only option.", 3f);
+            // If you don't have enough time, why not kill yourself?
+            // When there is not enough time, dying might be the only option.
             // Don't be afraid of the ghost, he might be useful right now
             return;
         }
 
-        SayNothing();
+        //SayNothing();
     }
 
     private void MakeGhostLeave(Ghost ghost)
@@ -115,7 +118,7 @@ public sealed class Ben : MonoBehaviour
 
     private void SayNothing()
     {
-        Delayed.Do(() => Notification.Do("Nothing... ?"), textDelay);
+        Delayed.Do(() => Notification.Do("Nothing..."), textDelay);
     }
 
     private void SayCode()
