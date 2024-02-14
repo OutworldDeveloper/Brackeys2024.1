@@ -17,15 +17,12 @@ public sealed class Hole : MonoBehaviour
 
     public bool TryExtractItem(PlayerCharacter player)
     {
-        if (player.Inventory.HasItem(_stickItem) == false)
-        {
-            Notification.Do("I can't reach it", 1.5f);
-            return false;
-        }
+        bool hasStick = player.Inventory.HasItem(_stickItem);
+        bool hasHook = player.Inventory.HasItem(_hookItem);
 
-        if (player.Inventory.HasItem(_hookItem) == false)
+        if (hasStick == false || hasHook == false)
         {
-            Notification.Do("I need a hook or something", 1.5f);
+            Notification.Do(GetFailResponse(hasStick, hasHook), 1.5f);
             return false;
         }
 
@@ -37,7 +34,21 @@ public sealed class Hole : MonoBehaviour
         _stuckPickup.enabled = true;
         //_animator.Play("ExtractItem");
         //Delayed.Do()
+
+        _stuckPickup.gameObject.SetActive(true);
+
         return true;
+    }
+
+    private string GetFailResponse(bool hasStick, bool hasHook)
+    {
+        if (hasStick == true && hasHook == false)
+            return "I need a hook";
+
+        if (hasStick == false && hasHook == true)
+            return "I need a fishing rode";
+
+        return "There is something interesting there";
     }
 
 }

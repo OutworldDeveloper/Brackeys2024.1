@@ -51,6 +51,8 @@ public sealed class PlayerCharacter : Pawn
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        ApplyModifier(new SpawnBlockModifier(), 0.4f);
     }
 
     public void Kill(DeathType type)
@@ -71,6 +73,8 @@ public sealed class PlayerCharacter : Pawn
         transform.rotation = _spawnRotation;
         _head.localRotation = Quaternion.identity;
         Health = _maxHealth;
+
+        ApplyModifier(new SpawnBlockModifier(), 0.4f);
     }
 
     public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier
@@ -318,5 +322,25 @@ public abstract class CharacterModifier
     public virtual bool CanInteract() => true;
     public virtual bool CanJump() => true;
     public virtual void Tick() { }
+
+}
+
+public sealed class SpawnBlockModifier : CharacterModifier
+{
+
+    public override bool CanInteract()
+    {
+        return false;
+    }
+
+    public override bool CanJump()
+    {
+        return false;
+    }
+
+    public override float GetSpeedMultiplier()
+    {
+        return 0f;
+    }
 
 }
