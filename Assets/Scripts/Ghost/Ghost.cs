@@ -9,6 +9,7 @@ public sealed class Ghost : MonoBehaviour
 {
 
     [SerializeField] private float _respawnTime;
+    [SerializeField] private AudioSource _damageAudioSource;
 
     private NavMeshAgent _agent;
     private GhostState _state = GhostState.Idle;
@@ -27,6 +28,7 @@ public sealed class Ghost : MonoBehaviour
 
     private void Start()
     {
+        _damageAudioSource.volume = 0f;
         _startPosition = transform.position;
         _startRotation = transform.rotation;
     }
@@ -69,7 +71,11 @@ public sealed class Ghost : MonoBehaviour
         if (Vector3.Distance(_target.transform.position, transform.position) < 2.5f)
         {
             _target.ApplyDamage(1f * Time.deltaTime);
-            //_target.Kill();
+            _damageAudioSource.volume = Mathf.Min(1f, _damageAudioSource.volume + Time.deltaTime * 1f);
+        }
+        else
+        {
+            _damageAudioSource.volume = Mathf.Max(0f, _damageAudioSource.volume - Time.deltaTime * 0.5f);
         }
     }
 
@@ -88,6 +94,7 @@ public sealed class Ghost : MonoBehaviour
 
     private void RespawnNow()
     {
+        _damageAudioSource.volume = 0f;
         _state = GhostState.Idle;
         _agent.ResetPath();
         transform.position = _startPosition;
