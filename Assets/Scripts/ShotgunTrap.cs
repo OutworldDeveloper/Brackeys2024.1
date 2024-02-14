@@ -16,6 +16,11 @@ public sealed class ShotgunTrap : MonoBehaviour
     public void Activate()
     {
         IsDeactivated = false;
+
+        if (_door.IsOpen == true)
+        {
+            ShootAndCloseDoor();
+        }
     }
 
     public void Deactivate()
@@ -49,10 +54,10 @@ public sealed class ShotgunTrap : MonoBehaviour
     private void OnDoorOpened()
     {
         if (IsDeactivated == false)
-            Shoot();
+            ShootAndCloseDoor();
     }
 
-    private void Shoot()
+    private void ShootAndCloseDoor()
     {
         if (_playerTrigger.HasPlayerInside == true)
             _playerTrigger.PlayerInside.Kill(DeathType.Physical);
