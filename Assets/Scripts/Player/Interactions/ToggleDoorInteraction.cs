@@ -32,6 +32,7 @@ public sealed class ToggleDoorInteraction: Interaction
 
         if (player.Inventory.HasItem(_door.Key) == true)
         {
+            player.Inventory.RemoveItem(_door.Key);
             _door.Open();
             return;
         }
