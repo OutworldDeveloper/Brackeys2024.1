@@ -17,7 +17,7 @@ public sealed class Door : MonoBehaviour
     [SerializeField] private float _animationDuration;
     [SerializeField] private AnimationCurve _openAnimationCurve;
     [SerializeField] private float _openAngle;
-    [SerializeField] private ItemTag _keyTag;
+    [SerializeField] private Item _key;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _openSound;
     [SerializeField] private Sound _closeSound;
@@ -30,8 +30,8 @@ public sealed class Door : MonoBehaviour
     private int _blockedTimes;
 
     public bool IsOpen => _isOpen;
-    public bool IsLocked => (IsOpen == false && _keyTag != null) || _blockedTimes > 0;
-    public ItemTag KeyTag => _keyTag;
+    public bool IsLocked => (IsOpen == false && _key != null) || _blockedTimes > 0;
+    public Item Key => _key;
 
     [ContextMenu("Open")]
     public void Open()

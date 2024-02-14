@@ -21,13 +21,10 @@ public sealed class ToggleDoorInteraction: Interaction
             return;
         }
 
-        foreach (var item in player.Inventory.Content)
+        if (player.Inventory.HasItem(_door.Key) == true)
         {
-            if (item.HasTag(_door.KeyTag) == true)
-            {
-                _door.Open();
-                return;
-            }
+            _door.Open();
+            return;
         }
 
         Notification.Do("Locked!");

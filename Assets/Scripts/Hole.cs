@@ -10,6 +10,11 @@ public sealed class Hole : MonoBehaviour
 
     public bool IsItemExtracted { get; private set; }
 
+    private void Start()
+    {
+        _stuckPickup.enabled = false;
+    }
+
     public bool TryExtractItem(PlayerCharacter player)
     {
         if (player.Inventory.HasItem(_stickItem) == false)
@@ -29,6 +34,7 @@ public sealed class Hole : MonoBehaviour
 
         IsItemExtracted = true;
         Notification.Do("Worked", 1.5f);
+        _stuckPickup.enabled = true;
         //_animator.Play("ExtractItem");
         //Delayed.Do()
         return true;
