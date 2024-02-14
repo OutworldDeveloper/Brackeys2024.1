@@ -3,22 +3,34 @@
 public sealed class Player : MonoBehaviour
 {
 
-    [SerializeField] private Pawn _defaultPawn;
+    [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
 
     private Pawn _currentPawn;
 
+    private void OnEnable()
+    {
+        _character.Damaged += OnCharacterDamaged;
+        _character.Died += OnCharacterDied;
+    }
+
+    private void OnDisable()
+    {
+        _character.Damaged -= OnCharacterDamaged;
+        _character.Died -= OnCharacterDied;
+    }
+
     private void Start()
     {
-        Possess(_defaultPawn);
+        Possess(_character);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) == true)
         {
-            if (_currentPawn != _defaultPawn)
+            if (_currentPawn != _character)
             {
                 Unpossess();
             }
@@ -35,7 +47,7 @@ public sealed class Player : MonoBehaviour
             }
             else
             {
-                if (_currentPawn != _defaultPawn)
+                if (_currentPawn != _character)
                 {
                     Unpossess();
                 }
@@ -51,16 +63,26 @@ public sealed class Player : MonoBehaviour
         _currentPawn = pawn;
         _currentPawn.OnPossessed(this);
 
-        _hud.SetActive(pawn == _defaultPawn);
+        _hud.SetActive(pawn == _character);
     }
 
     public void Unpossess()
     {
-        if (_currentPawn != null && _currentPawn != _defaultPawn)
+        if (_currentPawn != null && _currentPawn != _character)
         {
             _currentPawn.OnUnpossessed();
-            Possess(_defaultPawn);
+            Possess(_character);
         }
+    }
+
+    private void OnCharacterDamaged()
+    {
+        Possess(_character);
+    }
+
+    private void OnCharacterDied(DeathType deathType)
+    {
+        Possess(_character);
     }
 
 }

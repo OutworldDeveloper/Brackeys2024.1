@@ -690,6 +690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2924645d55d798b469502cb598488876, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <InteractionDistance>k__BackingField: 1.5
   _door: {fileID: 8284442354415670071}
 --- !u!114 &6648077549492242067
 MonoBehaviour:
@@ -703,4 +704,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e544c35099d93d14395e90e532934cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <InteractionDistance>k__BackingField: 1.5
   _door: {fileID: 8284442354415670071}
