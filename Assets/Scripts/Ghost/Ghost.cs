@@ -11,11 +11,13 @@ public sealed class Ghost : MonoBehaviour
     [SerializeField] private float _respawnTime;
 
     private NavMeshAgent _agent;
-    private State _state = State.Idle;
+    private GhostState _state = GhostState.Idle;
     private PlayerCharacter _target;
     private TimeUntil _timeUntilRespawn;
     private Vector3 _startPosition;
     private Quaternion _startRotation;
+
+    public GhostState State => _state;
 
     private void Awake()
     {
@@ -32,9 +34,9 @@ public sealed class Ghost : MonoBehaviour
     {
         switch (_state)
         {
-            case State.Idle: UpdateIdle(); break;
-            case State.Chasing: UpdateChasing(); break;
-            case State.Respawning: UpdateRespawning(); break;
+            case GhostState.Idle: UpdateIdle(); break;
+            case GhostState.Chasing: UpdateChasing(); break;
+            case GhostState.Respawning: UpdateRespawning(); break;
         }
     }
 
@@ -42,14 +44,17 @@ public sealed class Ghost : MonoBehaviour
     {
         _target = target;
         _target.Died += OnTargetDied;
-        _state = State.Chasing;
+        _state = GhostState.Chasing;
     }
 
     public void StartRespawning()
     {
+        if (_state == GhostState.Respawning)
+            return;
+
         _agent.ResetPath();
         _timeUntilRespawn = new TimeUntil(Time.time + _respawnTime);
-        _state = State.Respawning;
+        _state = GhostState.Respawning;
     }
 
     private void UpdateIdle() { }
@@ -81,17 +86,17 @@ public sealed class Ghost : MonoBehaviour
 
     private void RespawnNow()
     {
-        _state = State.Idle;
+        _state = GhostState.Idle;
         _agent.ResetPath();
         transform.position = _startPosition;
         transform.rotation = _startRotation;
     }
 
-    private enum State
-    {
-        Idle,
-        Chasing,
-        Respawning,
-    }
+}
 
+public enum GhostState
+{
+    Idle,
+    Chasing,
+    Respawning,
 }

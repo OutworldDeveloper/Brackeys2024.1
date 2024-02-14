@@ -28,6 +28,7 @@ public sealed class PlayerCharacter : Pawn
     private Vector3 _spawnPosition;
     private Quaternion _spawnRotation;
     private readonly List<CharacterModifier> _modifiers = new List<CharacterModifier>();
+    private TimeSince _timeSinceLastDamage = new TimeSince(float.NegativeInfinity);
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -83,6 +84,7 @@ public sealed class PlayerCharacter : Pawn
         if (IsDead == true)
             return;
 
+        _timeSinceLastDamage = new TimeSince(Time.time);
         Health = Mathf.Max(0f, Health - damage);
         Damaged?.Invoke();
 
@@ -140,6 +142,7 @@ public sealed class PlayerCharacter : Pawn
 
     private void UpdateAlive(PlayerInput input)
     {
+        // Modifiers
         for (int i = _modifiers.Count - 1; i >= 0; i--)
         {
             var modifier = _modifiers[i];
@@ -148,6 +151,12 @@ public sealed class PlayerCharacter : Pawn
             {
                 _modifiers.RemoveAt(i);
             }
+        }
+
+        // Regeneration
+        if (_timeSinceLastDamage > 10f)
+        {
+            Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
         }
 
         UpdateRotation(input);

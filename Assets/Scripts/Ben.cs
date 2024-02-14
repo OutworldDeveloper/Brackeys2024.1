@@ -59,8 +59,33 @@ public sealed class Ben : MonoBehaviour
         }
         else
         {
+            if (IsAngryGhostNear(out var ghost) == true)
+            {
+                Delayed.Do(() => MakeGhostLeave(ghost), answerDelay);
+                return;
+            }
+
             SayCode();
         }
+    }
+
+    private void MakeGhostLeave(Ghost ghost)
+    {
+        Delayed.Do(ghost.StartRespawning, 0.5f);
+        _hungrySound.Play(_audioSource);
+    }
+
+    private bool IsAngryGhostNear(out Ghost ghost)
+    {
+        ghost = FindObjectOfType<Ghost>();
+
+        if (ghost == null)
+            return false;
+
+        if (Vector3.Distance(ghost.transform.position, transform.position) > 7f)
+            return false;
+
+        return true;
     }
 
     private void SayCode()

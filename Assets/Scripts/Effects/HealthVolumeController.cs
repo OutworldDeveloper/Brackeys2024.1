@@ -28,9 +28,14 @@ public sealed class HealthVolumeController : MonoBehaviour
         _character.Respawned -= OnCharacterRespawned;
     }
 
-    private void OnCharacterDamaged()
+    private void Update()
     {
         _volume.weight = 1 - _character.Health / _character.MaxHealth;
+    }
+
+    private void OnCharacterDamaged()
+    {
+        //_volume.weight = 1 - _character.Health / _character.MaxHealth;
     }
 
     private void OnCharacterRespawned()
