@@ -41,7 +41,7 @@ public sealed class SafeLock : Pawn
 
     public override void PossessedTick()
     {
-        if (_timeSinceLastPress < 0.5f)
+        if (_timeSinceLastPress < 0.2f)
             return;
 
         Vector2Int moveSelection = new Vector2Int()
@@ -51,7 +51,6 @@ public sealed class SafeLock : Pawn
         };
 
         int newSelection = _selectedButtonIndex + moveSelection.x + moveSelection.y * 3;
-        //newSelection = Mathf.Clamp(newSelection, 0, _buttons.Length - 1);
         if (newSelection >= 0 && newSelection < _buttons.Length)
         {
             SelectButton(newSelection);

@@ -104,7 +104,7 @@ public sealed class Ghost : MonoBehaviour
         _damageAudioSource.volume = 0f;
         _state = GhostState.Idle;
         _agent.ResetPath();
-        transform.position = _startPosition;
+        _agent.Warp(_startPosition);
         transform.rotation = _startRotation;
 
         if (_currentChaseModifier != null)
