@@ -68,10 +68,17 @@ public sealed class Ghost : MonoBehaviour
         _agent.stoppingDistance = 1f;
         _agent.SetDestination(_target.transform.position);
 
-        if (Vector3.Distance(_target.transform.position, transform.position) < 2.5f)
+        float targetDistance = Vector3.Distance(_target.transform.position, transform.position);
+
+        if (targetDistance < 2.5f)
         {
             _target.ApplyDamage(1f * Time.deltaTime);
             _damageAudioSource.volume = Mathf.Min(1f, _damageAudioSource.volume + Time.deltaTime * 1f);
+
+            if (targetDistance < 0.5f)
+            {
+                _target.Kill(DeathType.Psionic);
+            }
         }
         else
         {
