@@ -120,7 +120,7 @@ public sealed class Ben : MonoBehaviour
         _timeSinceLastSpoke = new TimeSince(Time.time);
 
         Delayed.Do(() => sound.Play(_audioSource), answerDelay);
-        Delayed.Do(() => Notification.Do(text, notificationDuration), textDelay);
+        Delayed.Do(() => Notification.Show(text, notificationDuration), textDelay);
     }
 
 }

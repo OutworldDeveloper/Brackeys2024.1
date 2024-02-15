@@ -22,7 +22,7 @@ public sealed class Hole : MonoBehaviour
 
         if (hasStick == false || hasHook == false)
         {
-            Notification.Do(GetFailResponse(hasStick, hasHook), 1.5f);
+            Notification.Show(GetFailResponse(hasStick, hasHook), 1.5f);
             return false;
         }
 
@@ -30,7 +30,7 @@ public sealed class Hole : MonoBehaviour
         player.Inventory.RemoveItem(_hookItem);
 
         IsItemExtracted = true;
-        Notification.Do("Worked", 1.5f);
+        Notification.Show("Worked", 1.5f);
         _stuckPickup.enabled = true;
         //_animator.Play("ExtractItem");
         //Delayed.Do()

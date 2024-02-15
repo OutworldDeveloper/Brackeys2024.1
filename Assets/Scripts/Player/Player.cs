@@ -66,7 +66,7 @@ public sealed class Player : MonoBehaviour
             return;
         }
 
-        if (_currentPawn != _character)
+        if (_currentPawn != _character && _currentPawn.CanUnpossessAtWill() == true)
         {
             Unpossess();
         }

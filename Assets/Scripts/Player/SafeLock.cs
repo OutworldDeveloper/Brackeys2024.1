@@ -30,7 +30,7 @@ public sealed class SafeLock : Pawn
     {
         base.OnPossessed(player);
         SelectButton(0, false);
-        Notification.Do("Press Escape to exit", 2f);
+        Notification.Show("Press Escape to exit", 2f);
     }
 
     public override void OnUnpossessed()
@@ -71,16 +71,16 @@ public sealed class SafeLock : Pawn
                 break;
             case 10:
                 _currentEnteredCode += "0";
-                Notification.Do(_currentEnteredCode.ToString(), 0.5f);
+                Notification.Show(_currentEnteredCode.ToString(), 0.5f);
                 break;
             case 11:
-                Notification.Do(_currentEnteredCode.ToString(), 0.5f);
+                Notification.Show(_currentEnteredCode.ToString(), 0.5f);
                 SubmitCode(_currentEnteredCode);
                 _currentEnteredCode = string.Empty;
                 break;
             default:
                 _currentEnteredCode += _selectedButtonIndex + 1;
-                Notification.Do(_currentEnteredCode.ToString(), 0.5f);
+                Notification.Show(_currentEnteredCode.ToString(), 0.5f);
                 break;
         }
 

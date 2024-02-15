@@ -24,4 +24,9 @@ public abstract class Pawn : MonoBehaviour
         WantsUnpossess = true;
     }
 
+    public virtual bool CanUnpossessAtWill()
+    {
+        return true;
+    }
+
 }

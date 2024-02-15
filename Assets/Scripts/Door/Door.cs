@@ -84,7 +84,7 @@ public sealed class Door : MonoBehaviour
             if (player.Inventory.HasItem(Key) == false)
             {
                 PlayLockedSound();
-                Notification.Do("Locked!");
+                Notification.Show("Locked!");
                 return false;
             }
 

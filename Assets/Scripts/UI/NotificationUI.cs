@@ -65,7 +65,7 @@ public static class Notification
 
     public static event Action<Info> Event;
 
-    public static void Do(string text, float duration = 1f)
+    public static void Show(string text, float duration = 1f)
     {
         Event?.Invoke(new Info(text, duration));
     }

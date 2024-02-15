@@ -16,7 +16,7 @@ public sealed class FeedBenInteraction : Interaction
     {
         if (_ben.TryFeed(player) == false)
         {
-            Notification.Do("I don't have any food...");
+            Notification.Show("I don't have any food...");
         }
     }
 }
