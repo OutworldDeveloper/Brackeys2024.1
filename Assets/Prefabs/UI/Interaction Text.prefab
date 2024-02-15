@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8601349613840395422}
   - component: {fileID: 8601349613840395417}
   m_Layer: 5
-  m_Name: InteractionText
+  m_Name: Interaction Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,14 +68,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[Button] Interaction name'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: be5f9dfe097dab145bd7cfd6868e962e, type: 2}
+  m_sharedMaterial: {fileID: -4091840359411534873, guid: be5f9dfe097dab145bd7cfd6868e962e,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4289901234
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3

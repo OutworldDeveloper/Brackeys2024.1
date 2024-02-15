@@ -9,10 +9,10 @@ public sealed class InteractorUI : MonoBehaviour
 
     [SerializeField] private PlayerCharacter _player;
     [SerializeField] private Transform _interactionsPanel;
-    [SerializeField] private TextMeshProUGUI _textPrefab;
+    [SerializeField] private UI_InteractionLabel _interactionLabelPrefab;
     [SerializeField] private KeyCode[] _keyCodes;
 
-    private readonly List<TextMeshProUGUI> _activeTexts = new List<TextMeshProUGUI>();
+    private readonly List<UI_InteractionLabel> _activeLabels = new List<UI_InteractionLabel>();
 
     private void OnEnable()
     {
@@ -26,21 +26,20 @@ public sealed class InteractorUI : MonoBehaviour
 
     private void OnTargetChanged(List<Interaction> interactions)
     {
-        foreach (var text in _activeTexts)
+        foreach (var label in _activeLabels)
         {
-            Destroy(text.gameObject);
+            Destroy(label.gameObject);
         }
 
-        _activeTexts.Clear();
+        _activeLabels.Clear();
 
         for (int i = 0; i < Mathf.Min(interactions.Count, _keyCodes.Length); i++)
         {
             var interaction = interactions[i];
-            var text = Instantiate(_textPrefab);
+            var text = Instantiate(_interactionLabelPrefab);
             text.transform.SetParent(_interactionsPanel, false);
-            _activeTexts.Add(text);
-
-            text.text = $"[{_keyCodes[i]}] {interaction.Text}";
+            _activeLabels.Add(text);
+            text.Setup(_keyCodes[i].ToString(), interaction.Text);
         }
     }
 
