@@ -29,6 +29,7 @@ public sealed class PlayerCharacter : Pawn
     private Quaternion _spawnRotation;
     private readonly List<CharacterModifier> _modifiers = new List<CharacterModifier>();
     private TimeSince _timeSinceLastDamage = new TimeSince(float.NegativeInfinity);
+    private PlayerInput _currentInput;
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -36,6 +37,8 @@ public sealed class PlayerCharacter : Pawn
     public float RespawnTime => _respawnTime;
     public float MaxHealth => _maxHealth;
     public float Health { get; private set; }
+    public Vector3 HorizontalVelocity => _velocityXZ;
+    public bool IsGrounded => _controller.isGrounded;
 
     private void Awake()
     {
@@ -50,6 +53,32 @@ public sealed class PlayerCharacter : Pawn
         _spawnRotation = transform.rotation;
 
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
+    }
+
+    private void Update()
+    {
+        if (IsDead == true)
+        {
+            UpdateDead();
+        }
+        else
+        {
+            UpdateAlive(_currentInput);
+        }
+    }
+
+    public override void OnUnpossessed()
+    {
+        Debug.Log(this);
+        base.OnUnpossessed();
+
+        _currentInput = new PlayerInput()
+        {
+            WantsJump = false,
+            InteractionIndex = -1,
+            Direction = FlatVector.zero,
+        };
+        _velocityXZ = Vector3.zero;
     }
 
     public void Kill(DeathType type)
@@ -107,15 +136,7 @@ public sealed class PlayerCharacter : Pawn
 
     public override void PossessedTick()
     {
-        if (IsDead == true)
-        {
-            UpdateDead();
-        }
-        else
-        {
-            var input = GatherInput();
-            UpdateAlive(input);
-        }
+        _currentInput = GatherInput();
     }
 
     private PlayerInput GatherInput()

@@ -81,6 +81,7 @@ public sealed class Player : MonoBehaviour
         if (_currentPawn == pawn)
             return;
 
+        _currentPawn?.OnUnpossessed();
         _currentPawn = pawn;
         _currentPawn.OnPossessed(this);
 
