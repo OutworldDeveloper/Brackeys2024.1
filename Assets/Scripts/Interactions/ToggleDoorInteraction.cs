@@ -24,21 +24,7 @@ public sealed class ToggleDoorInteraction: Interaction
             return;
         }
 
-        if (_door.IsLocked == false)
-        {
-            _door.Open();
-            return;
-        }
-
-        if (player.Inventory.HasItem(_door.Key) == true)
-        {
-            player.Inventory.RemoveItem(_door.Key);
-            _door.Open();
-            return;
-        }
-
-        _door.PlayLockedSound();
-        Notification.Do("Locked!");
+        _door.TryOpen(player);
     }
 
 }

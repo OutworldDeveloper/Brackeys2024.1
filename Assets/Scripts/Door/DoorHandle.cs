@@ -15,15 +15,15 @@ public class DoorHandle : MonoBehaviour
 
     private void OnEnable()
     {
-        _door.Opening += OnDoorOpening;
+        _door.OpeningAttempt += OnOpeningAttepmt;
     }
 
     private void OnDisable()
     {
-        _door.Opening -= OnDoorOpening;
+        _door.OpeningAttempt -= OnOpeningAttepmt;
     }
 
-    private void OnDoorOpening()
+    private void OnOpeningAttepmt(PlayerCharacter player)
     {
         _tween?.Kill();
 

@@ -11,6 +11,7 @@ public sealed class Door : MonoBehaviour
     public event Action Opened;
     public event Action Closed;
     public event Action Closing;
+    public event Action<PlayerCharacter> OpeningAttempt;
 
     [SerializeField] private Collider _collision;
     [SerializeField] private Transform _rotator;
@@ -23,6 +24,7 @@ public sealed class Door : MonoBehaviour
     [SerializeField] private Sound _closeSound;
     [SerializeField] private Sound _knockSound;
     [SerializeField] private Sound _lockedSound;
+    [SerializeField] private float _openDelay;
 
     private bool _isOpen;
     private bool _isAnimating;
@@ -68,6 +70,29 @@ public sealed class Door : MonoBehaviour
         _IsCollisionSynched = false;
 
         Closing?.Invoke();
+    }
+
+    public bool TryOpen(PlayerCharacter player)
+    {
+        if (_isOpen == true)
+            return false;
+
+        OpeningAttempt?.Invoke(player);
+
+        if (IsLocked == true)
+        {
+            if (player.Inventory.HasItem(Key) == false)
+            {
+                PlayLockedSound();
+                Notification.Do("Locked!");
+                return false;
+            }
+
+            player.Inventory.RemoveItem(Key);
+        }
+
+        Delayed.Do(Open, _openDelay);
+        return true;
     }
 
     public void Knock()
@@ -142,4 +167,12 @@ public sealed class Door : MonoBehaviour
         _rotator.localRotation = Quaternion.Euler(0f, angle, 0f);
     }
 
+}
+
+public enum DoorState
+{
+    Closed,
+    Opening,
+    Open,
+    Closing,
 }

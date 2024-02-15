@@ -420,6 +420,7 @@ MonoBehaviour:
   _closeSound: {fileID: 11400000, guid: 1571adf185d419940937ed6dc2aa5fae, type: 2}
   _knockSound: {fileID: 11400000, guid: c9db0d554a1412c4cbf5a8e20cb916ba, type: 2}
   _lockedSound: {fileID: 11400000, guid: 9d210c071d0256a47bddb22a935ef9d5, type: 2}
+  _openDelay: 0.25
 --- !u!1 &8693634125740432161
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,7 +519,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _door: {fileID: 8284442354415670071}
   _openAngle: -45
-  _animationDuration: 0.7
+  _animationDuration: 0.4
   _ease: 1
 --- !u!1 &8788751423023254283
 GameObject:
