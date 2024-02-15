@@ -14,6 +14,9 @@ public sealed class Footsteps : MonoBehaviour
 
     private void Update()
     {
+        if (_player.IsDead == true)
+            return;
+
         if (_timeSinceLastStep < _cooldown)
             return;
 

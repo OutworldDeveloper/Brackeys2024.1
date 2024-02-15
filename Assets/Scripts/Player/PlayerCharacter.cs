@@ -69,7 +69,6 @@ public sealed class PlayerCharacter : Pawn
 
     public override void OnUnpossessed()
     {
-        Debug.Log(this);
         base.OnUnpossessed();
 
         _currentInput = new PlayerInput()
@@ -83,6 +82,7 @@ public sealed class PlayerCharacter : Pawn
 
     public void Kill(DeathType type)
     {
+        _velocityXZ = Vector3.zero;
         IsDead = true;
         _timeSinceLastDeath = new TimeSince(Time.time);
         Died?.Invoke(type);
