@@ -20,6 +20,7 @@ public sealed class Ben : MonoBehaviour
     [SerializeField] private SafeLock _safeLock;
     [SerializeField] private Door _trapSwitch;
     [SerializeField] private PlayerTrigger _trapRoomTrigger;
+    [SerializeField] private Door _finalDoor;
 
     private TimeSince _timeSinceLastSpoke = new TimeSince(float.NegativeInfinity);
 
@@ -75,6 +76,12 @@ public sealed class Ben : MonoBehaviour
 
     private void TrySayNextAdvice(bool ignoreCooldown = false)
     {
+        if (_finalDoor.IsOpen == true)
+        {
+            TrySay(_happySound, $"Is he saying... goodbye?");
+            return;
+        }
+
         if (_safeLock.IsOpen == false)
         {
             TrySay(_happySound, $"Is he saying... {_codeReward.Value}?", ignoreCooldown: ignoreCooldown);

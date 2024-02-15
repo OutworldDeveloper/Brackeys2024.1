@@ -12907,7 +12907,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1115992638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12915,12 +12915,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1115992637}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9d8e6ae84089bbd4d8eb06a636649c4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _music: []
+  _music:
+  - {fileID: 8300000, guid: e76fb56580b4bc040af3e6fd7ad20c2e, type: 3}
+  - {fileID: 8300000, guid: 0fd6dfd8c57cd1843a0bf5366edb1755, type: 3}
   _delayTimeMin: 10
   _delayTimeMax: 15
 --- !u!82 &1115992639
@@ -23032,6 +23034,11 @@ PrefabInstance:
       propertyPath: _safeLock
       value: 
       objectReference: {fileID: 437914575}
+    - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
+        type: 3}
+      propertyPath: _finalDoor
+      value: 
+      objectReference: {fileID: 1157912967}
     - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
         type: 3}
       propertyPath: _codeReward
