@@ -7,7 +7,9 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
+    [SerializeField] private GameObject _pauseMenu;
 
+    private bool _isPauseMenuOpen;
     private Pawn _currentPawn;
 
     private void OnEnable()
@@ -32,12 +34,10 @@ public sealed class Player : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) == true)
-        {
-            if (_currentPawn != _character)
-            {
-                Unpossess();
-            }
-        }
+            HandleEscapeButton();
+
+        if (_isPauseMenuOpen == true)
+            return;
 
         if (_currentPawn != null)
         {
@@ -45,7 +45,7 @@ public sealed class Player : MonoBehaviour
             {
                 _currentPawn.PossessedTick();
                 _mainCamera.transform.SetPositionAndRotation(
-                    _currentPawn.GetCameraPosition(), 
+                    _currentPawn.GetCameraPosition(),
                     _currentPawn.GetCameraRotation());
             }
             else
@@ -58,6 +58,24 @@ public sealed class Player : MonoBehaviour
         }
     }
 
+    private void HandleEscapeButton()
+    {
+        if (_isPauseMenuOpen == true)
+        {
+            ClosePauseMenu();
+            return;
+        }
+
+        if (_currentPawn != _character)
+        {
+            Unpossess();
+        }
+        else
+        {
+            OpenPauseMenu();
+        }
+    }
+
     public void Possess(Pawn pawn)
     {
         if (_currentPawn == pawn)
@@ -66,7 +84,7 @@ public sealed class Player : MonoBehaviour
         _currentPawn = pawn;
         _currentPawn.OnPossessed(this);
 
-        _hud.SetActive(pawn == _character);
+        UpdateState();
     }
 
     public void Unpossess()
@@ -86,13 +104,43 @@ public sealed class Player : MonoBehaviour
     private void OnCharacterDied(DeathType deathType)
     {
         Possess(_character);
-        _hud.SetActive(false);
+        UpdateState();
     }
 
     private void OnCharacterRespawned()
     {
-        _hud.SetActive(true);
+        UpdateState();
     }
 
+    public void OpenPauseMenu()
+    {
+        _isPauseMenuOpen = true;
+        UpdateState();
+    }
+
+    public void ClosePauseMenu()
+    {
+        _isPauseMenuOpen = false;
+        UpdateState();
+
+        PlayerPrefs.Save();
+    }
+
+    private void UpdateState()
+    {
+        bool showHud = _isPauseMenuOpen == false && _character.IsDead == false && _currentPawn == _character;
+
+        _hud.SetActive(showHud);
+        _pauseMenu.SetActive(_isPauseMenuOpen == true);
+
+        bool showCursor = _isPauseMenuOpen == true;
+
+        Cursor.visible = showCursor ? true : false;
+        Cursor.lockState = showCursor ? CursorLockMode.None : CursorLockMode.Locked;
+
+        bool pauseGame = _isPauseMenuOpen == true;
+
+        Time.timeScale = pauseGame ? 0f : 1f;
+    }
 
 }

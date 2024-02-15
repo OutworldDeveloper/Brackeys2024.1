@@ -15,7 +15,7 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private Transform _head;
     [SerializeField] private PlayerInteraction _interactor;
     [SerializeField] private Inventory _inventory;
-    [SerializeField] private float _mouseSensitivity;
+    [SerializeField] private FloatParameter _mouseSensitivity;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _respawnTime = 2f;
@@ -48,9 +48,6 @@ public sealed class PlayerCharacter : Pawn
 
         _spawnPosition = transform.position;
         _spawnRotation = transform.rotation;
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
 
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
     }
@@ -121,8 +118,8 @@ public sealed class PlayerCharacter : Pawn
     {
         var playerInput = new PlayerInput();
 
-        playerInput.MouseX = Input.GetAxis("Mouse X") * _mouseSensitivity * 100f;
-        playerInput.MouseY = Input.GetAxis("Mouse Y") * _mouseSensitivity * 100f;
+        playerInput.MouseX = Input.GetAxis("Mouse X") * _mouseSensitivity.Value;
+        playerInput.MouseY = Input.GetAxis("Mouse Y") * _mouseSensitivity.Value;
 
         playerInput.Direction = new FlatVector()
         {
@@ -187,8 +184,8 @@ public sealed class PlayerCharacter : Pawn
         if (CanRotateHead() == false)
             return;
 
-        var yRotation = transform.eulerAngles.y + input.MouseX * Time.deltaTime;
-        var xRotation = _head.localEulerAngles.x - input.MouseY * Time.deltaTime;
+        var yRotation = transform.eulerAngles.y + input.MouseX;
+        var xRotation = _head.localEulerAngles.x - input.MouseY;
         xRotation = ClampAngle(xRotation, -70f, 70f);
 
         transform.eulerAngles = new Vector3(0f, yRotation, 0f);
