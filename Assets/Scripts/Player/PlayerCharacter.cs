@@ -66,6 +66,10 @@ public sealed class PlayerCharacter : Pawn
         IsDead = false;
         Respawned?.Invoke();
         GetComponent<Animator>().SetBool("dead", false);
+
+        _velocityXZ = Vector3.zero;
+        _velocityY = 0f;
+
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
         _head.localRotation = Quaternion.identity;
