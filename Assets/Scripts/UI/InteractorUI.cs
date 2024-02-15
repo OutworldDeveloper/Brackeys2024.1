@@ -14,6 +14,9 @@ public sealed class InteractorUI : MonoBehaviour
 
     private readonly List<UI_InteractionLabel> _activeLabels = new List<UI_InteractionLabel>();
 
+    private List<Interaction> _interactions;
+    private TimeSince _timeSinceLastRefresh;
+
     private void OnEnable()
     {
         _player.Interactor.TargetChanged += OnTargetChanged;
@@ -24,8 +27,27 @@ public sealed class InteractorUI : MonoBehaviour
         _player.Interactor.TargetChanged -= OnTargetChanged;
     }
 
+    private void Update()
+    {
+        // What the fuck!
+        if (_timeSinceLastRefresh > 0.25f && _interactions != null)
+        {
+            _timeSinceLastRefresh = new TimeSince(Time.time);
+
+            for (int i = 0; i < Mathf.Min(_interactions.Count, _keyCodes.Length); i++)
+            {
+                var text = _activeLabels[i];
+                var interaction = _interactions[i];
+                text.Setup(_keyCodes[i].ToString(), interaction.Text);
+            }
+        }
+    }
+
     private void OnTargetChanged(List<Interaction> interactions)
     {
+        _interactions = interactions;
+        _timeSinceLastRefresh = new TimeSince(Time.time);
+
         foreach (var label in _activeLabels)
         {
             Destroy(label.gameObject);
