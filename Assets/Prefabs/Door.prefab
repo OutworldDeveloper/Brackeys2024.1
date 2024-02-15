@@ -431,6 +431,7 @@ GameObject:
   - component: {fileID: 6079469557437204128}
   - component: {fileID: 5214172143864351945}
   - component: {fileID: 3609850110968313483}
+  - component: {fileID: 8716167805227152891}
   m_Layer: 0
   m_Name: DoorHandle
   m_TagString: Untagged
@@ -445,7 +446,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8693634125740432161}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.261, y: 1.174, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -503,6 +504,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8716167805227152891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8693634125740432161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e43dfb9cdcac3649ac3a061e5ba5506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _door: {fileID: 8284442354415670071}
+  _openAngle: -45
+  _animationDuration: 0.7
+  _ease: 1
 --- !u!1 &8788751423023254283
 GameObject:
   m_ObjectHideFlags: 0
