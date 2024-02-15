@@ -7,6 +7,7 @@ public sealed class Hole : MonoBehaviour
     [SerializeField] private Item _hookItem;
     [SerializeField] private PickupInteraction _stuckPickup;
     [SerializeField] private Animator _animator;
+    [SerializeField] private MoviePawn _moviePawn;
 
     public bool IsItemExtracted { get; private set; }
 
@@ -34,7 +35,7 @@ public sealed class Hole : MonoBehaviour
         _stuckPickup.enabled = true;
         //_animator.Play("ExtractItem");
         //Delayed.Do()
-
+        player.Player.Possess(_moviePawn);
         _stuckPickup.gameObject.SetActive(true);
 
         return true;

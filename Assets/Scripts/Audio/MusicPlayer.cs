@@ -9,8 +9,21 @@ public sealed class MusicPlayer : MonoBehaviour
     [SerializeField] private AudioClip[] _music;
     [SerializeField] private float _delayTimeMin = 10f, _delayTimeMax = 15f;
 
+    //[SerializeField] private PlayerTrigger _kitchenTrigger;
+    //[SerializeField] 
+
     private TimeUntil _timeUntilNextMusic;
     private int _nextMusicIndex;
+
+    private void OnEnable()
+    {
+        //_kitchenTrigger.
+    }
+
+    private void OnDisable()
+    {
+        
+    }
 
     private void Start()
     {
@@ -30,6 +43,19 @@ public sealed class MusicPlayer : MonoBehaviour
         _nextMusicIndex++;
         if (_nextMusicIndex >= _music.Length)
             _nextMusicIndex = 0;
+    }
+
+    private void UpdateState()
+    {
+
+    }
+
+    private enum MusicState
+    {
+        None,
+        Default,
+        GhostChase,
+        FinishLine,
     }
 
 }
