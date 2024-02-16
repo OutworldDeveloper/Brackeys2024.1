@@ -7,10 +7,10 @@ public sealed class PlayerTrigger : MonoBehaviour
 {
 
     [System.Serializable]
-    private sealed class PlayerEvent : UnityEvent<PlayerCharacter> { }
+    public sealed class PlayerEvent : UnityEvent<PlayerCharacter> { }
 
-    [SerializeField] private PlayerEvent _enterEvent;
-    [SerializeField] private PlayerEvent _exitEvent;
+    [field: SerializeField] public PlayerEvent EnterEvent { get; private set; }
+    [field: SerializeField] public PlayerEvent ExitEvent { get; private set; }
 
     public bool EverVisited { get; private set; }
     public bool HasPlayerInside => PlayerInside != null;
@@ -22,7 +22,7 @@ public sealed class PlayerTrigger : MonoBehaviour
         {
             PlayerInside = player;
             EverVisited = true;
-            _enterEvent.Invoke(player);
+            EnterEvent.Invoke(player);
         }
     }
 
@@ -31,7 +31,7 @@ public sealed class PlayerTrigger : MonoBehaviour
         if (other.TryGetComponent(out PlayerCharacter player) == true)
         {
             PlayerInside = null;
-            _exitEvent.Invoke(player);
+            ExitEvent.Invoke(player);
         }
     }
 
