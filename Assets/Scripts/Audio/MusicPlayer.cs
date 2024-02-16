@@ -107,6 +107,10 @@ public sealed class MusicPlayer : MonoBehaviour
                 _timeUntilNextMusic = new TimeUntil(Time.time + GetRandomDelay());
                 break;
 
+            case MusicState.GhostChase:
+                _ghostNoChaseTime = 0f;
+                break;
+
             case MusicState.FinishLine:
                 _toPlay = _victoryMusic;
                 break;
