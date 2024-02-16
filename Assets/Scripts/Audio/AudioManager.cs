@@ -36,7 +36,6 @@ public sealed class AudioManager : MonoBehaviour
     private void OnMusicVolumeParameterUpdated(float value)
     {
         _audioMixer.SetFloat("Music Volume", Mathf.Log10(value) * 30f);
-        Debug.Log(value);
     }
 
 }

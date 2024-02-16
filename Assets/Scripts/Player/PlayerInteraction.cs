@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class PlayerInteraction : MonoBehaviour
 {
 
-    public event Action<List<Interaction>> TargetChanged;
+    public event Action TargetChanged;
 
     [SerializeField] private PlayerCharacter _player;
     [SerializeField] private Camera _camera;
@@ -14,19 +14,33 @@ public sealed class PlayerInteraction : MonoBehaviour
     [SerializeField] private float _interactionRange = 2.5f;
 
     private GameObject _currentTarget;
-    private readonly List<Interaction> _avaliableInteractions = new List<Interaction>();
+    private readonly List<Interaction> _targetInteractions = new List<Interaction>();
     private bool _hasTarget;
+
+    public int InteractionsCount => _targetInteractions.Count;
+    public Interaction GetInteraction(int index) => _targetInteractions[index];
 
     public void TryPerform(int index)
     {
-        if (_avaliableInteractions.Count <= index)
+        if (_targetInteractions.Count <= index)
             return;
 
-        if (_avaliableInteractions[index].IsAvaliable(_player) == false)
+        if (_targetInteractions[index].IsAvaliable(_player) == false)
             return;
 
-        _avaliableInteractions[index].Perform(_player);
-        OnTargetChanged(_currentTarget);
+        int avaliableIndex = 0;
+        for (int i = 0; i < InteractionsCount; i++)
+        {
+            var interaction = GetInteraction(i);
+
+            if (interaction.IsAvaliable(_player) == true)
+            {
+                if (avaliableIndex == index)
+                    _targetInteractions[index].Perform(_player);
+
+                avaliableIndex++;
+            }
+        }
     }
 
     private void Update()
@@ -53,24 +67,21 @@ public sealed class PlayerInteraction : MonoBehaviour
 
     private void OnTargetChanged(GameObject target)
     {
-        _avaliableInteractions.Clear();
+        _targetInteractions.Clear();
         _currentTarget = target;
 
         if (target != null)
         {
-            GetInteractions(_currentTarget, _avaliableInteractions);
+            GetInteractions(_currentTarget, _targetInteractions);
         }
 
-        TargetChanged?.Invoke(_avaliableInteractions);
+        TargetChanged?.Invoke();
     }
 
     private void GetInteractions(GameObject target, List<Interaction> interactions)
     {
         foreach (var interaction in target.GetComponents<Interaction>())
         {
-            if (interaction.IsAvaliable(_player) == false)
-                continue;
-
             interactions.Add(interaction);
         }
     }
