@@ -33,7 +33,7 @@ public sealed class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab) == true)
+        if (Input.GetKeyDown(KeyCode.Tab) == true || Input.GetKeyDown(KeyCode.Escape))
             HandleEscapeButton();
 
         if (_isPauseMenuOpen == true)

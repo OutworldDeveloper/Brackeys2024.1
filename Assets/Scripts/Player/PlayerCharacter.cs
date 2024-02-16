@@ -97,10 +97,11 @@ public sealed class PlayerCharacter : Pawn
         _velocityXZ = Vector3.zero;
         _velocityY = 0f;
 
-        _controller.enabled = false;
+        //_controller.enabled = false;
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
-        _controller.enabled = true;
+        Physics.SyncTransforms();
+        //_controller.enabled = true;
         _head.localRotation = Quaternion.identity;
         Health = _maxHealth;
 
