@@ -33,7 +33,7 @@ public sealed class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) == true)
+        if (Input.GetKeyDown(KeyCode.Tab) == true)
             HandleEscapeButton();
 
         if (_isPauseMenuOpen == true)
@@ -84,6 +84,11 @@ public sealed class Player : MonoBehaviour
         _currentPawn?.OnUnpossessed();
         _currentPawn = pawn;
         _currentPawn.OnPossessed(this);
+
+        if (_currentPawn.CanUnpossessAtWill() && _currentPawn != _character)
+        {
+            Notification.Show("Press Tab to exit", 2f);
+        }
 
         UpdateState();
     }
