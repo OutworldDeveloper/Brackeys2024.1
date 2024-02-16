@@ -2,6 +2,7 @@
 using UnityEngine;
 
 [CustomEditor(typeof(Sound))]
+[CanEditMultipleObjects]
 public sealed class SoundEditor : Editor
 {
 
