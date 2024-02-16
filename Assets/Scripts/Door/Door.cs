@@ -31,12 +31,17 @@ public sealed class Door : MonoBehaviour
     private bool _IsCollisionSynched;
     private TimeSince _timeSinceAnimationStarted;
     private int _blockedTimes;
+    private bool _isLockedByKey;
 
     private TimeSince _timeSinceLastKnocked = new TimeSince(float.NegativeInfinity);
 
     public bool IsOpen => _isOpen;
-    public bool IsLocked => (IsOpen == false && _key != null) || _blockedTimes > 0;
-    public Item Key => _key;
+    public bool IsLocked => _isLockedByKey == true || _blockedTimes > 0;
+
+    private void Start()
+    {
+        _isLockedByKey = _key != null;
+    }
 
     [ContextMenu("Open")]
     public void Open()
@@ -81,14 +86,16 @@ public sealed class Door : MonoBehaviour
 
         if (IsLocked == true)
         {
-            if (player.Inventory.HasItem(Key) == false)
+            if (player.Inventory.HasItem(_key) == false)
             {
                 PlayLockedSound();
                 Notification.Show("Locked!");
                 return false;
             }
 
-            player.Inventory.RemoveItem(Key);
+            player.Inventory.RemoveItem(_key);
+            _isLockedByKey = false;
+            Notification.Show($"Unlocked");
         }
 
         Delayed.Do(Open, _openDelay);
@@ -167,12 +174,4 @@ public sealed class Door : MonoBehaviour
         _rotator.localRotation = Quaternion.Euler(0f, angle, 0f);
     }
 
-}
-
-public enum DoorState
-{
-    Closed,
-    Opening,
-    Open,
-    Closing,
 }

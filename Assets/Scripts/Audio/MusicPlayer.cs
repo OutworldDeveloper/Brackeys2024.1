@@ -95,8 +95,7 @@ public sealed class MusicPlayer : MonoBehaviour
         _timeSinceLastStateChange = new TimeSince(Time.time);
         _toPlay = null;
 
-        if (Application.isEditor == true)
-            Notification.Show($"{_previousState} => {_state}");
+        Notification.ShowDebug($"{_previousState} => {_state}");
 
         switch (state)
         {

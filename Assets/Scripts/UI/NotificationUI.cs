@@ -70,6 +70,14 @@ public static class Notification
         Event?.Invoke(new Info(text, duration));
     }
 
+    public static void ShowDebug(string text, float duration = 1f)
+    {
+        if (Application.isEditor == true)
+        {
+            Show(text, duration);
+        }
+    }
+
     public readonly struct Info
     {
 

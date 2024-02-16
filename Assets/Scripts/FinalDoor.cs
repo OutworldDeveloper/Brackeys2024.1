@@ -4,7 +4,6 @@ public sealed class FinalDoor : MonoBehaviour
 {
 
     [SerializeField] private Code _code;
-    [SerializeField] private bool _debugMode;
     [SerializeField] private char _test;
     [SerializeField] private Door _door;
     [SerializeField] private MoviePawn _moviePawn;
@@ -40,10 +39,7 @@ public sealed class FinalDoor : MonoBehaviour
 
         _input[_input.Length - 1] = character;
 
-        if (_debugMode == true)
-        {
-            Notification.Show(new string(_input), 5f);
-        }
+        Notification.ShowDebug(new string(_input), 5f);
 
         SubmitCode(new string(_input));
     }
@@ -56,8 +52,7 @@ public sealed class FinalDoor : MonoBehaviour
         if (IsOpen == true)
             return;
 
-        if (_debugMode == true)
-            Notification.Show("Success!");
+        Notification.ShowDebug("Success!");
 
         IsOpen = true;
         Delayed.Do(_door.Open, 0.5f);

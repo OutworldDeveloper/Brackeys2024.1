@@ -25,6 +25,7 @@ public sealed class InteractorUI : MonoBehaviour
     private void OnDisable()
     {
         _player.Interactor.TargetChanged -= OnTargetChanged;
+        Clear();
     }
 
     private void Update()
@@ -48,12 +49,7 @@ public sealed class InteractorUI : MonoBehaviour
         _interactions = interactions;
         _timeSinceLastRefresh = new TimeSince(Time.time);
 
-        foreach (var label in _activeLabels)
-        {
-            Destroy(label.gameObject);
-        }
-
-        _activeLabels.Clear();
+        Clear();
 
         for (int i = 0; i < Mathf.Min(interactions.Count, _keyCodes.Length); i++)
         {
@@ -63,6 +59,16 @@ public sealed class InteractorUI : MonoBehaviour
             _activeLabels.Add(text);
             text.Setup(_keyCodes[i].ToString(), interaction.Text);
         }
+    }
+
+    private void Clear()
+    {
+        foreach (var label in _activeLabels)
+        {
+            Destroy(label.gameObject);
+        }
+
+        _activeLabels.Clear();
     }
 
 }
