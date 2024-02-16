@@ -92,19 +92,22 @@ public sealed class PlayerCharacter : Pawn
 
     public void Respawn()
     {
-        IsDead = false;
-        Respawned?.Invoke();
         GetComponent<Animator>().SetBool("dead", false);
 
         _velocityXZ = Vector3.zero;
         _velocityY = 0f;
 
+        _controller.enabled = false;
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
+        _controller.enabled = true;
         _head.localRotation = Quaternion.identity;
         Health = _maxHealth;
 
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
+
+        IsDead = false;
+        Respawned?.Invoke();
     }
 
     public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier

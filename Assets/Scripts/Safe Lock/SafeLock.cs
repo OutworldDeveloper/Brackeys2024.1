@@ -73,7 +73,6 @@ public sealed class SafeLock : Pawn
                 Notification.Show(_currentEnteredCode.ToString(), 0.5f);
                 break;
             case 11:
-                Notification.Show(_currentEnteredCode.ToString(), 0.5f);
                 SubmitCode(_currentEnteredCode);
                 _currentEnteredCode = string.Empty;
                 break;
