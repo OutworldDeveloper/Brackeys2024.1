@@ -689,7 +689,8 @@ MonoBehaviour:
   _openSound: {fileID: 11400000, guid: e682282ca25448149b9328854d771937, type: 2}
   _closeSound: {fileID: 0}
   _knockSound: {fileID: 0}
-  _lockedSound: {fileID: 0}
+  _lockedSound: {fileID: 11400000, guid: 1c660c821088b7842ada89639180b00b, type: 2}
+  _openDelay: 0
 --- !u!114 &5357371716127996335
 MonoBehaviour:
   m_ObjectHideFlags: 0

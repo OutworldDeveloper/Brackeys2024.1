@@ -346,8 +346,8 @@ MonoBehaviour:
   _audioSource: {fileID: 7418940683664027399}
   _openSound: {fileID: 0}
   _closeSound: {fileID: 0}
-  _knockSound: {fileID: 11400000, guid: c9db0d554a1412c4cbf5a8e20cb916ba, type: 2}
-  _lockedSound: {fileID: 11400000, guid: 9d210c071d0256a47bddb22a935ef9d5, type: 2}
+  _knockSound: {fileID: 11400000, guid: 96bc1ba2d657ade4f869ee2eb0249b38, type: 2}
+  _lockedSound: {fileID: 11400000, guid: a02813d4476e8024594ec6b57f19349c, type: 2}
   _openDelay: 2.4
 --- !u!114 &4129469418211929563
 MonoBehaviour:
@@ -411,6 +411,7 @@ MonoBehaviour:
   _audioSource: {fileID: 7418940683664027399}
   _openAttemptSuccessSound: {fileID: 11400000, guid: 91348b9878b2e7049888df55bad7b349,
     type: 2}
+  _openAttemptFailSound: {fileID: 0}
 --- !u!1 &5027541430557569009
 GameObject:
   m_ObjectHideFlags: 0
@@ -629,10 +630,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 2
-  MaxDistance: 25
+  MinDistance: 0
+  MaxDistance: 20
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -640,23 +641,23 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
+      time: 0.1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: -10.0039835
+      outSlope: -10.0039835
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: -0.10003988
+      outSlope: -0.10003988
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -680,7 +681,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 0.43055555
       inSlope: 0
       outSlope: 0
       tangentMode: 0

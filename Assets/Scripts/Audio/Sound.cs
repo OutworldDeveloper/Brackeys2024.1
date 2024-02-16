@@ -11,6 +11,7 @@ public sealed class Sound : ScriptableObject
     [SerializeField] private float _pitchMin = 1f, _pitchMax = 1f;
     [SerializeField] private float _volumeMin = 1f, _volumeMax = 1f;
     [SerializeField] private AudioMixerGroup _group;
+    [SerializeField] private bool _is3d = true;
 
     //public void Play(AudioSource source)
     //{
@@ -26,6 +27,7 @@ public sealed class Sound : ScriptableObject
         source.pitch = Random.Range(_pitchMin, _pitchMax);
         source.volume = Random.Range(_volumeMin, _volumeMax);
         source.outputAudioMixerGroup = _group;
+        source.spatialBlend = _is3d ? 1f : 0f;
     }
 
     public AudioClip GetRandomClip()

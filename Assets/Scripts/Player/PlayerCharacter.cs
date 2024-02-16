@@ -20,6 +20,7 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _respawnTime = 2f;
     [SerializeField] private float _maxHealth = 5f;
+    [SerializeField] private bool _allowJumping;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -281,7 +282,7 @@ public sealed class PlayerCharacter : Pawn
                 return false;
         }
 
-        return true;
+        return _allowJumping;
     }
 
     private bool CanWalk()
