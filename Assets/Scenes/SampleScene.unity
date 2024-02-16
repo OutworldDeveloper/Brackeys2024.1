@@ -586,7 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c79dd773d3dab04da14782f9df92023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _duration: 2.2
+  _duration: 4.5
 --- !u!4 &48906891
 Transform:
   m_ObjectHideFlags: 0
@@ -8217,6 +8217,7 @@ MonoBehaviour:
   _victoryMusic: {fileID: 8300000, guid: 0fd6dfd8c57cd1843a0bf5366edb1755, type: 3}
   _music:
   - {fileID: 8300000, guid: e76fb56580b4bc040af3e6fd7ad20c2e, type: 3}
+  - {fileID: 8300000, guid: d9f9676a2f547544f979bdb034125a6e, type: 3}
   _delayTimeMin: 10
   _delayTimeMax: 15
   _musicFadeOutSpeed: 0.25
@@ -13925,6 +13926,18 @@ PrefabInstance:
       objectReference: {fileID: 1056179504840610399}
     - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
         type: 3}
+      propertyPath: _screamSound
+      value: 
+      objectReference: {fileID: 11400000, guid: 4c325e8782740bb4e9f12d16031f7a27,
+        type: 2}
+    - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
+        type: 3}
+      propertyPath: _goodbyeSound
+      value: 
+      objectReference: {fileID: 11400000, guid: e55296444d1b76848acef3ffd5d4b117,
+        type: 2}
+    - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
+        type: 3}
       propertyPath: _trapRoomTrigger
       value: 
       objectReference: {fileID: 1357501154}
@@ -14047,6 +14060,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4129469418211929562, guid: fc195150435b0944a803bdaba4c63212,
+        type: 3}
+      propertyPath: _openDelay
+      value: 2.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4129469418211929563, guid: fc195150435b0944a803bdaba4c63212,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fc195150435b0944a803bdaba4c63212, type: 3}

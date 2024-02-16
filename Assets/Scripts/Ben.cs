@@ -14,6 +14,8 @@ public sealed class Ben : MonoBehaviour
     [SerializeField] private Sound _hungrySound;
     [SerializeField] private Sound _happySound;
     [SerializeField] private Sound _killSelfAdviceSound;
+    [SerializeField] private Sound _goodbyeSound;
+    [SerializeField] private Sound _screamSound;
     [SerializeField] private ItemTag _foodTag;
     [SerializeField] private Code _codeReward;
 
@@ -78,7 +80,7 @@ public sealed class Ben : MonoBehaviour
     {
         if (_finalDoor.IsOpen == true)
         {
-            TrySay(_happySound, $"Is he saying... goodbye?");
+            TrySay(_goodbyeSound, $"Is he saying... goodbye?");
             return;
         }
 
@@ -103,7 +105,7 @@ public sealed class Ben : MonoBehaviour
     private void MakeGhostLeave(Ghost ghost)
     {
         Delayed.Do(ghost.StartRespawning, 0.5f);
-        _hungrySound.Play(_audioSource);
+        _screamSound.Play(_audioSource);
     }
 
     private bool IsAngryGhostNear(out Ghost ghost)

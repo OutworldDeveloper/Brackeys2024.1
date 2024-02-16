@@ -23,7 +23,7 @@ public class DoorHandle : MonoBehaviour
         _door.OpeningAttempt -= OnOpeningAttepmt;
     }
 
-    private void OnOpeningAttepmt(PlayerCharacter player)
+    private void OnOpeningAttepmt(PlayerCharacter player, bool success)
     {
         _tween?.Kill();
 

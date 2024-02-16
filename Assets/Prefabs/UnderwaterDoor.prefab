@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5591429911985219367}
   - component: {fileID: 2698886458266896219}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Valve Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,8 +56,8 @@ GameObject:
   - component: {fileID: 8280193628040075131}
   - component: {fileID: 7360534539351218744}
   - component: {fileID: 7838828387000874884}
-  - component: {fileID: 2284152069367943640}
   - component: {fileID: 2284152069367943623}
+  - component: {fileID: 2284152069367943640}
   - component: {fileID: 2284152069367943641}
   m_Layer: 0
   m_Name: UnderwaterDoor
@@ -138,20 +138,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2284152069367943640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2284152069367943622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e544c35099d93d14395e90e532934cc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
-  _door: {fileID: 4129469418211929562}
 --- !u!114 &2284152069367943623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +153,20 @@ MonoBehaviour:
   <InteractionDistance>k__BackingField: 3
   _door: {fileID: 4129469418211929562}
   _canClose: 0
+--- !u!114 &2284152069367943640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2284152069367943622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e544c35099d93d14395e90e532934cc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <InteractionDistance>k__BackingField: 3
+  _door: {fileID: 4129469418211929562}
 --- !u!65 &2284152069367943641
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -274,6 +274,9 @@ GameObject:
   - component: {fileID: 4129469418211929561}
   - component: {fileID: 4129469418211929562}
   - component: {fileID: 4129469418211929563}
+  - component: {fileID: 8721097559271826197}
+  - component: {fileID: 3274055299980737031}
+  - component: {fileID: 7790544107191963349}
   m_Layer: 0
   m_Name: UnderwaterDoor
   m_TagString: Untagged
@@ -341,11 +344,11 @@ MonoBehaviour:
   _openAngle: -110
   _key: {fileID: 0}
   _audioSource: {fileID: 7418940683664027399}
-  _openSound: {fileID: 11400000, guid: 91348b9878b2e7049888df55bad7b349, type: 2}
-  _closeSound: {fileID: 11400000, guid: 1571adf185d419940937ed6dc2aa5fae, type: 2}
+  _openSound: {fileID: 0}
+  _closeSound: {fileID: 0}
   _knockSound: {fileID: 11400000, guid: c9db0d554a1412c4cbf5a8e20cb916ba, type: 2}
   _lockedSound: {fileID: 11400000, guid: 9d210c071d0256a47bddb22a935ef9d5, type: 2}
-  _openDelay: 0.25
+  _openDelay: 2.4
 --- !u!114 &4129469418211929563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,6 +361,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11c89429c497bc746b49f2f11a9887e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8721097559271826197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3604289422065678179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88c8a48cfaa6dfc469e46061c095ac00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 4129469418211929562}
+  _animator: {fileID: 3274055299980737031}
+--- !u!95 &3274055299980737031
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3604289422065678179}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: dc5b79f52741ca240acfa9faa3fb4271, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7790544107191963349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3604289422065678179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1801981ed277048ae108f33083c3cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 4129469418211929562}
+  _audioSource: {fileID: 7418940683664027399}
+  _openAttemptSuccessSound: {fileID: 11400000, guid: 91348b9878b2e7049888df55bad7b349,
+    type: 2}
 --- !u!1 &5027541430557569009
 GameObject:
   m_ObjectHideFlags: 0

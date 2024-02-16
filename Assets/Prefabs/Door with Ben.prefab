@@ -148,37 +148,37 @@ PrefabInstance:
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4
+      value: -18.939594
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.27299964
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -11.552951
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.00007307529
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
@@ -188,7 +188,7 @@ PrefabInstance:
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -179.992
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
@@ -252,8 +252,23 @@ MonoBehaviour:
   _happySound: {fileID: 11400000, guid: 37bd47b8b904c74489e23e850e82e4a6, type: 2}
   _killSelfAdviceSound: {fileID: 11400000, guid: c66d57f0264e7c040b4b6bc754708466,
     type: 2}
+  _goodbyeSound: {fileID: 11400000, guid: e55296444d1b76848acef3ffd5d4b117, type: 2}
+  _screamSound: {fileID: 11400000, guid: 4c325e8782740bb4e9f12d16031f7a27, type: 2}
   _foodTag: {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
   _codeReward: {fileID: 11400000, guid: abf112141b22b7040808904cc2954386, type: 2}
   _safeLock: {fileID: 0}
   _trapSwitch: {fileID: 0}
   _trapRoomTrigger: {fileID: 0}
+  _finalDoor: {fileID: 0}
+--- !u!114 &4046223937970144939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3843992233012168524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c89429c497bc746b49f2f11a9887e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

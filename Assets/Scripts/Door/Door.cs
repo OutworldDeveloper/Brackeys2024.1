@@ -11,7 +11,7 @@ public sealed class Door : MonoBehaviour
     public event Action Opened;
     public event Action Closed;
     public event Action Closing;
-    public event Action<PlayerCharacter> OpeningAttempt;
+    public event Action<PlayerCharacter, bool> OpeningAttempt;
 
     [SerializeField] private Collider _collision;
     [SerializeField] private Transform _rotator;
@@ -56,7 +56,7 @@ public sealed class Door : MonoBehaviour
         _isAnimating = true;
         _IsCollisionSynched = false;
 
-        _openSound?.Play(_audioSource);
+        _openSound.Play(_audioSource);
 
         Opening?.Invoke();
     }
@@ -77,28 +77,45 @@ public sealed class Door : MonoBehaviour
         Closing?.Invoke();
     }
 
-    public bool TryOpen(PlayerCharacter player)
+    public bool TryOpen(PlayerCharacter player, bool ignoreLocks = false)
     {
         if (_isOpen == true)
             return false;
 
-        OpeningAttempt?.Invoke(player);
+        bool success = false;
 
-        if (IsLocked == true)
+        if (IsLocked == true && ignoreLocks == false)
         {
-            if (player.Inventory.HasItem(_key) == false)
+            if (player == null)
             {
-                PlayLockedSound();
-                Notification.Show("Locked!");
-                return false;
+                Notification.ShowDebug("Tried opening door without player provided");
             }
-
-            player.Inventory.RemoveItem(_key);
-            _isLockedByKey = false;
-            Notification.Show($"Unlocked");
+            else
+            {
+                if (player.Inventory.HasItem(_key) == false)
+                {
+                    PlayLockedSound();
+                    Notification.Show("Locked!");
+                }
+                else
+                {
+                    player.Inventory.RemoveItem(_key);
+                    _isLockedByKey = false;
+                    success = true;
+                    Notification.Show($"Unlocked");
+                }
+            }
+        }
+        else
+        {
+            success = true;
         }
 
-        Delayed.Do(Open, _openDelay);
+        OpeningAttempt?.Invoke(player, success);
+
+        if (success == true)
+            Delayed.Do(Open, _openDelay);
+
         return true;
     }
 
@@ -115,7 +132,7 @@ public sealed class Door : MonoBehaviour
 
     public void PlayLockedSound()
     {
-        _lockedSound?.Play(_audioSource);
+        _lockedSound.Play(_audioSource);
     }
 
     public void Block()

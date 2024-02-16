@@ -55,7 +55,7 @@ public sealed class FinalDoor : MonoBehaviour
         Notification.ShowDebug("Success!");
 
         IsOpen = true;
-        Delayed.Do(_door.Open, 0.5f);
+        Delayed.Do(() => _door.TryOpen(null, true), 0.5f);
         FindObjectOfType<Player>().Possess(_moviePawn);
     }
 

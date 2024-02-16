@@ -46,7 +46,7 @@ public sealed class FridgeChains : MonoBehaviour
         return;
     }
 
-    private void OnOpeningAttempt(PlayerCharacter player)
+    private void OnOpeningAttempt(PlayerCharacter player, bool success)
     {
         if (IsUnlocked == false)
             _openingAttemptSound.Play(_audioSource);
