@@ -12,6 +12,7 @@ public abstract class Pawn : MonoBehaviour
     public virtual void OnPossessed(Player player)
     {
         Player = player;
+        WantsUnpossess = false;
     }
 
     public virtual void OnUnpossessed()

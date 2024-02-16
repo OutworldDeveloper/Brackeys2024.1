@@ -9,6 +9,11 @@ public class MoviePawn : Pawn
 
     private TimeUntil _timeUntilUnpossess;
 
+    public void SetDuration(float duration)
+    {
+        _duration = duration;
+    }
+
     public override bool CanUnpossessAtWill()
     {
         return false;

@@ -42,7 +42,7 @@ public sealed class Ben : MonoBehaviour
         if (IsHungry == false)
             return false;
 
-        foreach (var item in character.Inventory.Content)
+        foreach (var item in character.Inventory.Items)
         {
             if (item.HasTag(_foodTag) == false)
                 continue;

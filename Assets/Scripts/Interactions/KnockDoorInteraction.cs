@@ -7,6 +7,11 @@ public sealed class KnockDoorInteraction : Interaction
 
     public override string Text => "Knock";
 
+    public override bool IsAvaliable(PlayerCharacter player)
+    {
+        return _door.IsOpen == false;
+    }
+
     public override void Perform(PlayerCharacter player)
     {
         _door.Knock();

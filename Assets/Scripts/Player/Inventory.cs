@@ -11,7 +11,7 @@ public class Inventory : MonoBehaviour
 
     private readonly List<Item> _items = new List<Item>();
 
-    public Item[] Content => _items.ToArray();
+    public Item[] Items => _items.ToArray();
 
     public bool HasItemWithTag(ItemTag tag)
     {
