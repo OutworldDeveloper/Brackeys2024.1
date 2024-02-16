@@ -176,7 +176,7 @@ public sealed class Door : MonoBehaviour
 
             if (_isOpen == false)
             {
-                _closeSound?.Play(_audioSource);
+                _closeSound.Play(_audioSource);
             }
 
             if (_isOpen == true)
