@@ -26,6 +26,7 @@ public sealed class InteractorUI : MonoBehaviour
     {
         _player.Interactor.TargetChanged -= OnTargetChanged;
         Clear();
+        _interactions = null;
     }
 
     private void Update()

@@ -1965,6 +1965,7 @@ MonoBehaviour:
   _closeSound: {fileID: 11400000, guid: a63cd5462d71f7849b202a0cffe455ca, type: 2}
   _knockSound: {fileID: 0}
   _lockedSound: {fileID: 0}
+  _openDelay: 0
 --- !u!114 &2947156309140292299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2383,8 +2384,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.0084225, y: 0.7874225, z: 0.17079712}
-  m_Center: {x: 0.45313495, y: -0.342635, z: -0.034622714}
+  m_Size: {x: 1.1143354, y: 0.88204974, z: 0.17079712}
+  m_Center: {x: 0.46849096, y: -0.29532138, z: -0.034621656}
 --- !u!114 &7906892433233405504
 MonoBehaviour:
   m_ObjectHideFlags: 0
