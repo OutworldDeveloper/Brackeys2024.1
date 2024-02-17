@@ -11,6 +11,7 @@ public sealed class Ghost : MonoBehaviour
     [SerializeField] private float _respawnTime;
     [SerializeField] private AudioSource _ambientAudioSource;
     [SerializeField] private AudioSource _damageAudioSource;
+    [SerializeField] private LayerMask _attackLayerMask;
 
     private NavMeshAgent _agent;
     private GhostState _state = GhostState.Idle;
@@ -73,17 +74,22 @@ public sealed class Ghost : MonoBehaviour
 
     private void UpdateChasing()
     {
+        bool isPlayerVisible = !Physics.Linecast(transform.position + Vector3.up, _target.transform.position + Vector3.up, _attackLayerMask);
+
+        if (_currentChaseModifier != null)
+            _currentChaseModifier.IsPlayerVisible = isPlayerVisible;
+
         _agent.stoppingDistance = 1f;
         _agent.SetDestination(_target.transform.position);
 
         float targetDistance = Vector3.Distance(_target.transform.position, transform.position);
 
-        if (targetDistance < 2.5f)
+        if (targetDistance < 2.5f && isPlayerVisible == true)
         {
             _target.ApplyDamage(1f * Time.deltaTime);
             _damageAudioSource.volume = Mathf.Min(1f, _damageAudioSource.volume + Time.deltaTime * 1f);
 
-            if (targetDistance < 0.5f)
+            if (targetDistance < 0.4f)
             {
                 _target.Kill(DeathType.Psionic);
             }
@@ -142,6 +148,8 @@ public sealed class GhostChaseTargetModifier : CharacterModifier
     private float _currentSpeedMultiplier = 1f;
     private float _currentGhostDistance;
 
+    public bool IsPlayerVisible { get; set; }
+
     public GhostChaseTargetModifier(Ghost ghost)
     {
         _ghost = ghost;
@@ -151,7 +159,7 @@ public sealed class GhostChaseTargetModifier : CharacterModifier
     {
         _currentGhostDistance = GetDistanceToGhost();
 
-        if (_currentGhostDistance < 4.5f)
+        if (_currentGhostDistance < 3.5f && IsPlayerVisible == true)
         {
             if (_currentSpeedMultiplier > _minSpeedMultiplier)
                 _currentSpeedMultiplier -= Time.deltaTime * 0.15f;

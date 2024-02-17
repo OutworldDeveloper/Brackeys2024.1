@@ -8192,6 +8192,9 @@ MonoBehaviour:
   _respawnTime: 2
   _ambientAudioSource: {fileID: 1299627719}
   _damageAudioSource: {fileID: 875869084}
+  _attackLayerMask:
+    serializedVersion: 2
+    m_Bits: 513
 --- !u!195 &1123093920
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -13760,6 +13763,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5035901336422828114, guid: 7946e249e358c18458fcdbe149dab757,
+        type: 3}
+      propertyPath: _displayTime
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035901336422828114, guid: 7946e249e358c18458fcdbe149dab757,
+        type: 3}
+      propertyPath: _roomTrigger
+      value: 
+      objectReference: {fileID: 1357501154}
     - target: {fileID: 5035901336533209870, guid: 7946e249e358c18458fcdbe149dab757,
         type: 3}
       propertyPath: m_audioClip

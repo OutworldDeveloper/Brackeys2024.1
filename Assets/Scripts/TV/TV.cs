@@ -16,13 +16,30 @@ public sealed class TV : MonoBehaviour
     [SerializeField] private float _displayTime = 1f;
     [SerializeField] private float _transitionDuration = 1f;
     [SerializeField] private float _minNoiseValue = 0.6f;
+    [SerializeField] private PlayerTrigger _roomTrigger;
 
     public bool IsPlayingSequence { get; private set; }
+
+    private float _desiredNoiseVolume = 0f;
 
     private void Start()
     {
         _material.SetFloat(_noiseMultiplierID, 1f);
         _staticNoiseSource.volume = 1f;
+    }
+
+    private void Update()
+    {
+        float desiredVolume = _roomTrigger.PlayerInside ? _desiredNoiseVolume : 0f;
+
+        if (_staticNoiseSource.volume < desiredVolume)
+        {
+            _staticNoiseSource.volume += Time.deltaTime;
+        }
+        else
+        {
+            _staticNoiseSource.volume -= Time.deltaTime;
+        }
     }
 
     public void StartSequence()
@@ -49,12 +66,14 @@ public sealed class TV : MonoBehaviour
             AppendCallback(() => _material.SetTexture(_screenTextureID, texture)).
 
             Append(_material.DOFloat(_minNoiseValue, _noiseMultiplierID, _transitionDuration)).
-            Join(_staticNoiseSource.DOFade(_minNoiseValue, _transitionDuration)).
+            //Join(_staticNoiseSource.DOFade(_minNoiseValue, _transitionDuration)).
+            Join(DOTween.To(() => _desiredNoiseVolume, value => _desiredNoiseVolume = value, _minNoiseValue, _transitionDuration)).
 
             AppendInterval(_displayTime).
 
             Append(_material.DOFloat(1f, _noiseMultiplierID, _transitionDuration)).
-            Join(_staticNoiseSource.DOFade(1f, _transitionDuration));
+            //Join(_staticNoiseSource.DOFade(1f, _transitionDuration));
+            Join(DOTween.To(() => _desiredNoiseVolume, value => _desiredNoiseVolume = value, 1f, _transitionDuration));
     }
 
 }
