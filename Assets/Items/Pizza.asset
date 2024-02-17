@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pizza
   m_EditorClassIdentifier: 
   <DisplayName>k__BackingField: Pizza
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 9c0d6ec706e01ce448aea81584af092b,
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 28b900acc5d659b4bab3133223e8497d,
     type: 3}
   Tags:
   - {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
