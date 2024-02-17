@@ -3,23 +3,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public sealed class FinaleController : Pawn
 {
 
     [SerializeField] private PlayerTrigger _finalTrigger;
     [SerializeField] private Transform _cameraTransform;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private Door _finalDoor;
 
     private bool _isFinished;
+    private float _maxHeavenVolume;
 
     private void OnEnable()
     {
         _finalTrigger.EnterEvent.AddListener(PlayerEntered);
+        _finalDoor.Opened += OnFinalDoorOpened;
+        _maxHeavenVolume = _audioSource.volume;
+        _audioSource.volume = 0f;
     }
 
     private void OnDisable()
     {
         _finalTrigger.EnterEvent.RemoveListener(PlayerEntered);
+        _finalDoor.Opened -= OnFinalDoorOpened;
+    }
+
+    private void OnFinalDoorOpened()
+    {
+        _finalDoor.Opened -= OnFinalDoorOpened;
+        _audioSource.DOFade(_maxHeavenVolume, 0.5f);
     }
 
     private void PlayerEntered(PlayerCharacter player)

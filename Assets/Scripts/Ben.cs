@@ -6,8 +6,8 @@ using UnityEngine;
 public sealed class Ben : MonoBehaviour
 {
 
-    private const float answerDelay = 1.8f;
-    private const float textDelay = 1.84f;
+    private const float answerDelay = 1.0f;
+    private const float textDelay = 2.25f;
     private const float feedDelay = 0.5f;
 
     [SerializeField] private AudioSource _audioSource;
