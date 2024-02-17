@@ -256,10 +256,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _textureSequence:
-  - {fileID: 2800000, guid: 61fbc31ab38c0a1438a2df527012536c, type: 3}
-  - {fileID: 2800000, guid: 61fbc31ab38c0a1438a2df527012536c, type: 3}
   - {fileID: 2800000, guid: 990c4c5d2e6f65e40955b42c685682d6, type: 3}
-  - {fileID: 2800000, guid: 61fbc31ab38c0a1438a2df527012536c, type: 3}
+  - {fileID: 2800000, guid: ac6273d3c43874045a729c38a11fe482, type: 3}
+  - {fileID: 2800000, guid: 990c4c5d2e6f65e40955b42c685682d6, type: 3}
+  - {fileID: 2800000, guid: 990c4c5d2e6f65e40955b42c685682d6, type: 3}
   - {fileID: 2800000, guid: 98d0746239c257548899fff2c48d6e0b, type: 3}
   - {fileID: 2800000, guid: ac6273d3c43874045a729c38a11fe482, type: 3}
   - {fileID: 2800000, guid: 61fbc31ab38c0a1438a2df527012536c, type: 3}
