@@ -17,6 +17,8 @@ public sealed class TV : MonoBehaviour
     [SerializeField] private float _transitionDuration = 1f;
     [SerializeField] private float _minNoiseValue = 0.6f;
     [SerializeField] private PlayerTrigger _roomTrigger;
+    [SerializeField] private Sound _startSound;
+    [SerializeField] private AudioSource _startAudioSource;
 
     public bool IsPlayingSequence { get; private set; }
 
@@ -30,7 +32,7 @@ public sealed class TV : MonoBehaviour
 
     private void Update()
     {
-        float desiredVolume = _roomTrigger.PlayerInside ? _desiredNoiseVolume : 0f;
+        float desiredVolume = _roomTrigger.PlayerInside == true ? _desiredNoiseVolume : 0f;
 
         if (_staticNoiseSource.volume < desiredVolume)
         {
@@ -58,6 +60,8 @@ public sealed class TV : MonoBehaviour
         }
 
         sequence.OnComplete(() => IsPlayingSequence = false);
+
+        _startSound.Play(_startAudioSource);
     }
 
     private Sequence Show(Texture2D texture)

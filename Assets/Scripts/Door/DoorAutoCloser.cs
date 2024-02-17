@@ -5,10 +5,10 @@ using UnityEngine;
 public class DoorAutoCloser : MonoBehaviour
 {
 
-    private const bool doCloseDoors = false;
+    private const bool doCloseDoors = true;
+    private const float closeDelay = 4f;
 
     [SerializeField] private Door _door;
-    [SerializeField] private float _closeDelay = 2f;
 
     private TimeSince _timeSinceLastOpening;
 
@@ -30,7 +30,7 @@ public class DoorAutoCloser : MonoBehaviour
         if (_door.IsOpen == false)
             return;
 
-        if (_timeSinceLastOpening > _closeDelay)
+        if (_timeSinceLastOpening > closeDelay)
         {
             _door.Close();
         }

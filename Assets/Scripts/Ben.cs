@@ -16,6 +16,7 @@ public sealed class Ben : MonoBehaviour
     [SerializeField] private Sound _killSelfAdviceSound;
     [SerializeField] private Sound _goodbyeSound;
     [SerializeField] private Sound _screamSound;
+    [SerializeField] private Sound _pohuiSound;
     [SerializeField] private ItemTag _foodTag;
     [SerializeField] private Code _codeReward;
 
@@ -78,6 +79,12 @@ public sealed class Ben : MonoBehaviour
 
     private void TrySayNextAdvice(bool ignoreCooldown = false)
     {
+        if (Random.Range(0, 1000) == 0)
+        {
+            TrySay(_pohuiSound, $"?");
+            return;
+        }
+
         if (_finalDoor.IsOpen == true)
         {
             TrySay(_goodbyeSound, $"Is he saying... goodbye?");
