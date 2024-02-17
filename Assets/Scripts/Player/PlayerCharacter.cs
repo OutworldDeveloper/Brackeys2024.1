@@ -357,7 +357,7 @@ public sealed class SpawnBlockModifier : CharacterModifier
 
     public override bool CanInteract()
     {
-        return false;
+        return true;
     }
 
     public override bool CanJump()

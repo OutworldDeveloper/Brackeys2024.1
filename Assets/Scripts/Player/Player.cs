@@ -87,7 +87,7 @@ public sealed class Player : MonoBehaviour
 
         if (_currentPawn.CanUnpossessAtWill() && _currentPawn != _character)
         {
-            Notification.Show("Press Tab to exit", 2f);
+            //Notification.Show("Press Tab to exit", 2f);
         }
 
         UpdateState();

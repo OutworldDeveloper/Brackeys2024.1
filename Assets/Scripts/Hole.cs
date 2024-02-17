@@ -38,11 +38,11 @@ public sealed class Hole : MonoBehaviour
             player.Inventory.RemoveItem(_ropeItem);
             player.Inventory.RemoveItem(_hookItem);
             IsItemExtracted = true;
-            Delayed.Do(() => GiveReward(player), _animationDuration - 0.2f);
+            Delayed.Do(() => GiveReward(player), _animationDuration - 0.3f);
         }
         else
         {
-            Delayed.Do(() => GiveNothing(), _animationDuration - 0.2f);
+            Delayed.Do(() => GiveNothing(), _animationDuration - 0.3f);
         }
 
         player.Player.Possess(_moviePawn);
@@ -63,7 +63,7 @@ public sealed class Hole : MonoBehaviour
 
     private string GetFailResponse(bool hasRope, bool hasHook)
     {
-        return "There is something interesting down there. How do I reach it?";
+        return "There is something interesting down there.";
 
         if (hasRope == true && hasHook == false)
             return "I need a hook";

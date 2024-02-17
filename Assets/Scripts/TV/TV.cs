@@ -25,7 +25,7 @@ public sealed class TV : MonoBehaviour
     private void Start()
     {
         _material.SetFloat(_noiseMultiplierID, 1f);
-        _staticNoiseSource.volume = 1f;
+        _desiredNoiseVolume = 1f;
     }
 
     private void Update()
