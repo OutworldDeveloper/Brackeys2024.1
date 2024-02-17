@@ -259,6 +259,7 @@ MonoBehaviour:
     type: 2}
   _goodbyeSound: {fileID: 11400000, guid: e55296444d1b76848acef3ffd5d4b117, type: 2}
   _screamSound: {fileID: 11400000, guid: 4c325e8782740bb4e9f12d16031f7a27, type: 2}
+  _pohuiSound: {fileID: 0}
   _foodTag: {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
   _codeReward: {fileID: 11400000, guid: abf112141b22b7040808904cc2954386, type: 2}
   _safeLock: {fileID: 0}

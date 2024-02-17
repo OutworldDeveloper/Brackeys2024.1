@@ -20,12 +20,16 @@ public sealed class TV : MonoBehaviour
     [SerializeField] private Sound _startSound;
     [SerializeField] private AudioSource _startAudioSource;
 
+    [SerializeField] private Code _codeToShow;
+    [SerializeField] private Texture2D[] _texturesToNames;
+
     public bool IsPlayingSequence { get; private set; }
 
     private float _desiredNoiseVolume = 0f;
 
     private void Start()
     {
+
         _material.SetFloat(_noiseMultiplierID, 1f);
         _desiredNoiseVolume = 1f;
     }
