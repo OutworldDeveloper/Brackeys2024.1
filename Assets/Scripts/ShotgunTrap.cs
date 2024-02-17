@@ -14,9 +14,11 @@ public sealed class ShotgunTrap : MonoBehaviour
     [SerializeField] private AudioSource _toggleAudioSource;
     [SerializeField] private Sound _deactivateSound;
     [SerializeField] private Sound _activateSound;
+    [SerializeField] private GameObject _shootlightSource;
 
     private bool IsDeactivated;
     private bool IsDeactivatedForever;
+    private TimeSince _timeSinceLastShoot = new TimeSince(float.NegativeInfinity);
 
     public void DeactivateForever()
     {
@@ -67,6 +69,11 @@ public sealed class ShotgunTrap : MonoBehaviour
         _door.Opening -= OnDoorOpening;
     }
 
+    private void Update()
+    {
+        _shootlightSource.gameObject.SetActive(_timeSinceLastShoot < 0.05f);
+    }
+
     private void OnDoorOpening()
     {
         if (IsDeactivated == true)
@@ -89,6 +96,7 @@ public sealed class ShotgunTrap : MonoBehaviour
         if (_playerTrigger.HasPlayerInside == true)
             _playerTrigger.PlayerInside.Kill(DeathType.Physical);
 
+        _timeSinceLastShoot = new TimeSince(Time.time);
         _shootSound.Play(_shootAudioSource);
         Delayed.Do(() => _door.Close(), 0.2f); // 0.7f
     }
