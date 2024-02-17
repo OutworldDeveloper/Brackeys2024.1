@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Fridge Key
   m_EditorClassIdentifier: 
   <DisplayName>k__BackingField: Key
-  <Sprite>k__BackingField: {fileID: 21300000, guid: f9161c6c9e06dc445ada3ee16d991f90,
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 49c01d6cdac48a046b57a1b1bb789b6c,
     type: 3}
-  Tags:
-  - {fileID: 0}
+  Tags: []

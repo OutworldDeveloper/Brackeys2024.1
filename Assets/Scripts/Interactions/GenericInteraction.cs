@@ -10,6 +10,8 @@ public sealed class GenericInteraction : Interaction
     [SerializeField] private string _text;
     [SerializeField] private bool _singleUse;
     [SerializeField] private PlayerEvent _interaction;
+    [SerializeField] private bool _sendNotification;
+    [SerializeField] private string _notificationText;
 
     private bool _usedOnce;
 
@@ -26,6 +28,10 @@ public sealed class GenericInteraction : Interaction
     public override void Perform(PlayerCharacter player)
     {
         _usedOnce = true;
+
+        if (_sendNotification == true)
+            Notification.Show(_notificationText);
+
         _interaction.Invoke(player);
     }
 

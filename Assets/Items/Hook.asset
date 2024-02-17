@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Hook
   m_EditorClassIdentifier: 
   <DisplayName>k__BackingField: Hook
-  <Sprite>k__BackingField: {fileID: 21300000, guid: f09eae8c0ea04254b90c5386a034a225,
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 70fd261721ba89445a469179e0ec0a3b,
     type: 3}
   Tags: []
