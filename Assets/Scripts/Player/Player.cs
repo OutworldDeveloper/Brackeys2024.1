@@ -7,7 +7,7 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
-    [SerializeField] private GameObject _pauseMenu;
+    [SerializeField] private UI_PauseMenu _pauseMenu;
 
     private bool _isPauseMenuOpen;
     private Pawn _currentPawn;
@@ -29,6 +29,7 @@ public sealed class Player : MonoBehaviour
     private void Start()
     {
         Possess(_character);
+        OpenPauseMenu(true);
     }
 
     private void Update()
@@ -72,7 +73,7 @@ public sealed class Player : MonoBehaviour
         }
         else
         {
-            OpenPauseMenu();
+            OpenPauseMenu(false);
         }
     }
 
@@ -118,8 +119,9 @@ public sealed class Player : MonoBehaviour
         UpdateState();
     }
 
-    public void OpenPauseMenu()
+    public void OpenPauseMenu(bool menu)
     {
+        _pauseMenu.SetMode(menu);
         _isPauseMenuOpen = true;
         UpdateState();
     }
@@ -137,7 +139,7 @@ public sealed class Player : MonoBehaviour
         bool showHud = _isPauseMenuOpen == false && _character.IsDead == false && _currentPawn == _character;
 
         _hud.SetActive(showHud);
-        _pauseMenu.SetActive(_isPauseMenuOpen == true);
+        _pauseMenu.gameObject.SetActive(_isPauseMenuOpen == true);
 
         bool showCursor = _isPauseMenuOpen == true;
 

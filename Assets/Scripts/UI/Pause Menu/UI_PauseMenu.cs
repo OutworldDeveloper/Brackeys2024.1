@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
 
 public sealed class UI_PauseMenu : MonoBehaviour
 {
@@ -9,8 +10,16 @@ public sealed class UI_PauseMenu : MonoBehaviour
     [SerializeField] private CanvasGroup _mainPanel;
     [SerializeField] private RectTransform _buttonsPanel;
     [SerializeField] private Transform _buttonsParent;
+    [SerializeField] private TextMeshProUGUI _menuText;
+    [SerializeField] private TextMeshProUGUI _continueButtonText;
 
     private Sequence _sequeence;
+
+    public void SetMode(bool menu)
+    {
+        _menuText.text = menu ? "Menu" : "Pause Menu";
+        _continueButtonText.text = menu ? "Start" : "Continue";
+    }
 
     private void OnEnable()
     {

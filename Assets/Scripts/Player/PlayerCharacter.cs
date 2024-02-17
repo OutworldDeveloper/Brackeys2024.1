@@ -260,6 +260,12 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanRotateHead()
     {
+        foreach (var modifier in _modifiers)
+        {
+            if (modifier.CanRotateCamera() == false)
+                return false;
+        }
+
         return true;
     }
 
@@ -348,6 +354,7 @@ public abstract class CharacterModifier
     public virtual float GetSpeedMultiplier() => 1f;
     public virtual bool CanInteract() => true;
     public virtual bool CanJump() => true;
+    public virtual bool CanRotateCamera() => true;
     public virtual void Tick() { }
 
 }
