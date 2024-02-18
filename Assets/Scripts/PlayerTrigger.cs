@@ -12,6 +12,13 @@ public sealed class PlayerTrigger : MonoBehaviour
     [field: SerializeField] public PlayerEvent EnterEvent { get; private set; }
     [field: SerializeField] public PlayerEvent ExitEvent { get; private set; }
 
+    [field: SerializeField] private PlayerEvent _stayEvent { get; set; }
+    [SerializeField] private bool _useStayEvent;
+    [SerializeField] private float _stayTimeRequired = 0.75f;
+
+    private bool _stayEventSent;
+    private TimeSince _timeSinceLastEntered = new TimeSince(float.NegativeInfinity);
+
     public bool EverVisited { get; private set; }
     public bool HasPlayerInside => PlayerInside != null;
     public PlayerCharacter PlayerInside { get; private set; }
@@ -23,6 +30,8 @@ public sealed class PlayerTrigger : MonoBehaviour
             PlayerInside = player;
             EverVisited = true;
             EnterEvent.Invoke(player);
+
+            _timeSinceLastEntered = new TimeSince(Time.time);
         }
     }
 
@@ -32,6 +41,19 @@ public sealed class PlayerTrigger : MonoBehaviour
         {
             PlayerInside = null;
             ExitEvent.Invoke(player);
+            _stayEventSent = false;
+        }
+    }
+
+    private void Update()
+    {
+        if (_useStayEvent == false || PlayerInside == false || _stayEventSent == true)
+            return;
+
+        if (_timeSinceLastEntered > _stayTimeRequired)
+        {
+            _stayEvent.Invoke(PlayerInside);
+            _stayEventSent = true;
         }
     }
 

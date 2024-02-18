@@ -84,9 +84,9 @@ public sealed class Ghost : MonoBehaviour
 
         float targetDistance = Vector3.Distance(_target.transform.position, transform.position);
 
-        if (targetDistance < 2.5f && isPlayerVisible == true)
+        if (targetDistance < 2.75f && isPlayerVisible == true)
         {
-            _target.ApplyDamage(1f * Time.deltaTime);
+            _target.ApplyDamage(1.1f * Time.deltaTime);
             _damageAudioSource.volume = Mathf.Min(1f, _damageAudioSource.volume + Time.deltaTime * 1f);
 
             if (targetDistance < 0.4f)
@@ -159,7 +159,7 @@ public sealed class GhostChaseTargetModifier : CharacterModifier
     {
         _currentGhostDistance = GetDistanceToGhost();
 
-        if (_currentGhostDistance < 3.5f && IsPlayerVisible == true)
+        if (_currentGhostDistance < 4f && IsPlayerVisible == true)
         {
             if (_currentSpeedMultiplier > _minSpeedMultiplier)
                 _currentSpeedMultiplier -= Time.deltaTime * 0.15f;
