@@ -56,6 +56,11 @@ public sealed class PlayerCharacter : Pawn
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
     }
 
+    public override void InputTick()
+    {
+        _currentInput = GatherInput();
+    }
+
     private void Update()
     {
         if (IsDead == true)
@@ -66,18 +71,13 @@ public sealed class PlayerCharacter : Pawn
         {
             UpdateAlive(_currentInput);
         }
+
+        _currentInput = new PlayerInput() { InteractionIndex = -1 };
     }
 
     public override void OnUnpossessed()
     {
         base.OnUnpossessed();
-
-        _currentInput = new PlayerInput()
-        {
-            WantsJump = false,
-            InteractionIndex = -1,
-            Direction = FlatVector.zero,
-        };
         _velocityXZ = Vector3.zero;
     }
 
@@ -139,17 +139,12 @@ public sealed class PlayerCharacter : Pawn
         }
     }
 
-    public override void PossessedTick()
-    {
-        _currentInput = GatherInput();
-    }
-
     private PlayerInput GatherInput()
     {
         var playerInput = new PlayerInput();
 
-        playerInput.MouseX = Input.GetAxis("Mouse X") * _mouseSensitivity.Value;
-        playerInput.MouseY = Input.GetAxis("Mouse Y") * _mouseSensitivity.Value;
+        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value;
+        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value;
 
         playerInput.Direction = new FlatVector()
         {

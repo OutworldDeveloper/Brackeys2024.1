@@ -44,6 +44,7 @@ public sealed class Player : MonoBehaviour
         {
             if (_currentPawn.WantsUnpossess == false)
             {
+                _currentPawn.InputTick();
                 _currentPawn.PossessedTick();
                 _mainCamera.transform.SetPositionAndRotation(
                     _currentPawn.GetCameraPosition(),

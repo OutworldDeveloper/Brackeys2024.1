@@ -15,6 +15,8 @@ public abstract class Pawn : MonoBehaviour
         WantsUnpossess = false;
     }
 
+    public virtual void InputTick() { }
+
     public virtual void OnUnpossessed()
     {
         Player = null;
