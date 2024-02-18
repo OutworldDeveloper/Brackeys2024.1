@@ -60,7 +60,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Noise: 0
-    - _NoiseMultiplier: 0.27499998
+    - _NoiseMultiplier: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ScreenBrightness: 3.82

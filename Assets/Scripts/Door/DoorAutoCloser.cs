@@ -5,7 +5,7 @@ using UnityEngine;
 public class DoorAutoCloser : MonoBehaviour
 {
 
-    private const bool doCloseDoors = true;
+    private const bool doCloseDoors = false;
     private const float closeDelay = 4f;
 
     [SerializeField] private Door _door;

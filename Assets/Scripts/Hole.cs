@@ -9,6 +9,7 @@ public sealed class Hole : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private float _animationDuration;
     [SerializeField] private MoviePawn _moviePawn;
+    [SerializeField] private GameObject _keyPreview;
 
     public bool IsItemExtracted { get; private set; }
 
@@ -39,6 +40,7 @@ public sealed class Hole : MonoBehaviour
             player.Inventory.RemoveItem(_hookItem);
             IsItemExtracted = true;
             Delayed.Do(() => GiveReward(player), _animationDuration - 0.3f);
+            _keyPreview?.SetActive(false);
         }
         else
         {
