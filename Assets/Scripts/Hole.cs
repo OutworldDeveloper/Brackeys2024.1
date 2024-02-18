@@ -65,15 +65,13 @@ public sealed class Hole : MonoBehaviour
 
     private string GetFailResponse(bool hasRope, bool hasHook)
     {
-        return "There is something interesting down there. I cannot reach";
-
         if (hasRope == true && hasHook == false)
             return "I need a hook";
 
         if (hasRope == false && hasHook == true)
-            return "I need a fishing rode";
+            return "I need a rope";
 
-        return "There is something interesting down there. But I cannot reach.";
+        return "There is something interesting down there. I cannot reach";
     }
 
 }

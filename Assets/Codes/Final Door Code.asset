@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ae9d66997c32d741bc4129032fbe439, type: 3}
   m_Name: Final Door Code
   m_EditorClassIdentifier: 
-  _characters: 0000000001000000020000000300000004000000
+  _characters: 020000000400000001000000020000000300000000000000

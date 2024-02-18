@@ -55,11 +55,11 @@ public sealed class FinaleController : Pawn
         //player.Player.Possess(this);
         player.ApplyModifier(new FinalModifier(), -1);
 
-        Delayed.Do(() => 
+        Delayed.Do(() =>
         {
-            Notification.Show("Thanks for playing!", 5f);
-            Delayed.Do(() => SceneManager.LoadScene(0), 5f);
-        }, 2f);
+            Notification.Show("Thanks for playing!", 3.5f);
+            Delayed.Do(() => SceneManager.LoadScene(0), 4f);
+        }, 0.75f);
     }
 
     public override Vector3 GetCameraPosition()
