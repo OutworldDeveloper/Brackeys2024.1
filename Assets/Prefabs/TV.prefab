@@ -41,7 +41,7 @@ AudioSource:
   m_GameObject: {fileID: 5035901336533209868}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 8961078316356824809, guid: 928a5f6a3b3c4444aa1181218bc2b74b,
+  OutputAudioMixerGroup: {fileID: -3209306642645510601, guid: 928a5f6a3b3c4444aa1181218bc2b74b,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: e72f08220a7bfba41b1da0e428ec622d, type: 3}
   m_PlayOnAwake: 1
@@ -53,8 +53,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 0
-  MaxDistance: 5
+  MinDistance: 1
+  MaxDistance: 8
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -257,14 +257,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9135e272cb9a547b9969b2d87616d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _textureSequence:
-  - {fileID: 2800000, guid: 990c4c5d2e6f65e40955b42c685682d6, type: 3}
-  - {fileID: 2800000, guid: ac6273d3c43874045a729c38a11fe482, type: 3}
-  - {fileID: 2800000, guid: 990c4c5d2e6f65e40955b42c685682d6, type: 3}
-  - {fileID: 2800000, guid: 990c4c5d2e6f65e40955b42c685682d6, type: 3}
-  - {fileID: 2800000, guid: 98d0746239c257548899fff2c48d6e0b, type: 3}
-  - {fileID: 2800000, guid: ac6273d3c43874045a729c38a11fe482, type: 3}
-  - {fileID: 2800000, guid: 61fbc31ab38c0a1438a2df527012536c, type: 3}
   _material: {fileID: 2100000, guid: 7f25ff42706ea2f4ebd051456134aaca, type: 2}
   _staticNoiseSource: {fileID: 5035901336533209870}
   _delay: 0.3
@@ -274,8 +266,12 @@ MonoBehaviour:
   _roomTrigger: {fileID: 0}
   _startSound: {fileID: 11400000, guid: f3c81fca7d9b48e45b48e79a371f4149, type: 2}
   _startAudioSource: {fileID: 5662965555835563796}
-  _codeToShow: {fileID: 0}
-  _texturesToNames: []
+  _codeToShow: {fileID: 11400000, guid: 36d8c6ff489f93a4398e24f50cb1cca7, type: 2}
+  _textureA: {fileID: 2800000, guid: d1ffe67e6fca2be49bb7d502dfdbbd05, type: 3}
+  _textureB: {fileID: 2800000, guid: c31b247828defd64794fb3e6beb6159a, type: 3}
+  _textureD: {fileID: 2800000, guid: 0a1fb8194634a9843832e26a2a432da3, type: 3}
+  _textureE: {fileID: 2800000, guid: 98d0746239c257548899fff2c48d6e0b, type: 3}
+  _textureF: {fileID: 2800000, guid: ac6273d3c43874045a729c38a11fe482, type: 3}
 --- !u!1 &6263159753199508943
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,14 +297,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6263159753199508943}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.412, z: 0.269}
+  m_LocalRotation: {x: 0.061795115, y: 0.0000000013969835, z: 2.6193442e-10, w: 0.99808884}
+  m_LocalPosition: {x: -0, y: 0.394, z: 0.032}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4785537399039200167}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 7.086, y: 0, z: 0}
 --- !u!108 &4616671348875796297
 Light:
   m_ObjectHideFlags: 0
@@ -318,13 +314,13 @@ Light:
   m_GameObject: {fileID: 6263159753199508943}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 2
+  m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
-  m_Range: 10
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 21.80208
+  m_Range: 2.53
+  m_SpotAngle: 147.63882
+  m_InnerSpotAngle: 110.49211
   m_CookieSize: 10
   m_Shadows:
     m_Type: 1

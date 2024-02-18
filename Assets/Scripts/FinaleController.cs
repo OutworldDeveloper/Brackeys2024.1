@@ -21,6 +21,7 @@ public sealed class FinaleController : Pawn
     {
         _finalTrigger.EnterEvent.AddListener(PlayerEntered);
         _finalDoor.Opened += OnFinalDoorOpened;
+        _finalDoor.Opening += OnFinalDoorOpening;
         _maxHeavenVolume = _audioSource.volume;
         _audioSource.volume = 0f;
         _finalLight.enabled = false;
@@ -30,13 +31,19 @@ public sealed class FinaleController : Pawn
     {
         _finalTrigger.EnterEvent.RemoveListener(PlayerEntered);
         _finalDoor.Opened -= OnFinalDoorOpened;
+        _finalDoor.Opening -= OnFinalDoorOpening;
+    }
+
+    private void OnFinalDoorOpening()
+    {
+        _finalDoor.Opening -= OnFinalDoorOpening;
+        _finalLight.enabled = true;
     }
 
     private void OnFinalDoorOpened()
     {
         _finalDoor.Opened -= OnFinalDoorOpened;
         _audioSource.DOFade(_maxHeavenVolume, 0.5f);
-        _finalLight.enabled = true;
     }
 
     private void PlayerEntered(PlayerCharacter player)

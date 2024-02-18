@@ -37,6 +37,7 @@ public sealed class SafeLock : Pawn
     {
         base.OnUnpossessed();
         SelectButton(-1);
+        _currentEnteredCode = string.Empty;
     }
 
     public override void PossessedTick()

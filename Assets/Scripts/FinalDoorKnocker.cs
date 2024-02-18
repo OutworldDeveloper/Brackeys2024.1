@@ -4,7 +4,7 @@ public sealed class FinalDoorKnocker : MonoBehaviour
 {
 
     [SerializeField] private FinalDoor _finalDoor;
-    [SerializeField] private char _char;
+    [SerializeField] private CodeCharacter _character;
     [SerializeField] private Door _target;
 
     private void OnEnable()
@@ -19,7 +19,7 @@ public sealed class FinalDoorKnocker : MonoBehaviour
 
     private void OnDoorKnocked()
     {
-        _finalDoor.SubmitCharacter(_char);
+        _finalDoor.SubmitCharacter(_character);
     }
 
 }

@@ -3,34 +3,28 @@
 public sealed class FinalDoor : MonoBehaviour
 {
 
-    [SerializeField] private Code _code;
-    [SerializeField] private char _test;
+    [SerializeField] private FinalDoorCode _code;
     [SerializeField] private Door _door;
     [SerializeField] private MoviePawn _moviePawn;
 
-    private char[] _input;
+    private CodeCharacter[] _input;
 
     public bool IsOpen { get; private set; }
 
     private void Start()
     {
-        var codeLenght = _code.Value.ToString().Length;
-        _input = new char[codeLenght];
+        var code = _code.Characters;
+        _input = new CodeCharacter[code.Length];
 
         for (int i = 0; i < _input.Length; i++)
         {
-            _input[i] = '6';
+            _input[i] = CodeCharacter.A;
         }
 
         _door.Block();
     }
 
-    public void Submit(string s)
-    {
-        SubmitCharacter(s[0]);
-    }
-
-    public void SubmitCharacter(char character)
+    public void SubmitCharacter(CodeCharacter character)
     {
         for (int i = 0; i < _input.Length - 1; i++)
         {
@@ -39,14 +33,14 @@ public sealed class FinalDoor : MonoBehaviour
 
         _input[_input.Length - 1] = character;
 
-        Notification.ShowDebug(new string(_input), 5f);
+        Notification.ShowDebug(character.ToString(), 5f);
 
-        SubmitCode(new string(_input));
+        SubmitCode();
     }
 
-    private void SubmitCode(string code)
+    private void SubmitCode()
     {
-        if (code != _code.Value)
+        if (_code.IsValid(_input) == false)
             return;
 
         if (IsOpen == true)
@@ -55,7 +49,7 @@ public sealed class FinalDoor : MonoBehaviour
         Notification.ShowDebug("Success!");
 
         IsOpen = true;
-        Delayed.Do(() => _door.TryOpen(null, true), 0.5f);
+        Delayed.Do(() => _door.TryOpen(null, true), 1.25f);
         FindObjectOfType<Player>().Possess(_moviePawn);
     }
 

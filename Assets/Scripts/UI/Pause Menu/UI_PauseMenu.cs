@@ -17,7 +17,7 @@ public sealed class UI_PauseMenu : MonoBehaviour
 
     public void SetMode(bool menu)
     {
-        _menuText.text = menu ? "Menu" : "Pause Menu";
+        _menuText.text = menu ? "Escape the hallway" : "Pause Menu";
         _continueButtonText.text = menu ? "Start" : "Continue";
     }
 

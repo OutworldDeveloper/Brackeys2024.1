@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 020aed4b85fabf440bacaff1db3c94a5, type: 3}
   m_Name: Mouse Sensetivity
   m_EditorClassIdentifier: 
-  defaultValue: 3
+  defaultValue: 1
   <MinValue>k__BackingField: 0.5
   <MaxValue>k__BackingField: 3

@@ -74,7 +74,7 @@ public static class Notification
     {
         if (Application.isEditor == true)
         {
-            Show(text, duration);
+            Show($"[Debug] {text}", duration);
         }
     }
 
