@@ -12,7 +12,7 @@ public sealed class FinaleController : Pawn
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Door _finalDoor;
-    [SerializeField] private Light _finalLight;
+    [SerializeField] private GameObject _finalLight;
 
     private bool _isFinished;
     private float _maxHeavenVolume;
@@ -24,7 +24,7 @@ public sealed class FinaleController : Pawn
         _finalDoor.Opening += OnFinalDoorOpening;
         _maxHeavenVolume = _audioSource.volume;
         _audioSource.volume = 0f;
-        _finalLight.enabled = false;
+        _finalLight.SetActive(false);
     }
 
     private void OnDisable()
@@ -37,7 +37,7 @@ public sealed class FinaleController : Pawn
     private void OnFinalDoorOpening()
     {
         _finalDoor.Opening -= OnFinalDoorOpening;
-        _finalLight.enabled = true;
+        _finalLight.SetActive(true);
     }
 
     private void OnFinalDoorOpened()

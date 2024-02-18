@@ -31,6 +31,7 @@ public sealed class MusicPlayer : MonoBehaviour
 
     private float _maxVolume;
 
+    private bool _wasChasedByGhost;
     private float _ghostNoChaseTime;
 
     private void OnEnable()
@@ -57,32 +58,56 @@ public sealed class MusicPlayer : MonoBehaviour
     {
         HandleState();
 
-        if (_audioSource.clip == _toPlay)
-        {
-            _audioSource.volume = _maxVolume;
-            return;
-        }
+        var isBeingChasedByGhost = _ghost.State == GhostState.Chasing;
 
-        if (_audioSource.isPlaying == true) // If we're playing, but shouldn't, turn the volume down
+        if (isBeingChasedByGhost == true)
         {
-            if (_audioSource.volume > 0.001f)
+            if (_wasChasedByGhost == false)
             {
-                _audioSource.volume -= Time.deltaTime * _musicFadeOutSpeed;
-            }
-            else
-            {
-                _audioSource.Stop();
-                _audioSource.clip = null;
+                _ghostNoChaseTime = 0f;
             }
         }
         else
         {
-            _audioSource.clip = _toPlay;
-            _audioSource.volume = _maxVolume;
-
-            if (_audioSource.clip != null)
-                _audioSource.Play();
+            _ghostNoChaseTime += Time.deltaTime;
         }
+
+        bool wantsToChangeSon = _audioSource.clip != _toPlay;
+        bool shouldPlayCurrentMusic = isBeingChasedByGhost == false && _ghostNoChaseTime > 5f && wantsToChangeSon == false;
+
+        if (shouldPlayCurrentMusic == true)
+        {
+            if (_audioSource.volume < _maxVolume)
+                _audioSource.volume += Time.deltaTime * _musicFadeOutSpeed;
+        }
+        else 
+        {
+            if (_audioSource.isPlaying == true) // If we're playing, but shouldn't, turn the volume down
+            {
+                if (_audioSource.volume > 0.001f)
+                {
+                    if (_audioSource.volume > 0f)
+                        _audioSource.volume -= Time.deltaTime * _musicFadeOutSpeed;
+                }
+                else
+                {
+                    if (wantsToChangeSon == true)
+                    {
+                        _audioSource.Stop();
+                        _audioSource.clip = null;
+                    }
+                }
+            }
+            else
+            {
+                _audioSource.clip = _toPlay;
+
+                if (_audioSource.clip != null)
+                    _audioSource.Play();
+            }
+        }
+
+        _wasChasedByGhost = isBeingChasedByGhost;
     }
 
     private void SetState(MusicState state)
@@ -107,10 +132,6 @@ public sealed class MusicPlayer : MonoBehaviour
                 _timeUntilNextMusic = new TimeUntil(Time.time + GetRandomDelay());
                 break;
 
-            case MusicState.GhostChase:
-                _ghostNoChaseTime = 0f;
-                break;
-
             case MusicState.FinishLine:
                 _toPlay = _victoryMusic;
                 break;
@@ -119,12 +140,6 @@ public sealed class MusicPlayer : MonoBehaviour
 
     private void HandleState()
     {
-        if (_ghost.State == GhostState.Chasing && _state != MusicState.FinishLine)
-        {
-            SetState(MusicState.GhostChase);
-            return;
-        }
-
         switch (_state)
         {
             case MusicState.ExploringKitchen:
@@ -141,22 +156,6 @@ public sealed class MusicPlayer : MonoBehaviour
                 _nextMusicIndex++;
                 if (_nextMusicIndex >= _music.Length)
                     _nextMusicIndex = 0;
-                break;
-
-            case MusicState.GhostChase:
-
-                if (_ghost.State == GhostState.Chasing)
-                {
-                    _ghostNoChaseTime = 0f;
-                }
-                else
-                {
-                    _ghostNoChaseTime += Time.deltaTime;
-                    if (_ghostNoChaseTime > 5f)
-                    {
-                        SetState(_previousState);
-                    } 
-                }
                 break;
 
             case MusicState.FinishLine:
@@ -188,7 +187,6 @@ public sealed class MusicPlayer : MonoBehaviour
         None,
         ExploringKitchen,
         Gameplay,
-        GhostChase,
         FinishLine,
     }
 
