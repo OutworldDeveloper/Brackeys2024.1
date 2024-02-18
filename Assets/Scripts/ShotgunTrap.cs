@@ -23,6 +23,10 @@ public sealed class ShotgunTrap : MonoBehaviour
     public void DeactivateForever()
     {
         IsDeactivatedForever = true;
+
+        if (IsDeactivated)
+            _deactivateSound.Play(_toggleAudioSource);
+
         Deactivate();
     }
 
