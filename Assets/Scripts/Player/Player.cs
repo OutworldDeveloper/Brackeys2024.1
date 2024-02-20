@@ -11,6 +11,7 @@ public sealed class Player : MonoBehaviour
 
     private bool _isPauseMenuOpen;
     private Pawn _currentPawn;
+    private TimeSince _timeSincePawnChanged;
 
     private void OnEnable()
     {
@@ -46,9 +47,13 @@ public sealed class Player : MonoBehaviour
             {
                 _currentPawn.InputTick();
                 _currentPawn.PossessedTick();
-                _mainCamera.transform.SetPositionAndRotation(
-                    _currentPawn.GetCameraPosition(),
-                    _currentPawn.GetCameraRotation());
+
+                if (_timeSincePawnChanged > 0.2f)
+                {
+                    _mainCamera.transform.SetPositionAndRotation(
+                        _currentPawn.GetCameraPosition(),
+                        _currentPawn.GetCameraRotation());
+                }
             }
             else
             {
@@ -93,6 +98,8 @@ public sealed class Player : MonoBehaviour
         }
 
         UpdateState();
+        _timeSincePawnChanged = new TimeSince(Time.time);
+        ScreenFade.FadeOutFor(0.2f);
     }
 
     public void Unpossess()
