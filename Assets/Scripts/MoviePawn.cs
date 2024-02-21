@@ -38,9 +38,6 @@ public class MoviePawn : Pawn
         return transform.position;
     }
 
-    public override Quaternion GetCameraRotation()
-    {
-        return transform.rotation;
-    }
+    public override Quaternion GetCameraRotation() => transform.rotation;
 
 }

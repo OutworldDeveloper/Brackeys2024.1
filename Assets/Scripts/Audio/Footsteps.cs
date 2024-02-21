@@ -11,14 +11,15 @@ public sealed class Footsteps : MonoBehaviour
     [SerializeField] private float _cooldown = 0.2f;
 
     private TimeSince _timeSinceLastStep;
+    private Vector3 _lastStepPosition;
 
     private void Update()
     {
         if (_player.IsDead == true)
             return;
 
-        if (_timeSinceLastStep < _cooldown)
-            return;
+        //if (_timeSinceLastStep < _cooldown)
+        //    return;
 
         if (_player.HorizontalVelocity.magnitude < 0.05f)
             return;
@@ -26,8 +27,12 @@ public sealed class Footsteps : MonoBehaviour
         if (_player.IsGrounded == false)
             return;
 
+        if (Vector3.Distance(_lastStepPosition, _player.transform.position) < 1.3f)
+            return;
+
         _sound.Play(_audioSource);
         _timeSinceLastStep = new TimeSince(Time.time);
+        _lastStepPosition = _player.transform.position;
     }
 
 }

@@ -3386,7 +3386,7 @@ GameObject:
   - component: {fileID: 429771266}
   - component: {fileID: 429771268}
   m_Layer: 0
-  m_Name: RespawnFade Volume
+  m_Name: ScreenFade Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5383,6 +5383,60 @@ MonoBehaviour:
   _respawnTime: 2
   _maxHealth: 2
   _allowJumping: 0
+  _crouchedCameraHeight: -0.8
+  _crouchAnimation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _uncrouchAnimation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _crouchAnimationDuration: 0.45
+  _uncrouchLayerMask:
+    serializedVersion: 2
+    m_Bits: 513
+  _crouchedControllerSize: 1.1
 --- !u!114 &668565587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13803,7 +13857,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Mouse sensetivity:'
+  m_text: 'Mouse sensitivity:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be5f9dfe097dab145bd7cfd6868e962e, type: 2}
   m_sharedMaterial: {fileID: -4091840359411534873, guid: be5f9dfe097dab145bd7cfd6868e962e,

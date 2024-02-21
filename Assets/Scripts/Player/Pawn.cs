@@ -7,6 +7,7 @@ public abstract class Pawn : MonoBehaviour
 
     public abstract Vector3 GetCameraPosition();
     public abstract Quaternion GetCameraRotation();
+
     public virtual void PossessedTick() { }
 
     public virtual void OnPossessed(Player player)

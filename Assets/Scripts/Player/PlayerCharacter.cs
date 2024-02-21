@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
-
 [RequireComponent(typeof(CharacterController), typeof(PlayerInteraction))]
 public sealed class PlayerCharacter : Pawn
 {
@@ -21,6 +19,12 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private float _respawnTime = 2f;
     [SerializeField] private float _maxHealth = 5f;
     [SerializeField] private bool _allowJumping;
+    [SerializeField] private float _crouchedCameraHeight = -0.75f;
+    [SerializeField] private AnimationCurve _crouchAnimation;
+    [SerializeField] private AnimationCurve _uncrouchAnimation;
+    [SerializeField] private float _crouchAnimationDuration = 0.45f;
+    [SerializeField] private LayerMask _uncrouchLayerMask;
+    [SerializeField] private float _crouchedControllerSize = 1.25f;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -32,6 +36,10 @@ public sealed class PlayerCharacter : Pawn
     private TimeSince _timeSinceLastDamage = new TimeSince(float.NegativeInfinity);
     private PlayerInput _currentInput;
 
+    private float _defaultCameraHeight;
+    private bool _isCrouching;
+    private TimeSince _timeSinceLastPostureChange = new TimeSince(float.NegativeInfinity);
+
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
     public bool IsDead { get; private set; }
@@ -40,6 +48,7 @@ public sealed class PlayerCharacter : Pawn
     public float Health { get; private set; }
     public Vector3 HorizontalVelocity => _velocityXZ;
     public bool IsGrounded => _controller.isGrounded;
+    public bool IsCrouching => _isCrouching;
 
     private void Awake()
     {
@@ -48,6 +57,8 @@ public sealed class PlayerCharacter : Pawn
 
     private void Start()
     {
+        _defaultCameraHeight = _head.localPosition.y;
+
         Health = _maxHealth;
 
         _spawnPosition = transform.position;
@@ -63,6 +74,38 @@ public sealed class PlayerCharacter : Pawn
 
     private void Update()
     {
+        if (_isCrouching == false)
+        {
+            if (_currentInput.WantsCrouch == true && CanCrouch() == true)
+            {
+                Crouch();
+            }
+        }
+        else
+        {
+            var shouldUncrouch = _currentInput.WantsCrouch == false || CanCrouch() == false;
+
+            if (shouldUncrouch == true && CanUncrouch())
+            {
+                Stand();
+            }
+        }
+
+        // Update camera
+        if (_timeSinceLastPostureChange < _crouchAnimationDuration)
+        {
+            var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
+            var t = _timeSinceLastPostureChange / _crouchAnimationDuration;
+            var animationCurve = _isCrouching ? _crouchAnimation : _uncrouchAnimation;
+            t = animationCurve.Evaluate(t);
+            _head.localPosition = new Vector3()
+            {
+                x = _head.localPosition.x,
+                y = Mathf.Lerp(_head.localPosition.y, targetHeight, t),
+                z = _head.localPosition.z
+            };
+        }
+
         if (IsDead == true)
         {
             UpdateDead();
@@ -72,7 +115,7 @@ public sealed class PlayerCharacter : Pawn
             UpdateAlive(_currentInput);
         }
 
-        _currentInput = new PlayerInput() { InteractionIndex = -1 };
+        _currentInput.Clear();
     }
 
     public override void OnUnpossessed()
@@ -98,11 +141,10 @@ public sealed class PlayerCharacter : Pawn
         _velocityXZ = Vector3.zero;
         _velocityY = 0f;
 
-        //_controller.enabled = false;
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
         Physics.SyncTransforms();
-        //_controller.enabled = true;
+
         _head.localRotation = Quaternion.identity;
         Health = _maxHealth;
 
@@ -162,6 +204,8 @@ public sealed class PlayerCharacter : Pawn
             playerInput.InteractionIndex = 2;
         else
             playerInput.InteractionIndex = -1;
+
+        playerInput.WantsCrouch = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
 
         return playerInput;
     }
@@ -253,6 +297,26 @@ public sealed class PlayerCharacter : Pawn
         _controller.Move(finalMove);
     }
 
+    private void Crouch()
+    {
+        _isCrouching = true;
+        _timeSinceLastPostureChange = new TimeSince(Time.time);
+
+        // temp
+        _controller.height = _crouchedControllerSize;
+        _controller.center = new Vector3(_controller.center.x, _controller.height / 2f, _controller.center.z);
+    }
+
+    private void Stand()
+    {
+        _isCrouching = false;
+        _timeSinceLastPostureChange = new TimeSince(Time.time);
+
+        // temp
+        _controller.height = 2f;
+        _controller.center = new Vector3(_controller.center.x, _controller.height / 2f, _controller.center.z);
+    }
+
     private bool CanRotateHead()
     {
         foreach (var modifier in _modifiers)
@@ -277,6 +341,9 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanJump()
     {
+        if (_isCrouching == true)
+            return false;
+
         foreach (var modifier in _modifiers)
         {
             if (modifier.CanJump() == false)
@@ -302,18 +369,35 @@ public sealed class PlayerCharacter : Pawn
         }
 
         multipler = Mathf.Max(0f, multipler);
-        return _speed * multipler;
+
+        var crouchMultipler = _isCrouching ? 0.4f : 1f;
+
+        return _speed * multipler * crouchMultipler;
     }
 
-    public override Vector3 GetCameraPosition()
+    public bool CanCrouch()
     {
-        return _head.position;
+        foreach (var modifier in _modifiers)
+        {
+            if (modifier.CanCrouch() == false)
+                return false;
+        }
+
+        return true && _timeSinceLastPostureChange > _crouchAnimationDuration && _controller.isGrounded == true && IsDead == false;
     }
 
-    public override Quaternion GetCameraRotation()
+    public bool CanUncrouch()
     {
-        return _head.rotation;
+        return 
+            _timeSinceLastPostureChange > _crouchAnimationDuration && 
+            Physics.CheckCapsule(
+                transform.position + Vector3.up * _controller.radius,
+                transform.position + Vector3.up * 2f - Vector3.up * _controller.radius,
+                _controller.radius, _uncrouchLayerMask) == false;
     }
+
+    public override Vector3 GetCameraPosition() => _head.position;
+    public override Quaternion GetCameraRotation() => _head.rotation;
 
     private struct PlayerInput
     {
@@ -322,7 +406,20 @@ public sealed class PlayerCharacter : Pawn
         public FlatVector Direction;
         public bool WantsJump;
         public int InteractionIndex;
+        public bool WantsCrouch;
+        
         public bool WantsInteract => InteractionIndex != -1;
+
+        public void Clear()
+        {
+            MouseX = 0;
+            MouseY = 0;
+            Direction = FlatVector.zero;
+            WantsJump = false;
+            InteractionIndex = -1;
+            WantsCrouch = false;
+        }
+
     }
 
 }
@@ -349,6 +446,7 @@ public abstract class CharacterModifier
     public virtual float GetSpeedMultiplier() => 1f;
     public virtual bool CanInteract() => true;
     public virtual bool CanJump() => true;
+    public virtual bool CanCrouch() => true;
     public virtual bool CanRotateCamera() => true;
     public virtual void Tick() { }
 
@@ -363,6 +461,11 @@ public sealed class SpawnBlockModifier : CharacterModifier
     }
 
     public override bool CanJump()
+    {
+        return false;
+    }
+
+    public override bool CanCrouch()
     {
         return false;
     }

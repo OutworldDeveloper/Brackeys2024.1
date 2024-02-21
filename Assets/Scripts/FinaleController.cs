@@ -67,10 +67,7 @@ public sealed class FinaleController : Pawn
         return _cameraTransform.position;
     }
 
-    public override Quaternion GetCameraRotation()
-    {
-        return _cameraTransform.rotation;
-    }
+    public override Quaternion GetCameraRotation() => _cameraTransform.rotation;
 
 }
 
