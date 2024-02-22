@@ -18700,6 +18700,12 @@ PrefabInstance:
       objectReference: {fileID: 6898263042487767858}
     - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
         type: 3}
+      propertyPath: _pohuiSound
+      value: 
+      objectReference: {fileID: 11400000, guid: eb6d899432290ae43be7b2cb785e34d6,
+        type: 2}
+    - target: {fileID: 4046223937970144936, guid: 52977a5a67afdaf4e83e171ec850a9a7,
+        type: 3}
       propertyPath: _trapSwitch
       value: 
       objectReference: {fileID: 1056179504840610399}
