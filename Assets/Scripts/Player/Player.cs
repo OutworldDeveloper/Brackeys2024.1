@@ -8,6 +8,7 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
     [SerializeField] private UI_PauseMenu _pauseMenu;
+    [SerializeField] private bool _smoothPawnCameraChange;
 
     private bool _isPauseMenuOpen;
     private Pawn _currentPawn;
@@ -47,13 +48,6 @@ public sealed class Player : MonoBehaviour
             {
                 _currentPawn.InputTick();
                 _currentPawn.PossessedTick();
-
-                if (_timeSincePawnChanged > 0.2f)
-                {
-                    _mainCamera.transform.SetPositionAndRotation(
-                        _currentPawn.GetCameraPosition(),
-                        _currentPawn.GetCameraRotation());
-                }
             }
             else
             {
@@ -61,6 +55,19 @@ public sealed class Player : MonoBehaviour
                 {
                     Unpossess();
                 }
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (_currentPawn != null)
+        {
+            if (_timeSincePawnChanged > 0.2f || _smoothPawnCameraChange == false)
+            {
+                _mainCamera.transform.SetPositionAndRotation(
+                    _currentPawn.GetCameraPosition(),
+                    _currentPawn.GetCameraRotation());
             }
         }
     }
@@ -99,7 +106,9 @@ public sealed class Player : MonoBehaviour
 
         UpdateState();
         _timeSincePawnChanged = new TimeSince(Time.time);
-        ScreenFade.FadeOutFor(0.2f);
+
+        if (_smoothPawnCameraChange == true)
+            ScreenFade.FadeOutFor(0.2f);
     }
 
     public void Unpossess()
