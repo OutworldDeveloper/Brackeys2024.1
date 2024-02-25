@@ -71,7 +71,7 @@ public sealed class Hole : MonoBehaviour
         if (hasRope == false && hasHook == true)
             return "I need a rope";
 
-        return "There is something interesting down there. I cannot reach";
+        return "I cannot reach";
     }
 
 }

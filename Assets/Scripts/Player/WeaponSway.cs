@@ -22,7 +22,7 @@ public sealed class WeaponSway : MonoBehaviour
 
         _currentRotation.eulerAngles = new Vector3(_currentRotation.eulerAngles.x, _currentRotation.eulerAngles.y, z);
 
-        _currentRotation = Quaternion.Slerp(_currentRotation, transform.parent.rotation, Time.deltaTime * _speed * Mathf.Lerp(1f, 2.5f, t));
+        _currentRotation = Quaternion.Slerp(_currentRotation, transform.parent.rotation, Time.deltaTime * _speed);
         transform.rotation = _currentRotation;
 
         if (Input.GetKeyDown(KeyCode.G))

@@ -19,6 +19,7 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private float _respawnTime = 2f;
     [SerializeField] private float _maxHealth = 5f;
     [SerializeField] private bool _allowJumping;
+    [SerializeField] private bool _allowCrouching;
     [SerializeField] private float _crouchedCameraHeight = -0.75f;
     [SerializeField] private AnimationCurve _crouchAnimation;
     [SerializeField] private AnimationCurve _uncrouchAnimation;
@@ -74,6 +75,22 @@ public sealed class PlayerCharacter : Pawn
 
     private void Update()
     {
+        // Modifiers
+        for (int i = _modifiers.Count - 1; i >= 0; i--)
+        {
+            var modifier = _modifiers[i];
+
+            if (modifier.IsInfinite == false && modifier.TimeUntilExpires < 0)
+            {
+                _modifiers.RemoveAt(i);
+            }
+            else
+            {
+                modifier.Tick();
+            }
+        }
+
+        // Crouching
         if (_isCrouching == false)
         {
             if (_currentInput.WantsCrouch == true && CanCrouch() == true)
@@ -106,13 +123,22 @@ public sealed class PlayerCharacter : Pawn
             };
         }
 
-        if (IsDead == true)
+        if (IsDead == true && _timeSinceLastDeath > _respawnTime)
         {
-            UpdateDead();
+            Respawn();
         }
-        else
+
+        if (IsDead == false && _timeSinceLastDamage > 10f)
         {
-            UpdateAlive(_currentInput);
+            Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
+        }
+
+        UpdateRotation(_currentInput);
+        UpdateMovement(_currentInput);
+
+        if (CanInteract() == true && _currentInput.WantsInteract == true)
+        {
+            _interactor.TryPerform(_currentInput.InteractionIndex);
         }
 
         _currentInput.Clear();
@@ -210,44 +236,6 @@ public sealed class PlayerCharacter : Pawn
         return playerInput;
     }
 
-    private void UpdateDead()
-    {
-        if (_timeSinceLastDeath > _respawnTime)
-            Respawn();
-    }
-
-    private void UpdateAlive(PlayerInput input)
-    {
-        // Modifiers
-        for (int i = _modifiers.Count - 1; i >= 0; i--)
-        {
-            var modifier = _modifiers[i];
-
-            if (modifier.IsInfinite == false && modifier.TimeUntilExpires < 0)
-            {
-                _modifiers.RemoveAt(i);
-            }
-            else
-            {
-                modifier.Tick();
-            }
-        }
-
-        // Regeneration
-        if (_timeSinceLastDamage > 10f)
-        {
-            Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
-        }
-
-        UpdateRotation(input);
-        UpdateMovement(input);
-
-        if (CanInteract() == true && input.WantsInteract == true)
-        {
-            _interactor.TryPerform(input.InteractionIndex);
-        }
-    }
-
     private void UpdateRotation(PlayerInput input)
     {
         if (CanRotateHead() == false)
@@ -319,6 +307,9 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanRotateHead()
     {
+        if (IsDead == true)
+            return false;
+
         foreach (var modifier in _modifiers)
         {
             if (modifier.CanRotateCamera() == false)
@@ -330,6 +321,9 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanInteract()
     {
+        if (IsDead == true)
+            return false;
+
         foreach (var modifier in _modifiers)
         {
             if (modifier.CanInteract() == false)
@@ -341,6 +335,9 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanJump()
     {
+        if (IsDead == true)
+            return false;
+
         if (_isCrouching == true)
             return false;
 
@@ -355,7 +352,7 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanWalk()
     {
-        return true;
+        return IsDead == false;
     }
 
     private float GetSpeed()
@@ -377,6 +374,9 @@ public sealed class PlayerCharacter : Pawn
 
     public bool CanCrouch()
     {
+        if (_allowCrouching == false)
+            return false;
+
         foreach (var modifier in _modifiers)
         {
             if (modifier.CanCrouch() == false)
