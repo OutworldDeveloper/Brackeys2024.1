@@ -12,6 +12,7 @@ public sealed class PlayerCharacter : Pawn
 
     [SerializeField] private Transform _head;
     [SerializeField] private PlayerInteraction _interactor;
+    [SerializeField] private Grip _grip;
     [SerializeField] private Inventory _inventory;
     [SerializeField] private FloatParameter _mouseSensitivity;
     [SerializeField] private float _speed;
@@ -43,6 +44,7 @@ public sealed class PlayerCharacter : Pawn
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
+    public Grip Grip => _grip;
     public bool IsDead { get; private set; }
     public float RespawnTime => _respawnTime;
     public float MaxHealth => _maxHealth;

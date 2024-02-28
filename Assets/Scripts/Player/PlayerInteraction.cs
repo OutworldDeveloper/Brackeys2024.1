@@ -13,6 +13,8 @@ public sealed class PlayerInteraction : MonoBehaviour
     [SerializeField] private LayerMask _interactableLayer;
     [SerializeField] private float _interactionRange = 2.5f;
 
+    [SerializeField] private Interaction[] _globalInteractinos;
+
     private GameObject _currentTarget;
     private readonly List<Interaction> _targetInteractions = new List<Interaction>();
     private bool _hasTarget;
@@ -20,25 +22,62 @@ public sealed class PlayerInteraction : MonoBehaviour
     public int InteractionsCount => _targetInteractions.Count;
     public Interaction GetInteraction(int index) => _targetInteractions[index];
 
-    public void TryPerform(int index)
+    public int GetAvaliableInteractionsCount()
     {
-        if (_targetInteractions.Count <= index)
-            return;
-
-        if (_targetInteractions[index].IsAvaliable(_player) == false)
-            return;
-
-        int avaliableIndex = 0;
+        int avaliableCount = 0;
         for (int i = 0; i < InteractionsCount; i++)
         {
             var interaction = GetInteraction(i);
 
             if (interaction.IsAvaliable(_player) == true)
             {
-                if (avaliableIndex == index)
-                    _targetInteractions[index].Perform(_player);
+                avaliableCount++;
+            }
+        }
 
+        return avaliableCount;
+    }
+
+    public Interaction GetAvaliableInteraction(int index)
+    {
+        int avaliableIndex = -1;
+        for (int i = 0; i < InteractionsCount; i++)
+        {
+            var interaction = GetInteraction(i);
+
+            if (interaction.IsAvaliable(_player) == true)
+            {
                 avaliableIndex++;
+
+                if (avaliableIndex == index)
+                {
+                    return interaction;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void TryPerform(int index)
+    {
+        if (_targetInteractions.Count <= index)
+            return;
+
+        int avaliableIndex = -1;
+        for (int i = 0; i < InteractionsCount; i++)
+        {
+            var interaction = GetInteraction(i);
+
+            if (interaction.IsAvaliable(_player) == true)
+            {
+                avaliableIndex++;
+
+                if (avaliableIndex == index)
+                {
+                    interaction.Perform(_player);
+                    return;
+                }
             }
         }
     }
@@ -70,15 +109,20 @@ public sealed class PlayerInteraction : MonoBehaviour
         _targetInteractions.Clear();
         _currentTarget = target;
 
+        foreach (var interaction in _globalInteractinos)
+        {
+            _targetInteractions.Add(interaction);
+        }
+
         if (target != null)
         {
-            GetInteractions(_currentTarget, _targetInteractions);
+            GetInteractionsForTarget(_currentTarget, _targetInteractions);
         }
 
         TargetChanged?.Invoke();
     }
 
-    private void GetInteractions(GameObject target, List<Interaction> interactions)
+    private void GetInteractionsForTarget(GameObject target, List<Interaction> interactions)
     {
         foreach (var interaction in target.GetComponents<Interaction>())
         {

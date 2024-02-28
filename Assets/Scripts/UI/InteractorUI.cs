@@ -40,6 +40,8 @@ public sealed class InteractorUI : MonoBehaviour
 
         _timeSinceLastRefresh = new TimeSince(Time.time);
 
+        // This keeps button the same I believe?
+        /*
         for (int i = 0; i < _interactionLables.Length; i++)
         {
             var label = _interactionLables[i];
@@ -55,6 +57,21 @@ public sealed class InteractorUI : MonoBehaviour
                 label.gameObject.SetActive(true);
                 label.SetInteractionText(interaction.Text);
             }
+        }
+        */
+
+        for (int i = 0; i < _interactionLables.Length; i++)
+        {
+            var label = _interactionLables[i];
+            label.gameObject.SetActive(false);
+        }
+
+        for (int i = 0; i < Mathf.Min(_interactionLables.Length, _player.Interactor.GetAvaliableInteractionsCount()); i++)
+        {
+            var interaction = _player.Interactor.GetAvaliableInteraction(i);
+            var label = _interactionLables[i];
+            label.gameObject.SetActive(true);
+            label.SetInteractionText(interaction.Text);
         }
     }
 
