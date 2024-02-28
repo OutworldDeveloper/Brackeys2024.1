@@ -15,5 +15,8 @@ MonoBehaviour:
   <DisplayName>k__BackingField: Pizza
   <Sprite>k__BackingField: {fileID: 21300000, guid: 28b900acc5d659b4bab3133223e8497d,
     type: 3}
+  <Model>k__BackingField:
+    _asset: {fileID: -1461101269250384049, guid: 7ff88ff1404f0794aaa91fe1e074e6c8,
+      type: 3}
   Tags:
   - {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}

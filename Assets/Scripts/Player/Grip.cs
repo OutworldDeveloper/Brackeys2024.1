@@ -75,9 +75,9 @@ public sealed class Grip : MonoBehaviour
         var movable = Object.GetComponent<Movable>();
 
         if (Physics.CheckBox(
-            _previewObject.transform.position + movable.PlaceCheckOrigin, 
+            _previewObject.transform.position + movable.PlaceCheckOrigin,
             movable.PlaceCheckExtents * 0.5f,
-            Quaternion.identity, 
+            _previewObject.transform.rotation,
             _placeCheckMask))
         {
             CanPlace = false;

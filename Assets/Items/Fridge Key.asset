@@ -15,4 +15,7 @@ MonoBehaviour:
   <DisplayName>k__BackingField: Key
   <Sprite>k__BackingField: {fileID: 21300000, guid: 49c01d6cdac48a046b57a1b1bb789b6c,
     type: 3}
+  <Model>k__BackingField:
+    _asset: {fileID: -1461101269250384049, guid: 7ff88ff1404f0794aaa91fe1e074e6c8,
+      type: 3}
   Tags: []

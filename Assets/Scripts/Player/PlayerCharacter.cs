@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 [RequireComponent(typeof(CharacterController), typeof(PlayerInteraction))]
 public sealed class PlayerCharacter : Pawn
 {
