@@ -30,7 +30,7 @@ public sealed class SafeLock : Pawn
     {
         base.OnPossessed(player);
         SelectButton(0, false);
-        Notification.Show("Press Tab to exit. WASD to move.", 999f);
+        Notification.Show("Press [Tab] to exit, [WASD] to move, [F] to press", 999f);
     }
 
     public override void OnUnpossessed()
@@ -38,6 +38,8 @@ public sealed class SafeLock : Pawn
         base.OnUnpossessed();
         SelectButton(-1);
         _currentEnteredCode = string.Empty;
+
+        Notification.Show(string.Empty, 0.1f);
     }
 
     public override void PossessedTick()
