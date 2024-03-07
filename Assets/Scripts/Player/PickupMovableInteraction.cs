@@ -1,11 +1,15 @@
 ﻿public sealed class PickupMovableInteraction : Interaction
 {
-    public override string Text => "Pickup";
+    public override string Text => $"Pickup {GetComponent<Movable>().DisplayName}";
+
+    public override bool IsAvaliable(PlayerCharacter player)
+    {
+        return player.Grip.IsHolding == false;
+    }
 
     public override void Perform(PlayerCharacter player)
     {
-        Notification.ShowDebug("PickupMovableInteraction");
-        player.Grip.PickUp(gameObject);
+        player.Grip.PickUp(GetComponent<Movable>());
     }
 
 }

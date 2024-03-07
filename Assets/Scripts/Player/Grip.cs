@@ -17,17 +17,23 @@ public sealed class Grip : MonoBehaviour
     private GameObject _previewObject;
     private List<MeshRenderer> _previewRenderers;
     private CharacterModifier _activeModifier;
+    private TimeSince _timeSinceLastStateChange = new TimeSince(float.NegativeInfinity);
 
-    public GameObject Object { get; private set; }
+    public Movable Object { get; private set; }
     public bool IsHolding => Object != null;
     public bool CanPlace { get; private set; }
 
-    public void PickUp(GameObject movable)
+    public void PickUp(Movable movable)
     {
-        Notification.ShowDebug("PickUp");
+        if (IsHolding == true)
+            return;
+
+        if (_timeSinceLastStateChange < 0.51f)
+            return;
+
         Object = movable;
         _previewRenderers = new List<MeshRenderer>();
-        _previewObject = CreatePrieviewObject(movable);
+        _previewObject = CreatePrieviewObject(movable.gameObject);
         //Object.SetActive(false);
 
         Object.GetComponent<Movable>().OnPickedUp();
@@ -38,10 +44,15 @@ public sealed class Grip : MonoBehaviour
 
         // todo Apply debuff that slows and locks hand interactions
         _character.ApplyModifier(_activeModifier = new CarryingObjectModifier(), -1f);
+
+        _timeSinceLastStateChange = TimeSince.Now();
     }
 
     public void TryPlace()
     {
+        if (_timeSinceLastStateChange < 0.51f)
+            return;
+
         if (CanPlace == false)
             return;
 
@@ -53,13 +64,15 @@ public sealed class Grip : MonoBehaviour
         DOTween.Sequence().
             Join(Object.transform.DOMove(_previewObject.transform.position, 0.5f)).
             Join(Object.transform.DORotateQuaternion(_previewObject.transform.rotation, 0.5f)).
-            AppendCallback(Object.GetComponent<Movable>().OnPlaced);
+            AppendCallback(Object.OnPlaced);
 
         // todo Apply debuff that doesn't allow movement and interacting
 
         Object = null;
         Destroy(_previewObject);
         _previewRenderers.Clear();
+
+        _timeSinceLastStateChange = TimeSince.Now();
     }
 
     private void LateUpdate()
@@ -72,11 +85,10 @@ public sealed class Grip : MonoBehaviour
         _previewObject.transform.forward = -transform.forward;
 
         var couldPlace = CanPlace;
-        var movable = Object.GetComponent<Movable>();
 
         if (Physics.CheckBox(
-            _previewObject.transform.position + movable.PlaceCheckOrigin,
-            movable.PlaceCheckExtents * 0.5f,
+            _previewObject.transform.position + Object.PlaceCheckOrigin,
+            Object.PlaceCheckExtents * 0.5f,
             _previewObject.transform.rotation,
             _placeCheckMask))
         {
@@ -136,23 +148,9 @@ public sealed class Grip : MonoBehaviour
         if (IsHolding == false)
             return;
 
-        var movable = Object.GetComponent<Movable>();
         Gizmos.matrix = _previewObject.transform.localToWorldMatrix;
-
-        if (Physics.CheckBox(
-            _previewObject.transform.position + movable.PlaceCheckOrigin,
-            movable.PlaceCheckExtents * 0.5f,
-            _previewObject.transform.rotation,
-            _placeCheckMask))
-        {
-            Gizmos.color = Color.red;
-        }
-        else
-        {
-            Gizmos.color = Color.green;
-        }
-
-        Gizmos.DrawCube(movable.PlaceCheckOrigin, movable.PlaceCheckExtents);
+        Gizmos.color = CanPlace ? Color.green : Color.red;
+        Gizmos.DrawCube(Object.PlaceCheckOrigin, Object.PlaceCheckExtents);
     }
 
 }

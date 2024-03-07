@@ -4,9 +4,11 @@ public abstract class Pawn : MonoBehaviour
 {
     public bool WantsUnpossess { get; private set; }
     public Player Player { get; private set; }
+    public virtual bool OverrideCameraPositionAndRotation => true;
+    public virtual bool ShowCursor => false;
 
-    public abstract Vector3 GetCameraPosition();
-    public abstract Quaternion GetCameraRotation();
+    public virtual Vector3 GetCameraPosition() => Vector3.zero;
+    public virtual Quaternion GetCameraRotation() => Quaternion.identity;
 
     public virtual void PossessedTick() { }
 

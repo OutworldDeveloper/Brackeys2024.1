@@ -6,7 +6,7 @@ public sealed class FridgeChains : MonoBehaviour
 {
 
     [SerializeField] private Door _door;
-    [SerializeField] private Item _key;
+    [SerializeField] private ItemTag _keyTag;
     [SerializeField] private Sound _openingAttemptSound;
     [SerializeField] private Sound _unlockSound;
     [SerializeField] private AudioSource _audioSource;
@@ -34,10 +34,10 @@ public sealed class FridgeChains : MonoBehaviour
 
     public void TryUnlock(PlayerCharacter player)
     {
-        if (player.Inventory.HasItem(_key) == false)
+        if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
             return;
 
-        player.Inventory.RemoveItem(_key);
+        player.Inventory.RemoveAndDestroyItem(key);
         _door.Unblock();
         IsUnlocked = true;
         _unlockSound.Play(_audioSource);

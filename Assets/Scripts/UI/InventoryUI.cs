@@ -36,9 +36,6 @@ public sealed class InventoryUI : MonoBehaviour
 
     private void OnItemRemoved(Item item)
     {
-        if (_player.Inventory.HasItem(item) == true) // Do not do anything if we still have item
-            return;
-
         if (_itemDisplays.TryGetValue(item, out var display) == false)
             return;
 

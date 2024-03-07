@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class DoorAnimator : MonoBehaviour
+public class DoorAnimator : MonoBehaviour
 {
 
     [SerializeField] private Door _target;

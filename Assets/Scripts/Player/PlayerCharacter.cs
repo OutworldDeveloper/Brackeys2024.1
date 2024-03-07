@@ -29,6 +29,8 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private LayerMask _uncrouchLayerMask;
     [SerializeField] private float _crouchedControllerSize = 1.25f;
 
+    [SerializeField] private InspectionPawn _inspectionPawn;
+
     private CharacterController _controller;
     private Vector3 _velocityXZ;
     private float _velocityY;
@@ -43,6 +45,12 @@ public sealed class PlayerCharacter : Pawn
     private bool _isCrouching;
     private TimeSince _timeSinceLastPostureChange = new TimeSince(float.NegativeInfinity);
 
+    private int _lastStairsTouchFrame;
+    private bool _isTouchingStairs;
+    private readonly string _stairsTag = "Stairs";
+
+    private float _currentCameraHeight;
+
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
     public Grip Grip => _grip;
@@ -53,6 +61,42 @@ public sealed class PlayerCharacter : Pawn
     public Vector3 HorizontalVelocity => _velocityXZ;
     public bool IsGrounded => _controller.isGrounded;
     public bool IsCrouching => _isCrouching;
+
+    public void Inspect(Inspectable target)
+    {
+        _inspectionPawn.SetTarget(target);
+        Player.Possess(_inspectionPawn);
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (Mathf.Abs(hit.moveDirection.y) < 0.01f)
+        {
+            if (hit.gameObject.TryGetComponent<Rigidbody>(out var rb) == true)
+            {
+                rb.AddForce(_velocityXZ * 25f);
+            }
+        }
+
+        if (hit.moveDirection.y > 0.01f && _velocityY > 0f)
+            _velocityY = 0f;
+
+        if (Mathf.Abs(hit.moveDirection.y) < 0.01f && hit.gameObject.CompareTag(_stairsTag) == true)
+        {
+            _lastStairsTouchFrame = Time.frameCount;
+            _isTouchingStairs = true;
+            _controller.stepOffset = 1.5f;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (_isTouchingStairs == true && Time.frameCount > _lastStairsTouchFrame)
+        {
+            _controller.stepOffset = 0.3f;
+            _isTouchingStairs = false;
+        }
+    }
 
     private void Awake()
     {
@@ -145,12 +189,22 @@ public sealed class PlayerCharacter : Pawn
         }
 
         _currentInput.Clear();
+
+        // test
+
+        _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, _head.transform.position.y, 15f * Time.deltaTime);
     }
 
     public override void OnUnpossessed()
     {
         base.OnUnpossessed();
         _velocityXZ = Vector3.zero;
+    }
+
+    public void Warp(Vector3 position)
+    {
+        transform.position = position;
+        Physics.SyncTransforms();
     }
 
     public void Kill(DeathType type)
@@ -399,7 +453,7 @@ public sealed class PlayerCharacter : Pawn
                 _controller.radius, _uncrouchLayerMask) == false;
     }
 
-    public override Vector3 GetCameraPosition() => _head.position;
+    public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
     public override Quaternion GetCameraRotation() => _head.rotation;
 
     private struct PlayerInput

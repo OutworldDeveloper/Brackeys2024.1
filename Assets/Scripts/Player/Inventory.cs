@@ -15,36 +15,42 @@ public class Inventory : MonoBehaviour
 
     public bool HasItemWithTag(ItemTag tag)
     {
+        return TryGetItemWithTag(tag, out Item result);
+    }
+
+    public bool TryGetItemWithTag(ItemTag tag, out Item result)
+    {
         foreach (var item in _items)
         {
             if (item.HasTag(tag) == true)
+            {
+                result = item;
                 return true;
+            }
         }
 
-        return false;
-    }
-
-    public bool HasItem(Item item)
-    {
-        foreach (var checkItem in _items)
-        {
-            if (checkItem == item)
-                return true;
-        }
-
+        result = null;
         return false;
     }
 
     public void AddItem(Item item)
     {
+        item.gameObject.SetActive(false);
         _items.Add(item);
         ItemAdded?.Invoke(item);
     }
 
     public void RemoveItem(Item item)
     {
+        item.gameObject.SetActive(true);
         _items.Remove(item);
         ItemRemoved?.Invoke(item);
+    }
+
+    public void RemoveAndDestroyItem(Item item)
+    {
+        RemoveItem(item);
+        item.DestroyItem();
     }
 
 }

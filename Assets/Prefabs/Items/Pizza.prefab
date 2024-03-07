@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1732943729636365457
+--- !u!1 &720687746943849400
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5867227865400288871}
-  - component: {fileID: 949101054949228737}
-  - component: {fileID: 778527528189617883}
-  - component: {fileID: 5353872178230755348}
-  - component: {fileID: 67713987962465283}
+  - component: {fileID: 4854975112523473230}
+  - component: {fileID: 6359088091116685117}
+  - component: {fileID: 1368059712397126442}
+  - component: {fileID: 2718569519719374001}
   m_Layer: 0
   m_Name: Pizza
   m_TagString: Untagged
@@ -20,36 +19,114 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5867227865400288871
+--- !u!4 &4854975112523473230
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732943729636365457}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.292, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.2988861, z: 1}
+  m_GameObject: {fileID: 720687746943849400}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -16.082, y: 0.667, z: -7.144}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 908494069614579382}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &949101054949228737
+--- !u!65 &6359088091116685117
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720687746943849400}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.33194318, y: 0.022260366, z: 0.32530236}
+  m_Center: {x: -0.0077306777, y: 0.011130183, z: -0.009434104}
+--- !u!114 &1368059712397126442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720687746943849400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a28f5f8013c7b9a4f8e736ca1fc28bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <InteractionDistance>k__BackingField: 3
+  _item: {fileID: 2718569519719374001}
+--- !u!114 &2718569519719374001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720687746943849400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <DisplayName>k__BackingField: Pizza
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 28b900acc5d659b4bab3133223e8497d,
+    type: 3}
+  Tags:
+  - {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
+--- !u!1 &4645890711315522147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 908494069614579382}
+  - component: {fileID: 8628663049295209341}
+  - component: {fileID: 8320424783761325606}
+  m_Layer: 0
+  m_Name: Pizza
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &908494069614579382
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4645890711315522147}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4854975112523473230}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &8628663049295209341
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732943729636365457}
+  m_GameObject: {fileID: 4645890711315522147}
   m_Mesh: {fileID: -2304508562620316840, guid: 7b76aabd0656d424fa7b2ac03daf39f6, type: 3}
---- !u!23 &778527528189617883
+--- !u!23 &8320424783761325606
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732943729636365457}
+  m_GameObject: {fileID: 4645890711315522147}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -85,30 +162,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5353872178230755348
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732943729636365457}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.33194318, y: 0.022260366, z: 0.32530236}
-  m_Center: {x: -0.0077306777, y: 0.011130183, z: -0.009434104}
---- !u!114 &67713987962465283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732943729636365457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a28f5f8013c7b9a4f8e736ca1fc28bf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
-  _item: {fileID: 11400000, guid: 6ce23633e4fff934d86ed1b015cd3869, type: 2}

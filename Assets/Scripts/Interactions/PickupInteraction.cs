@@ -10,7 +10,6 @@ public class PickupInteraction : Interaction
     public override void Perform(PlayerCharacter player)
     {
         player.Inventory.AddItem(_item);
-        Destroy(gameObject);
     }
 
 }

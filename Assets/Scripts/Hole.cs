@@ -3,9 +3,9 @@
 public sealed class Hole : MonoBehaviour
 {
 
-    [SerializeField] private Item _ropeItem;
-    [SerializeField] private Item _hookItem;
-    [SerializeField] private Item _rewardItem;
+    [SerializeField] private ItemTag _ropeItemTag;
+    [SerializeField] private ItemTag _hookItemTag;
+    [SerializeField] private Prefab<Item> _rewardItemPrefab;
     [SerializeField] private Animator _animator;
     [SerializeField] private float _animationDuration;
     [SerializeField] private MoviePawn _moviePawn;
@@ -23,8 +23,8 @@ public sealed class Hole : MonoBehaviour
         if (IsItemExtracted == true)
             return false;
 
-        bool hasRope = player.Inventory.HasItem(_ropeItem);
-        bool hasHook = player.Inventory.HasItem(_hookItem);
+        bool hasRope = player.Inventory.TryGetItemWithTag(_ropeItemTag, out Item ropeItem);
+        bool hasHook = player.Inventory.TryGetItemWithTag(_hookItemTag, out Item hookItem);
 
         if (hasRope == false)
         {
@@ -36,8 +36,8 @@ public sealed class Hole : MonoBehaviour
 
         if (isSuccess == true)
         {
-            player.Inventory.RemoveItem(_ropeItem);
-            player.Inventory.RemoveItem(_hookItem);
+            player.Inventory.RemoveAndDestroyItem(ropeItem);
+            player.Inventory.RemoveAndDestroyItem(hookItem);
             IsItemExtracted = true;
             Delayed.Do(() => GiveReward(player), _animationDuration - 0.3f);
             _keyPreview?.SetActive(false);
@@ -54,8 +54,9 @@ public sealed class Hole : MonoBehaviour
 
     private void GiveReward(PlayerCharacter player)
     {
-        player.Inventory.AddItem(_rewardItem);
-        Notification.Show($"{_rewardItem.DisplayName}!");
+        var rewardItem = _rewardItemPrefab.Instantiate();
+        player.Inventory.AddItem(rewardItem);
+        Notification.Show($"{rewardItem.DisplayName}!");
     }
 
     private void GiveNothing()

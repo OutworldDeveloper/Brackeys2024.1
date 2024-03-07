@@ -2,8 +2,9 @@
 
 public sealed class Movable : MonoBehaviour
 {
-    [field: SerializeField] public Vector3 PlaceCheckExtents { get; private set; }
+    [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public Vector3 PlaceCheckOrigin { get; private set; }
+    [field: SerializeField] public Vector3 PlaceCheckExtents { get; private set; }
 
     [SerializeField] private Collider[] _colliders;
 

@@ -225,7 +225,7 @@ PrefabInstance:
     - target: {fileID: 4472821639245162550, guid: 8e81759737b6e3340987fc05e0823fa7,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4472821639245162550, guid: 8e81759737b6e3340987fc05e0823fa7,
         type: 3}
@@ -235,7 +235,7 @@ PrefabInstance:
     - target: {fileID: 4472821639245162550, guid: 8e81759737b6e3340987fc05e0823fa7,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -15.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4472821639245162550, guid: 8e81759737b6e3340987fc05e0823fa7,
         type: 3}
@@ -280,7 +280,7 @@ PrefabInstance:
     - target: {fileID: 8681431658524383365, guid: 8e81759737b6e3340987fc05e0823fa7,
         type: 3}
       propertyPath: m_Name
-      value: 3M Wall
+      value: Wall 3M
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e81759737b6e3340987fc05e0823fa7, type: 3}

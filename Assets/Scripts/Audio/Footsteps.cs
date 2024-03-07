@@ -12,6 +12,7 @@ public sealed class Footsteps : MonoBehaviour
 
     private TimeSince _timeSinceLastStep;
     private Vector3 _lastStepPosition;
+    private Vector3 _lastFramePosition;
 
     private void Update()
     {
@@ -33,6 +34,11 @@ public sealed class Footsteps : MonoBehaviour
         _sound.Play(_audioSource);
         _timeSinceLastStep = new TimeSince(Time.time);
         _lastStepPosition = _player.transform.position;
+    }
+
+    private void LateUpdate()
+    {
+        _lastFramePosition = _player.transform.position;
     }
 
 }

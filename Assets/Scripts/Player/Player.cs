@@ -61,7 +61,7 @@ public sealed class Player : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_currentPawn != null)
+        if (_currentPawn != null && _currentPawn.OverrideCameraPositionAndRotation == true)
         {
             if (_timeSincePawnChanged > 0.2f || _smoothPawnCameraChange == false)
             {
@@ -94,6 +94,15 @@ public sealed class Player : MonoBehaviour
     {
         if (_currentPawn == pawn)
             return;
+
+        // Not sure but this could fix jittering
+        if (_currentPawn != null && pawn.OverrideCameraPositionAndRotation == false)
+        {
+            _mainCamera.transform.SetPositionAndRotation(
+                _currentPawn.GetCameraPosition(),
+                _currentPawn.GetCameraRotation());
+        }
+        // end
 
         _currentPawn?.OnUnpossessed();
         _currentPawn = pawn;
@@ -158,7 +167,7 @@ public sealed class Player : MonoBehaviour
         _hud.SetActive(showHud);
         _pauseMenu.gameObject.SetActive(_isPauseMenuOpen == true);
 
-        bool showCursor = _isPauseMenuOpen == true;
+        bool showCursor = _isPauseMenuOpen == true || _currentPawn.ShowCursor == true;
 
         Cursor.visible = showCursor ? true : false;
         Cursor.lockState = showCursor ? CursorLockMode.None : CursorLockMode.Locked;

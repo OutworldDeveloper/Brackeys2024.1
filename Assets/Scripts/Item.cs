@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Item")]
-public class Item : ScriptableObject
+public class Item : MonoBehaviour
 {
     [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public Sprite Sprite { get; private set; }
@@ -13,6 +12,11 @@ public class Item : ScriptableObject
     public bool HasTag(ItemTag tag)
     {
         return Tags.Contains(tag);
+    }
+
+    public void DestroyItem()
+    {
+        Destroy(gameObject);
     }
 
 }

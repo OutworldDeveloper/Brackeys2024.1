@@ -15,10 +15,11 @@ public sealed class Door : MonoBehaviour
 
     [SerializeField] private Collider _collision;
     [SerializeField] private Transform _rotator;
+    [SerializeField] private DoorAnimatorAnimator[] _doorAnimators;
     [SerializeField] private float _animationDuration;
     [SerializeField] private AnimationCurve _openAnimationCurve;
     [SerializeField] private float _openAngle;
-    [SerializeField] private Item _key;
+    [SerializeField] private ItemTag _keyTag;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _openSound;
     [SerializeField] private Sound _closeSound;
@@ -26,9 +27,11 @@ public sealed class Door : MonoBehaviour
     [SerializeField] private Sound _lockedSound;
     [SerializeField] private float _openDelay;
 
+    [SerializeField] private BoxCheck _blockersCheck;
+
     private bool _isOpen;
     private bool _isAnimating;
-    private bool _IsCollisionSynched;
+    private bool _isCollisionSynched;
     private TimeSince _timeSinceAnimationStarted;
     private int _blockedTimes;
     private bool _isLockedByKey;
@@ -40,7 +43,7 @@ public sealed class Door : MonoBehaviour
 
     private void Start()
     {
-        _isLockedByKey = _key != null;
+        _isLockedByKey = _keyTag != null;
     }
 
     [ContextMenu("Open")]
@@ -54,9 +57,14 @@ public sealed class Door : MonoBehaviour
 
         _timeSinceAnimationStarted = new TimeSince(Time.time);
         _isAnimating = true;
-        _IsCollisionSynched = false;
+        _isCollisionSynched = false;
 
         _openSound.Play(_audioSource);
+
+        foreach (var animator in _doorAnimators)
+        {
+            animator.AnimateTo(true, _animationDuration);
+        }
 
         Opening?.Invoke();
     }
@@ -72,7 +80,12 @@ public sealed class Door : MonoBehaviour
 
         _timeSinceAnimationStarted = new TimeSince(Time.time);
         _isAnimating = true;
-        _IsCollisionSynched = false;
+        _isCollisionSynched = false;
+
+        foreach (var animator in _doorAnimators)
+        {
+            animator.AnimateTo(false, _animationDuration);
+        }
 
         Closing?.Invoke();
     }
@@ -92,14 +105,14 @@ public sealed class Door : MonoBehaviour
             }
             else
             {
-                if (player.Inventory.HasItem(_key) == false)
+                if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
                 {
                     PlayLockedSound();
                     Notification.Show("Locked!");
                 }
                 else
                 {
-                    player.Inventory.RemoveItem(_key);
+                    player.Inventory.RemoveAndDestroyItem(key);
                     _isLockedByKey = false;
                     success = true;
                     Notification.Show($"Unlocked");
@@ -109,6 +122,13 @@ public sealed class Door : MonoBehaviour
         else
         {
             success = true;
+        }
+
+        if (success == true && _blockersCheck != null && _blockersCheck.Check<Movable>() == true)
+        {
+            PlayLockedSound();
+            Notification.Show($"Blocked!");
+            return false;
         }
 
         OpeningAttempt?.Invoke(player, success);
@@ -150,12 +170,12 @@ public sealed class Door : MonoBehaviour
         if (_isAnimating == false)
             return;
 
-        if (_IsCollisionSynched == false && _timeSinceAnimationStarted > _animationDuration * 0.3f)
+        if (_isCollisionSynched == false && _timeSinceAnimationStarted > _animationDuration * 0.3f)
         {
             if (_collision != null)
                 _collision.enabled = _isOpen;
 
-            _IsCollisionSynched = true;
+            _isCollisionSynched = true;
         }
 
         float startAngle = _isOpen ? _openAngle : 0f;
@@ -188,7 +208,16 @@ public sealed class Door : MonoBehaviour
 
     private void SetRotation(float angle)
     {
+        if (_rotator == null)
+            return;
+
         _rotator.localRotation = Quaternion.Euler(0f, angle, 0f);
     }
+
+}
+
+public abstract class DoorAnimatorAnimator : MonoBehaviour
+{
+    public abstract void AnimateTo(bool open, float duration);
 
 }

@@ -11,6 +11,7 @@ public sealed class PlayerInteraction : MonoBehaviour
     [SerializeField] private PlayerCharacter _player;
     [SerializeField] private Camera _camera;
     [SerializeField] private LayerMask _interactableLayer;
+    [SerializeField] private float _minInteractionRange = 0.75f;
     [SerializeField] private float _interactionRange = 2.5f;
 
     [SerializeField] private Interaction[] _globalInteractinos;
@@ -21,6 +22,8 @@ public sealed class PlayerInteraction : MonoBehaviour
 
     public int InteractionsCount => _targetInteractions.Count;
     public Interaction GetInteraction(int index) => _targetInteractions[index];
+    public bool HasTarget => _hasTarget;
+    public GameObject Target => _currentTarget;
 
     public int GetAvaliableInteractionsCount()
     {
@@ -86,7 +89,9 @@ public sealed class PlayerInteraction : MonoBehaviour
     {
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, _interactionRange, _interactableLayer))
+        Debug.DrawRay(ray.origin, ray.direction * GetInteractionRange(ray), Color.blue);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, GetInteractionRange(ray), _interactableLayer))
         {
             if (hit.transform.gameObject != _currentTarget)
             {
@@ -102,6 +107,13 @@ public sealed class PlayerInteraction : MonoBehaviour
                 _hasTarget = false;
             }
         }
+    }
+
+    private float GetInteractionRange(Ray ray)
+    {
+        float dot = Vector3.Dot(ray.direction, Vector3.down);
+        float t = (dot + 1) / 2;
+        return Mathf.Lerp(_minInteractionRange, _interactionRange, t);
     }
 
     private void OnTargetChanged(GameObject target)
