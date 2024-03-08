@@ -1,10 +1,13 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class InspectionPawn : Pawn
 {
+
+    public event Action<InspectAction> ActionSelected;
 
     [SerializeField] private float _inAnimationDuration = 0.5f;
     [SerializeField] private Ease _inEase;
@@ -23,8 +26,13 @@ public sealed class InspectionPawn : Pawn
 
     private Tween _introTween;
 
+    private InspectAction[] _targetActions;
+
+    private InspectAction _selectedAction;
+
     public override bool ShowCursor => true;
     public override bool OverrideCameraPositionAndRotation => true;
+    public InspectAction SelectedAction => _selectedAction;
 
     private void Start()
     {
@@ -38,6 +46,8 @@ public sealed class InspectionPawn : Pawn
         _originalRotation = target.transform.rotation;
 
         _targetData = new TargetData(target.gameObject);
+
+        _targetActions = target.GetComponentsInChildren<InspectAction>();
     }
 
     public override void OnPossessed(Player player)
@@ -67,10 +77,6 @@ public sealed class InspectionPawn : Pawn
     {
         base.OnUnpossessed();
 
-        //DOTween.Sequence().
-        //    Append(_target.transform.DOMove(_originalPosition, 0.2f)).
-        //    Join(_target.transform.DORotateQuaternion(_originalRotation, 0.15f));
-
         _introTween.Kill();
 
         _target.transform.position = _originalPosition;
@@ -87,6 +93,26 @@ public sealed class InspectionPawn : Pawn
 
         if (_timeSinceLastPossess < _inAnimationDuration)
             return;
+
+        InspectAction bestAction = null;
+        float bestAngle = Mathf.Infinity;
+
+        foreach (var action in _targetActions)
+        {
+            float angleToAction = Vector3.Angle(-action.transform.forward, transform.forward);
+
+            if (angleToAction < action.MaxAngle && angleToAction < bestAngle)
+            {
+                bestAction = action;
+                bestAngle = angleToAction;
+            }
+        }
+
+        if (_selectedAction != bestAction)
+        {
+            _selectedAction = bestAction;
+            ActionSelected?.Invoke(_selectedAction);
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape) == true)
         {

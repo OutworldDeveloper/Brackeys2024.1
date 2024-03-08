@@ -4,6 +4,8 @@ using UnityEngine;
 public sealed class Player : MonoBehaviour
 {
 
+    public event Action<Pawn> PawnChanged;
+
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
@@ -118,6 +120,8 @@ public sealed class Player : MonoBehaviour
 
         if (_smoothPawnCameraChange == true)
             ScreenFade.FadeOutFor(0.2f);
+
+        PawnChanged?.Invoke(_currentPawn);
     }
 
     public void Unpossess()
