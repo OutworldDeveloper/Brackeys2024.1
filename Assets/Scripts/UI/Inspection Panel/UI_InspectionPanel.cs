@@ -7,7 +7,8 @@ public sealed class UI_InspectionPanel : MonoBehaviour
 {
 
     [SerializeField] private RectTransform _actionLabel;
-    [SerializeField] private TextMeshProUGUI _label;
+    [SerializeField] private TextMeshProUGUI _buttonLabel;
+    [SerializeField] private TextMeshProUGUI _interactionLabel;
     [SerializeField] private Player _player;
 
     private InspectionPawn _inspector;
@@ -16,6 +17,7 @@ public sealed class UI_InspectionPanel : MonoBehaviour
     {
         _player.PawnChanged += OnPawnChanged;
         _actionLabel.gameObject.SetActive(false);
+        _buttonLabel.text = "[F]";
     }
 
     private void OnDisable()
@@ -24,6 +26,8 @@ public sealed class UI_InspectionPanel : MonoBehaviour
 
         if (_inspector != null)
             _inspector.ActionSelected -= OnActionSelected;
+
+        _actionLabel.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -31,9 +35,7 @@ public sealed class UI_InspectionPanel : MonoBehaviour
         if (_inspector == null || _inspector.SelectedAction == null)
             return;
 
-        var screenPos = Camera.main.WorldToScreenPoint(_inspector.SelectedAction.transform.position);
-       // Vector3 uiPos = new Vector3(screenPos.x, Screen.height - screenPos.y, screenPos.z);
-        _actionLabel.position = screenPos;
+        UpdatePosition(_inspector.SelectedAction);
     }
 
     private void OnPawnChanged(Pawn pawn)
@@ -48,6 +50,7 @@ public sealed class UI_InspectionPanel : MonoBehaviour
             if (_inspector != null)
                 _inspector.ActionSelected -= OnActionSelected;
             _inspector = null;
+            _actionLabel.gameObject.SetActive(false);
         }
     }
 
@@ -55,7 +58,18 @@ public sealed class UI_InspectionPanel : MonoBehaviour
     {
         _actionLabel.gameObject.SetActive(action != null);
         if (action != null)
-            _label.text = $"[F] to {action.GetText(null)}";
+            _interactionLabel.text = action.GetText(null);
+
+        UpdatePosition(action);
+    }
+
+    private void UpdatePosition(InspectAction action)
+    {
+        if (action == null)
+            return;
+
+        var screenPos = Camera.main.WorldToScreenPoint(action.transform.position);
+        _actionLabel.position = screenPos;
     }
 
 }

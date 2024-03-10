@@ -143,6 +143,14 @@ public sealed class InspectionPawn : Pawn
             Quaternion.AngleAxis(rotY, transform.right) *
             Quaternion.AngleAxis(-1 * rotZ, transform.forward) *
             _target.transform.rotation;
+
+        if (Input.GetKeyDown(KeyCode.F) == true)
+        {
+            if (SelectedAction.IsAvaliable(null) == true)
+            {
+                SelectedAction.Perform(null);
+            }
+        }
     }
 
     public override Vector3 GetCameraPosition()
