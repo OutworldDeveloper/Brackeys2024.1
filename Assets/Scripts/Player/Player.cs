@@ -128,7 +128,6 @@ public sealed class Player : MonoBehaviour
     {
         if (_currentPawn != null && _currentPawn != _character)
         {
-            _currentPawn.OnUnpossessed();
             Possess(_character);
         }
     }

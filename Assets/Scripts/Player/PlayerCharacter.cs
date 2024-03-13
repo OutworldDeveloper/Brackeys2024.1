@@ -62,9 +62,9 @@ public sealed class PlayerCharacter : Pawn
     public bool IsGrounded => _controller.isGrounded;
     public bool IsCrouching => _isCrouching;
 
-    public void Inspect(Inspectable target)
+    public void Inspect(Item target, bool noAnimation = false)
     {
-        _inspectionPawn.SetTarget(target);
+        _inspectionPawn.SetTarget(target, noAnimation);
         Player.Possess(_inspectionPawn);
     }
 
@@ -118,6 +118,15 @@ public sealed class PlayerCharacter : Pawn
     public override void InputTick()
     {
         _currentInput = GatherInput();
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
+            Inspect(_inventory.Items[0], true);
+
+        if (Input.GetKeyDown(KeyCode.Alpha2) == true)
+            Inspect(_inventory.Items[1], true);
+
+        if (Input.GetKeyDown(KeyCode.Alpha3) == true)
+            Inspect(_inventory.Items[2], true);
     }
 
     private void Update()

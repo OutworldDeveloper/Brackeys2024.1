@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Inspectable))]
+[RequireComponent(typeof(Item))]
 public sealed class InspectInteraction : Interaction
 {
 
-    private Inspectable _inspectable;
+    private Item _inspectable;
 
     public override string Text => "Inspect";
 
     private void Awake()
     {
-        _inspectable = GetComponent<Inspectable>();
+        _inspectable = GetComponent<Item>();
     }
 
     public override void Perform(PlayerCharacter player)

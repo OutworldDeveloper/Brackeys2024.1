@@ -10,13 +10,13 @@ public sealed class InspectionPawn : Pawn
     public event Action<InspectAction> ActionSelected;
 
     [SerializeField] private float _inAnimationDuration = 0.5f;
-    [SerializeField] private Ease _inEase;
+    [SerializeField] private AnimationCurve _inEase;
     [SerializeField] private FloatParameter _mouseSensitivity;
     [SerializeField] private float _rotationSpeed = 5f;
     [SerializeField] private Vector2 _rotationMouseSpeed = new Vector2(2.5f, 3.5f);
     [SerializeField] private Light _light;
 
-    private Inspectable _target;
+    private Item _target;
     private Vector3 _originalPosition;
     private Quaternion _originalRotation;
 
@@ -30,6 +30,8 @@ public sealed class InspectionPawn : Pawn
 
     private InspectAction _selectedAction;
 
+    private bool _noAnimation;
+
     public override bool ShowCursor => true;
     public override bool OverrideCameraPositionAndRotation => true;
     public InspectAction SelectedAction => _selectedAction;
@@ -39,7 +41,7 @@ public sealed class InspectionPawn : Pawn
         _light.enabled = false;
     }
 
-    public void SetTarget(Inspectable target)
+    public void SetTarget(Item target, bool noAnimation = false)
     {
         _target = target;
         _originalPosition = target.transform.position;
@@ -48,11 +50,16 @@ public sealed class InspectionPawn : Pawn
         _targetData = new TargetData(target.gameObject);
 
         _targetActions = target.GetComponentsInChildren<InspectAction>();
+
+        _noAnimation = noAnimation;
     }
 
     public override void OnPossessed(Player player)
     {
         base.OnPossessed(player);
+
+        _timeSinceLastPossess = TimeSince.Now();
+
         Vector3 inspectPosition = transform.position + transform.forward * _target.Distance;
         Quaternion inspectRotation =
             Quaternion.AngleAxis(_target.FaceDirection.x, transform.right) *
@@ -60,17 +67,23 @@ public sealed class InspectionPawn : Pawn
             Quaternion.AngleAxis(_target.FaceDirection.z, transform.forward) *
             Quaternion.LookRotation(transform.forward, transform.up);
 
-        _timeSinceLastPossess = TimeSince.Now();
+        if (_noAnimation == true)
+        {
+            _target.transform.position = inspectPosition - transform.up * 0.2f;
+            _target.transform.rotation = inspectRotation;
+        }
 
         _introTween = DOTween.Sequence().
             Append(_target.transform.DOMove(inspectPosition, _inAnimationDuration)).
             Join(_target.transform.DORotateQuaternion(inspectRotation, _inAnimationDuration)).
-            SetEase(_inEase);
+            SetEase(_inEase);      
 
         _light.enabled = true;
 
         _targetData.Init();
         _targetData.SetLayers(LayerMask.NameToLayer("Inspected"));
+
+        _target.EnableVisuals();
     }
 
     public override void OnUnpossessed()
@@ -85,6 +98,10 @@ public sealed class InspectionPawn : Pawn
         _light.enabled = false;
 
         _targetData.RestoreLayers();
+
+        _target.DisableVisuals();
+
+        Debug.Log($"InspectionPawn OnUnpossessed");
     }
 
     public override void InputTick()
@@ -112,11 +129,6 @@ public sealed class InspectionPawn : Pawn
         {
             _selectedAction = bestAction;
             ActionSelected?.Invoke(_selectedAction);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape) == true)
-        {
-            Unpossess();
         }
 
         float rotX;

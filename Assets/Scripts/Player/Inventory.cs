@@ -35,14 +35,16 @@ public class Inventory : MonoBehaviour
 
     public void AddItem(Item item)
     {
-        item.gameObject.SetActive(false);
+        item.DisableCollision();
+        item.DisableVisuals();
         _items.Add(item);
         ItemAdded?.Invoke(item);
     }
 
     public void RemoveItem(Item item)
     {
-        item.gameObject.SetActive(true);
+        item.EnableCollision();
+        item.EnableVisuals();
         _items.Remove(item);
         ItemRemoved?.Invoke(item);
     }
@@ -50,7 +52,7 @@ public class Inventory : MonoBehaviour
     public void RemoveAndDestroyItem(Item item)
     {
         RemoveItem(item);
-        item.DestroyItem();
+        item.Kill();
     }
 
 }
