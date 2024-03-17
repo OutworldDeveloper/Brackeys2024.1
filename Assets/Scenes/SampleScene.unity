@@ -12386,7 +12386,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 193
   _minInteractionRange: 0.75
-  _interactionRange: 2.2
+  _interactionRange: 2.09
   _globalInteractinos:
   - {fileID: 668565590}
 --- !u!114 &668565586
@@ -12467,6 +12467,8 @@ MonoBehaviour:
     m_Bits: 513
   _crouchedControllerSize: 1.1
   _inspectionPawn: {fileID: 423207319}
+  _weaponHolder: {fileID: 0}
+  _aimingSpeed: 0.5
 --- !u!114 &668565587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15604,7 +15606,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &840037116
 Transform:
   m_ObjectHideFlags: 0

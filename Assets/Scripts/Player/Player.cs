@@ -63,14 +63,22 @@ public sealed class Player : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_currentPawn != null && _currentPawn.OverrideCameraPositionAndRotation == true)
+        if (_currentPawn == null)
+            return;
+
+        if (_smoothPawnCameraChange == true && _timeSincePawnChanged < 0.2f)
+            return;
+
+        if (_currentPawn.OverrideCameraPositionAndRotation == true)
         {
-            if (_timeSincePawnChanged > 0.2f || _smoothPawnCameraChange == false)
-            {
-                _mainCamera.transform.SetPositionAndRotation(
-                    _currentPawn.GetCameraPosition(),
-                    _currentPawn.GetCameraRotation());
-            }
+            _mainCamera.transform.SetPositionAndRotation(
+                _currentPawn.GetCameraPosition(),
+                _currentPawn.GetCameraRotation());
+        }
+
+        if (_currentPawn.OverrideCameraFOV == true)
+        {
+            _mainCamera.fieldOfView = _currentPawn.GetCameraFOV();
         }
     }
 

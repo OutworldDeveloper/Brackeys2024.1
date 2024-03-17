@@ -31,25 +31,31 @@ public sealed class PlayerCharacter : Pawn
 
     [SerializeField] private InspectionPawn _inspectionPawn;
 
+    [SerializeField] private WeaponHolder _weaponHolder;
+
+    [SerializeField] private float _aimingSpeed = 0.5f;
+
     private CharacterController _controller;
     private Vector3 _velocityXZ;
     private float _velocityY;
-    private TimeSince _timeSinceLastDeath = new TimeSince(float.NegativeInfinity);
+    private TimeSince _timeSinceLastDeath = TimeSince.Never;
     private Vector3 _spawnPosition;
     private Quaternion _spawnRotation;
     private readonly List<CharacterModifier> _modifiers = new List<CharacterModifier>();
-    private TimeSince _timeSinceLastDamage = new TimeSince(float.NegativeInfinity);
+    private TimeSince _timeSinceLastDamage = TimeSince.Never;
     private PlayerInput _currentInput;
 
     private float _defaultCameraHeight;
     private bool _isCrouching;
-    private TimeSince _timeSinceLastPostureChange = new TimeSince(float.NegativeInfinity);
+    private TimeSince _timeSinceLastPostureChange = TimeSince.Never;
 
     private int _lastStairsTouchFrame;
     private bool _isTouchingStairs;
     private readonly string _stairsTag = "Stairs";
 
     private float _currentCameraHeight;
+
+    private bool _isAiming;
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -164,7 +170,23 @@ public sealed class PlayerCharacter : Pawn
             }
         }
 
-        // Update camera
+        // Aiming
+        if (_isAiming == false)
+        {
+            if (_currentInput.WantsAim == true && CanAim() == true)
+            {
+                _isAiming = true;
+            }
+        }
+        else
+        {
+            if (_currentInput.WantsAim == false || CanAim() == false)
+            {
+                _isAiming = false;
+            }
+        }
+
+        // Update camera rotation
         if (_timeSinceLastPostureChange < _crouchAnimationDuration)
         {
             var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
@@ -197,11 +219,10 @@ public sealed class PlayerCharacter : Pawn
             _interactor.TryPerform(_currentInput.InteractionIndex);
         }
 
-        _currentInput.Clear();
-
-        // test
-
+        // test Smooth camera Y
         _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, _head.transform.position.y, 15f * Time.deltaTime);
+  
+        _currentInput.Clear();
     }
 
     public override void OnUnpossessed()
@@ -298,6 +319,8 @@ public sealed class PlayerCharacter : Pawn
             playerInput.InteractionIndex = -1;
 
         playerInput.WantsCrouch = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
+
+        playerInput.WantsAim = Input.GetKey(KeyCode.Mouse1);
 
         return playerInput;
     }
@@ -423,6 +446,8 @@ public sealed class PlayerCharacter : Pawn
 
     private float GetSpeed()
     {
+        var baseSpeed = _isAiming ? _aimingSpeed : _speed;
+
         var multipler = 1f;
 
         foreach (var modifier in _modifiers)
@@ -435,7 +460,7 @@ public sealed class PlayerCharacter : Pawn
 
         var crouchMultipler = _isCrouching ? 0.4f : 1f;
 
-        return _speed * multipler * crouchMultipler;
+        return baseSpeed * multipler * crouchMultipler;
     }
 
     public bool CanCrouch()
@@ -462,8 +487,15 @@ public sealed class PlayerCharacter : Pawn
                 _controller.radius, _uncrouchLayerMask) == false;
     }
 
+    public bool CanAim()
+    {
+        return IsDead == false && _controller.isGrounded == true;
+    }
+
     public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
     public override Quaternion GetCameraRotation() => _head.rotation;
+    public override bool OverrideCameraFOV => _isAiming;
+    public override float GetCameraFOV() => 50f;
 
     private struct PlayerInput
     {
@@ -473,7 +505,8 @@ public sealed class PlayerCharacter : Pawn
         public bool WantsJump;
         public int InteractionIndex;
         public bool WantsCrouch;
-        
+        public bool WantsAim;
+
         public bool WantsInteract => InteractionIndex != -1;
 
         public void Clear()
@@ -484,6 +517,7 @@ public sealed class PlayerCharacter : Pawn
             WantsJump = false;
             InteractionIndex = -1;
             WantsCrouch = false;
+            WantsAim = false;
         }
 
     }
