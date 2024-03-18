@@ -35,6 +35,8 @@ public sealed class PlayerCharacter : Pawn
 
     [SerializeField] private float _aimingSpeed = 0.5f;
 
+    [SerializeField] private Animator _armsAnimator;
+
     private CharacterController _controller;
     private Vector3 _velocityXZ;
     private float _velocityY;
@@ -56,6 +58,10 @@ public sealed class PlayerCharacter : Pawn
     private float _currentCameraHeight;
 
     private bool _isAiming;
+
+    private float _currentRecoilY;
+    private float _targetRecoilY;
+    private TimeSince _timeSinceLastShoot;
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -87,7 +93,7 @@ public sealed class PlayerCharacter : Pawn
         if (hit.moveDirection.y > 0.01f && _velocityY > 0f)
             _velocityY = 0f;
 
-        if (Mathf.Abs(hit.moveDirection.y) < 0.01f && hit.gameObject.CompareTag(_stairsTag) == true)
+        if (Mathf.Abs(hit.moveDirection.y) < 0.01f && hit.gameObject.CompareTag(_stairsTag) == true && _isCrouching == false)
         {
             _lastStairsTouchFrame = Time.frameCount;
             _isTouchingStairs = true;
@@ -133,10 +139,26 @@ public sealed class PlayerCharacter : Pawn
 
         if (Input.GetKeyDown(KeyCode.Alpha3) == true)
             Inspect(_inventory.Items[2], true);
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) == true)
+        {
+            if (_weaponHolder.ActiveWeapon != null)
+            {
+                _weaponHolder.ActiveWeapon.Attack(_head.transform.position, _head.transform.forward);
+                _timeSinceLastShoot = TimeSince.Now();
+                _targetRecoilY += UnityEngine.Random.Range(15f, 20f);
+            }
+        }
     }
 
     private void Update()
     {
+        // Recoil
+        _targetRecoilY = Mathf.Max(0f, _targetRecoilY -= Time.deltaTime * 45f);
+        _currentRecoilY = Mathf.Lerp(_currentRecoilY, _targetRecoilY, Time.deltaTime * 50f);
+        //_recoilY = Mathf.Lerp(_recoilY, 0f, Time.deltaTime * 5f);
+        //_currentRecoilY = Mathf.MoveTowards(_currentRecoilY, _recoilY, 100f * Time.deltaTime);
+
         // Modifiers
         for (int i = _modifiers.Count - 1; i >= 0; i--)
         {
@@ -176,6 +198,7 @@ public sealed class PlayerCharacter : Pawn
             if (_currentInput.WantsAim == true && CanAim() == true)
             {
                 _isAiming = true;
+                _armsAnimator.SetBool("is_aiming", true);
             }
         }
         else
@@ -183,10 +206,13 @@ public sealed class PlayerCharacter : Pawn
             if (_currentInput.WantsAim == false || CanAim() == false)
             {
                 _isAiming = false;
+                _armsAnimator.SetBool("is_aiming", false);
             }
         }
 
-        // Update camera rotation
+        _currentFOV = Mathf.Lerp(_currentFOV, _isAiming ? 50f : 75f, Time.deltaTime * 5f);
+
+        // Update camera
         if (_timeSinceLastPostureChange < _crouchAnimationDuration)
         {
             var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
@@ -298,8 +324,8 @@ public sealed class PlayerCharacter : Pawn
     {
         var playerInput = new PlayerInput();
 
-        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value;
-        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value;
+        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
 
         playerInput.Direction = new FlatVector()
         {
@@ -319,11 +345,12 @@ public sealed class PlayerCharacter : Pawn
             playerInput.InteractionIndex = -1;
 
         playerInput.WantsCrouch = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
-
         playerInput.WantsAim = Input.GetKey(KeyCode.Mouse1);
 
         return playerInput;
     }
+
+    float cameraTargetRotX;
 
     private void UpdateRotation(PlayerInput input)
     {
@@ -331,18 +358,25 @@ public sealed class PlayerCharacter : Pawn
             return;
 
         var yRotation = transform.eulerAngles.y + input.MouseX;
-        var xRotation = _head.localEulerAngles.x - input.MouseY;
-        xRotation = ClampAngle(xRotation, -70f, 70f);
+
+        var currentMouseInput = input.MouseY;
+
+        // If target Y recoil is grater than 0 we first decrease it, and only then we rotate head
+        if (_targetRecoilY > 0f)
+        {
+            _targetRecoilY += input.MouseY;
+        }
+        else
+        {
+            cameraTargetRotX -= input.MouseY;
+        }
+
+        cameraTargetRotX = Mathf.Clamp(cameraTargetRotX, -70f, 70f);
+
+        var finalAngle = Mathf.Clamp(cameraTargetRotX - _currentRecoilY, -70f, 70f);
 
         transform.eulerAngles = new Vector3(0f, yRotation, 0f);
-        _head.localEulerAngles = new Vector3(xRotation, 0f, 0f);
-
-        float ClampAngle(float angle, float min, float max)
-        {
-            float start = (min + max) * 0.5f - 180;
-            float floor = Mathf.FloorToInt((angle - start) / 360) * 360;
-            return Mathf.Clamp(angle, min + floor, max + floor);
-        }
+        _head.localEulerAngles = new Vector3(finalAngle, 0f, 0f);
     }
 
     private void UpdateMovement(PlayerInput input)
@@ -489,13 +523,24 @@ public sealed class PlayerCharacter : Pawn
 
     public bool CanAim()
     {
-        return IsDead == false && _controller.isGrounded == true;
+        return 
+            IsDead == false && 
+            _controller.isGrounded == true && 
+            _weaponHolder.ActiveWeapon != null &&
+            _weaponHolder.ActiveWeapon.CanAim == true;
+    }
+
+    public float GetMouseSensetivityMultiplier()
+    {
+        return _isAiming ? 0.5f : 1f;
     }
 
     public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
     public override Quaternion GetCameraRotation() => _head.rotation;
-    public override bool OverrideCameraFOV => _isAiming;
-    public override float GetCameraFOV() => 50f;
+    public override bool OverrideCameraFOV => true;
+    public override float GetCameraFOV() => _currentFOV;
+
+    private float _currentFOV = 70f;
 
     private struct PlayerInput
     {
