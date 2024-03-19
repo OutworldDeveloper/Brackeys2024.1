@@ -34,6 +34,8 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private WeaponHolder _weaponHolder;
 
     [SerializeField] private float _aimingSpeed = 0.5f;
+    [SerializeField] private float _aimingFieldOfView = 50f;
+    [SerializeField] private float _fieldOfView = 70f;
 
     [SerializeField] private Animator _armsAnimator;
 
@@ -59,9 +61,16 @@ public sealed class PlayerCharacter : Pawn
 
     private bool _isAiming;
 
+    private float _currentFOV = 70f;
+
     private float _currentRecoilY;
     private float _targetRecoilY;
+    private float _currentRecoilX;
+    private float _targetRecoilX;
     private TimeSince _timeSinceLastShoot;
+
+    private float _cameraTargetRotX;
+    private float _cameraTargetRotY;
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -142,11 +151,17 @@ public sealed class PlayerCharacter : Pawn
 
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {
-            if (_weaponHolder.ActiveWeapon != null)
+            if (_weaponHolder.ActiveWeapon != null && CanShoot() == true)
             {
                 _weaponHolder.ActiveWeapon.Attack(_head.transform.position, _head.transform.forward);
                 _timeSinceLastShoot = TimeSince.Now();
                 _targetRecoilY += UnityEngine.Random.Range(15f, 20f);
+                bool recoilRight = UnityEngine.Random.Range(0, 2) == 0;
+                Notification.ShowDebug(recoilRight ? "Right" : "Left");
+                _targetRecoilX += UnityEngine.Random.Range(5f, 7f) * (recoilRight ? 1 : -1);
+
+                //_armsAnimator.Play("shotgun_shoot", 0);
+                _armsAnimator.SetTrigger("shoot");
             }
         }
     }
@@ -158,6 +173,9 @@ public sealed class PlayerCharacter : Pawn
         _currentRecoilY = Mathf.Lerp(_currentRecoilY, _targetRecoilY, Time.deltaTime * 50f);
         //_recoilY = Mathf.Lerp(_recoilY, 0f, Time.deltaTime * 5f);
         //_currentRecoilY = Mathf.MoveTowards(_currentRecoilY, _recoilY, 100f * Time.deltaTime);
+
+        _targetRecoilX = Mathf.MoveTowards(_targetRecoilX, 0f, Time.deltaTime * 45f);
+        _currentRecoilX = Mathf.Lerp(_currentRecoilX, _targetRecoilX, Time.deltaTime * 50f);
 
         // Modifiers
         for (int i = _modifiers.Count - 1; i >= 0; i--)
@@ -210,7 +228,8 @@ public sealed class PlayerCharacter : Pawn
             }
         }
 
-        _currentFOV = Mathf.Lerp(_currentFOV, _isAiming ? 50f : 75f, Time.deltaTime * 5f);
+        // Field of view
+        _currentFOV = Mathf.Lerp(_currentFOV, _isAiming ? _aimingFieldOfView : _fieldOfView, Time.deltaTime * 5f);
 
         // Update camera
         if (_timeSinceLastPostureChange < _crouchAnimationDuration)
@@ -350,14 +369,16 @@ public sealed class PlayerCharacter : Pawn
         return playerInput;
     }
 
-    float cameraTargetRotX;
-
     private void UpdateRotation(PlayerInput input)
     {
         if (CanRotateHead() == false)
             return;
 
-        var yRotation = transform.eulerAngles.y + input.MouseX;
+        //var yRotation = transform.eulerAngles.y + input.MouseX;
+
+        //_cameraTargetRotY += input.MouseX + _currentRecoilX; permanent apply
+
+        _cameraTargetRotY += input.MouseX;
 
         var currentMouseInput = input.MouseY;
 
@@ -368,14 +389,14 @@ public sealed class PlayerCharacter : Pawn
         }
         else
         {
-            cameraTargetRotX -= input.MouseY;
+            _cameraTargetRotX -= input.MouseY;
         }
 
-        cameraTargetRotX = Mathf.Clamp(cameraTargetRotX, -70f, 70f);
+        _cameraTargetRotX = Mathf.Clamp(_cameraTargetRotX, -70f, 70f);
 
-        var finalAngle = Mathf.Clamp(cameraTargetRotX - _currentRecoilY, -70f, 70f);
+        var finalAngle = Mathf.Clamp(_cameraTargetRotX - _currentRecoilY, -70f, 70f);
 
-        transform.eulerAngles = new Vector3(0f, yRotation, 0f);
+        transform.eulerAngles = new Vector3(0f, _cameraTargetRotY + _currentRecoilX, 0f);
         _head.localEulerAngles = new Vector3(finalAngle, 0f, 0f);
     }
 
@@ -508,7 +529,7 @@ public sealed class PlayerCharacter : Pawn
                 return false;
         }
 
-        return true && _timeSinceLastPostureChange > _crouchAnimationDuration && _controller.isGrounded == true && IsDead == false;
+        return true && _timeSinceLastPostureChange > _crouchAnimationDuration && IsDead == false;
     }
 
     public bool CanUncrouch()
@@ -535,12 +556,15 @@ public sealed class PlayerCharacter : Pawn
         return _isAiming ? 0.5f : 1f;
     }
 
+    public bool CanShoot()
+    {
+        return IsDead == false && _isAiming == true && _controller.isGrounded == true;
+    }
+
     public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
     public override Quaternion GetCameraRotation() => _head.rotation;
     public override bool OverrideCameraFOV => true;
     public override float GetCameraFOV() => _currentFOV;
-
-    private float _currentFOV = 70f;
 
     private struct PlayerInput
     {
