@@ -156,6 +156,7 @@ public sealed class PlayerCharacter : Pawn
                 _weaponHolder.ActiveWeapon.Attack(_head.transform.position, _head.transform.forward);
                 _timeSinceLastShoot = TimeSince.Now();
                 _targetRecoilY += UnityEngine.Random.Range(15f, 20f);
+                //_targetRecoilY += UnityEngine.Random.Range(25f, 35f);
                 bool recoilRight = UnityEngine.Random.Range(0, 2) == 0;
                 Notification.ShowDebug(recoilRight ? "Right" : "Left");
                 _targetRecoilX += UnityEngine.Random.Range(5f, 7f) * (recoilRight ? 1 : -1);
@@ -163,6 +164,21 @@ public sealed class PlayerCharacter : Pawn
                 //_armsAnimator.Play("shotgun_shoot", 0);
                 _armsAnimator.SetTrigger("shoot");
             }
+        }
+
+        if (Application.isEditor == true)
+        {
+            if (Input.GetKeyDown(KeyCode.F1))
+                Time.timeScale = 0.1f;
+
+            if (Input.GetKeyDown(KeyCode.F2))
+                Time.timeScale = 0.5f;
+
+            if (Input.GetKeyDown(KeyCode.F3))
+                Time.timeScale = 0.75f;
+
+            if (Input.GetKeyDown(KeyCode.F4))
+                Time.timeScale = 1f;
         }
     }
 
@@ -225,6 +241,18 @@ public sealed class PlayerCharacter : Pawn
             {
                 _isAiming = false;
                 _armsAnimator.SetBool("is_aiming", false);
+
+                // Stop remaining recoil
+                if (false)
+                {
+                    _cameraTargetRotY += _currentRecoilX;
+                    _targetRecoilX = 0f;
+                    _currentRecoilX = 0f;
+
+                    _cameraTargetRotX -= _currentRecoilY;
+                    _targetRecoilY = 0f;
+                    _currentRecoilY = 0f;
+                }
             }
         }
 
@@ -382,10 +410,24 @@ public sealed class PlayerCharacter : Pawn
 
         var currentMouseInput = input.MouseY;
 
-        // If target Y recoil is grater than 0 we first decrease it, and only then we rotate head
+        Debug.Log(input.MouseY);
+
+        // If Y recoil is present
         if (_targetRecoilY > 0f)
         {
-            _targetRecoilY += input.MouseY;
+            // And we want to move camera down, we firstly decrese recoil
+            if (input.MouseY < 0.0001f)
+            {
+                _targetRecoilY += input.MouseY;
+            }
+
+            // If we want to rotate camera UP, we transfer recoil onto rotation
+            if (input.MouseY > 0.0001f)
+            {
+                // Don't know if this shit works
+                _targetRecoilY -= input.MouseY;
+                _cameraTargetRotX -= input.MouseY;
+            }
         }
         else
         {
