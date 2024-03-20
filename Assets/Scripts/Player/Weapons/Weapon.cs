@@ -31,9 +31,9 @@ public class Weapon : MonoBehaviour
         if (Physics.Raycast(origin, direction, out RaycastHit hit, 25f, _shootMask) == false)
             return;
 
-        if (hit.transform.TryGetComponent(out Ghost ghost) == true)
+        if (hit.transform.TryGetComponent(out Zombie zombie) == true)
         {
-            ghost.StartRespawning();
+            zombie.Kill();
         }
     }
 
