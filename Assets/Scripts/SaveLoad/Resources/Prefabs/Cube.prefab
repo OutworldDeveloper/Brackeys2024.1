@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7500697300475586966}
   - component: {fileID: 8854404944547921480}
   - component: {fileID: 4566495469038216587}
+  - component: {fileID: 2131366376020547679}
   - component: {fileID: 334216361558911691}
   - component: {fileID: 7221094374888502126}
   m_Layer: 0
@@ -124,6 +125,19 @@ MonoBehaviour:
   _prefabPath: 
   _hasSceneID: 0
   _sceneID: 
+--- !u!114 &2131366376020547679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155466897871064075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba35cd1c90a4c2f4a94301d23ac62f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _saveableComponents: []
 --- !u!114 &334216361558911691
 MonoBehaviour:
   m_ObjectHideFlags: 0

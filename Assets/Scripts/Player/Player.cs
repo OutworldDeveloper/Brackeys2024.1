@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public sealed class Player : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private GameObject _hud;
     [SerializeField] private UI_PauseMenu _pauseMenu;
     [SerializeField] private bool _smoothPawnCameraChange;
+
+    [SerializeField] private Volume _blurVolume;
 
     private bool _isPauseMenuOpen;
     private Pawn _currentPawn;
@@ -79,6 +83,14 @@ public sealed class Player : MonoBehaviour
         if (_currentPawn.OverrideCameraFOV == true)
         {
             _mainCamera.fieldOfView = _currentPawn.GetCameraFOV();
+        }
+
+        _blurVolume.enabled = _currentPawn.GetBlurStatus(out float targetBlurDistance);
+
+        // Blur
+        if (_blurVolume.profile.TryGet(out DepthOfField dof))
+        {
+            dof.focusDistance.Override(targetBlurDistance);
         }
     }
 

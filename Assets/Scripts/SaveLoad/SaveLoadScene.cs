@@ -52,9 +52,21 @@ public class SaveLoadScene : MonoBehaviour
             dynamicSaveable.transform.position = dynamicSaveableData.Position;
             dynamicSaveable.transform.eulerAngles = dynamicSaveableData.Rotation;
 
-            dynamicSaveable.RestoreState(dynamicSaveableData.CustomData);
+            dynamicSaveable.GetComponent<SaveableComponents>().RestoreState(dynamicSaveableData.Components);
 
             Debug.Log($"Spawned '{resourcePath}'");
+        }
+
+        // Static objects
+        foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
+        {
+            if (sceneData.StaticSaveableDatas.TryGetValue(staticSaveable.SceneGuid, out StaticSaveableData staticSaveableData) == false)
+                continue;
+
+            staticSaveable.transform.position = staticSaveableData.Position;
+            staticSaveable.transform.eulerAngles = staticSaveableData.Rotation;
+
+            staticSaveable.GetComponent<SaveableComponents>().RestoreState(staticSaveableData.Components);
         }
     }
 
@@ -87,7 +99,19 @@ public class SaveLoadScene : MonoBehaviour
                 Guid = dynamicSaveable.SceneGuid,
                 Position = dynamicSaveable.transform.position,
                 Rotation = dynamicSaveable.transform.eulerAngles,
-                CustomData = dynamicSaveable.GatherData(),
+                //CustomData = dynamicSaveable.GatherData(),
+                Components = dynamicSaveable.GetComponent<SaveableComponents>().GatherData()
+            });
+        }
+
+        // Static
+        foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
+        {
+            levelData.StaticSaveableDatas.Add(staticSaveable.SceneGuid, new StaticSaveableData()
+            {
+                Position = staticSaveable.transform.position,
+                Rotation = staticSaveable.transform.eulerAngles,
+                Components = staticSaveable.GetComponent<SaveableComponents>().GatherData()
             });
         }
 
@@ -103,6 +127,7 @@ public class SaveLoadScene : MonoBehaviour
 public class LevelData
 {
 
+    public Dictionary<string, StaticSaveableData> StaticSaveableDatas = new Dictionary<string, StaticSaveableData>();
     public List<DynamicSaveableData> DynamicSaveableDatas = new List<DynamicSaveableData>();
 
     public bool ContainsDynamicSaveable(string guid)
@@ -125,6 +150,23 @@ public struct DynamicSaveableData
     public string ResourcesPath;
     public SerializableVector3 Position;
     public SerializableVector3 Rotation;
-    public Dictionary<string, object> CustomData; // Not custom data but components data (custom data is different)
+    public ComponentsData Components;
+
+}
+
+[Serializable]
+public struct StaticSaveableData
+{
+    public SerializableVector3 Position;
+    public SerializableVector3 Rotation;
+    public ComponentsData Components;
+
+}
+
+[Serializable]
+public sealed class SaveData
+{
+
+    public Dictionary<string, LevelData> ScenesData = new Dictionary<string, LevelData>();
 
 }

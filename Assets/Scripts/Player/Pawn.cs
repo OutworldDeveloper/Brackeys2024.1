@@ -12,6 +12,11 @@ public abstract class Pawn : MonoBehaviour
     public virtual Vector3 GetCameraPosition() => Vector3.zero;
     public virtual Quaternion GetCameraRotation() => Quaternion.identity;
     public virtual float GetCameraFOV() => throw new NotImplementedException();
+    public virtual bool GetBlurStatus(out float targetDistance)
+    {
+        targetDistance = 0f;
+        return false;
+    }
 
     public virtual void PossessedTick() { }
 

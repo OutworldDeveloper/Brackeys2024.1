@@ -175,6 +175,12 @@ public sealed class InspectionPawn : Pawn
         return transform.rotation;
     }
 
+    public override bool GetBlurStatus(out float targetDistance)
+    {
+        targetDistance = _target.Distance;
+        return true;
+    }
+
 }
 
 public sealed class TargetData

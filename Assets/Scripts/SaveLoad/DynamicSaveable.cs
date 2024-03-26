@@ -8,6 +8,7 @@ using UnityEditor;
 #endif
 
 [ExecuteAlways]
+[RequireComponent(typeof(SaveableComponents))]
 public class DynamicSaveable : MonoBehaviour
 {
 
@@ -18,8 +19,6 @@ public class DynamicSaveable : MonoBehaviour
 
     public string PrefabPath => _prefabPath;
     public string SceneGuid => _sceneID;
-
-    [SerializeField] private SaveableComponentInfo[] _saveableComponentInfos = Array.Empty<SaveableComponentInfo>();
 
     public void SetSceneGuid(string guid)
     {
@@ -55,15 +54,6 @@ public class DynamicSaveable : MonoBehaviour
         }
 
         _prefabPath = AssetDatabase.GetAssetPath(_selfPrefab);
-
-        //
-        foreach (var saveableComponentInfo in _saveableComponentInfos)
-        {
-            if (saveableComponentInfo.Guid == string.Empty)
-            {
-                saveableComponentInfo.Guid = Guid.NewGuid().ToString();
-            }
-        }
     }
 #endif
 
@@ -98,7 +88,6 @@ public class DynamicSaveable : MonoBehaviour
 
         return container;
     }
-
     private void GatherComponentData(MonoBehaviour target, Dictionary<string, object> data)
     {
         Type type = target.GetType();
@@ -122,7 +111,6 @@ public class DynamicSaveable : MonoBehaviour
             Debug.Log($"{field.Name} is a persistent field. We will save it's value {field.GetValue(target)}.");
         }
     }
-
     public void RestoreState(Dictionary<string, object> data)
     {
         foreach (var monoBehaviour in gameObject.GetComponentsInChildren<MonoBehaviour>())
@@ -130,7 +118,6 @@ public class DynamicSaveable : MonoBehaviour
             RestoreComponentData(monoBehaviour, data);
         }
     }
-
     private void RestoreComponentData(MonoBehaviour target, Dictionary<string, object> data)
     {
         Type type = target.GetType();
