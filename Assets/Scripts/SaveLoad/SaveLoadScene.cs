@@ -17,29 +17,39 @@ public class SaveLoadScene : MonoBehaviour
         ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
     };
 
+    private LevelData _sceneData;
+
     private void Awake()
     {
-        bool hasData = File.Exists(SavePath);
-
         // Если false всё равно можно прогреть и удалить все обьекты что бы не было отличий никак
-        if (hasData == false)
-            return;
+        if (File.Exists(SavePath) == false)
+        {
+            _sceneData = new LevelData();
 
-        var sceneData = new LevelData(); // loadedSave
+            foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
+            {
+                _sceneData.DynamicTheyExist.Add(dynamicSaveable.SceneGuid);
+            }
+
+            return;
+        }
 
         using (StreamReader stream = File.OpenText(SavePath))
         {
-            sceneData = (LevelData)_serializer.Deserialize(stream, typeof(LevelData));
+            _sceneData = (LevelData)_serializer.Deserialize(stream, typeof(LevelData));
         }
 
         foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
         {
-            if (sceneData.ContainsDynamicSaveable(dynamicSaveable.SceneGuid) == true)
+            //if (_sceneData.ContainsDynamicSaveable(dynamicSaveable.SceneGuid) == true)
+            //    Destroy(dynamicSaveable.gameObject);
+            
+            if(_sceneData.DynamicTheyExist.Contains(dynamicSaveable.SceneGuid) == true)
                 Destroy(dynamicSaveable.gameObject);
         }
 
-        // Load objects
-        foreach (var dynamicSaveableData in sceneData.DynamicSaveableDatas)
+        // Load dynamic objects
+        foreach (var dynamicSaveableData in _sceneData.DynamicSaveableDatas)
         {
             string resourcePath = dynamicSaveableData.ResourcesPath;
             //Debug.Log(resourcePath);
@@ -57,10 +67,10 @@ public class SaveLoadScene : MonoBehaviour
             Debug.Log($"Spawned '{resourcePath}'");
         }
 
-        // Static objects
+        // Load static objects
         foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
         {
-            if (sceneData.StaticSaveableDatas.TryGetValue(staticSaveable.SceneGuid, out StaticSaveableData staticSaveableData) == false)
+            if (_sceneData.StaticSaveableDatas.TryGetValue(staticSaveable.SceneGuid, out StaticSaveableData staticSaveableData) == false)
                 continue;
 
             staticSaveable.transform.position = staticSaveableData.Position;
@@ -89,11 +99,20 @@ public class SaveLoadScene : MonoBehaviour
     [ContextMenu("Save")]
     public void SaveGame()
     {
-        var levelData = new LevelData();
+        //var levelData = new LevelData(); // We used to create new LevelData every time. Let's try to keep the old one
+
+        // we still need to clear it though
+        _sceneData.DynamicSaveableDatas.Clear();
+        _sceneData.StaticSaveableDatas.Clear();
+        //
 
         foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
         {
-            levelData.DynamicSaveableDatas.Add(new DynamicSaveableData()
+            // Don't save those objects that have StaticSaveable as parents
+            if (dynamicSaveable.GetComponentInParent<StaticSaveable>() != null)
+                continue;
+
+            _sceneData.DynamicSaveableDatas.Add(new DynamicSaveableData()
             {
                 ResourcesPath = dynamicSaveable.PrefabPath,
                 Guid = dynamicSaveable.SceneGuid,
@@ -107,7 +126,7 @@ public class SaveLoadScene : MonoBehaviour
         // Static
         foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
         {
-            levelData.StaticSaveableDatas.Add(staticSaveable.SceneGuid, new StaticSaveableData()
+            _sceneData.StaticSaveableDatas.Add(staticSaveable.SceneGuid, new StaticSaveableData()
             {
                 Position = staticSaveable.transform.position,
                 Rotation = staticSaveable.transform.eulerAngles,
@@ -115,13 +134,15 @@ public class SaveLoadScene : MonoBehaviour
             });
         }
 
+        // Save file
         using (var stream = File.CreateText(SavePath))
         {
-            _serializer.Serialize(stream, levelData);
+            _serializer.Serialize(stream, _sceneData);
         }
     }
 
 }
+
 
 [Serializable]
 public class LevelData
@@ -129,6 +150,8 @@ public class LevelData
 
     public Dictionary<string, StaticSaveableData> StaticSaveableDatas = new Dictionary<string, StaticSaveableData>();
     public List<DynamicSaveableData> DynamicSaveableDatas = new List<DynamicSaveableData>();
+
+    public HashSet<string> DynamicTheyExist = new HashSet<string>(); // Dynamic objects that do exist or something
 
     public bool ContainsDynamicSaveable(string guid)
     {
@@ -168,5 +191,20 @@ public sealed class SaveData
 {
 
     public Dictionary<string, LevelData> ScenesData = new Dictionary<string, LevelData>();
+
+}
+
+public static class DictionaryExtensions
+{
+    public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+    {
+        if (dictionary.ContainsKey(key) == true)
+        {
+            dictionary[key] = value;
+            return;
+        }
+
+        dictionary.Add(key, value);
+    }
 
 }
