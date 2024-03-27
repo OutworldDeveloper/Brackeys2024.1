@@ -90,6 +90,12 @@ public sealed class SaveableComponents : MonoBehaviour
             //Debug.Log($"{field.Name} is a persistent field. We will save it's value {field.GetValue(component)}.");
         }
 
+        // Custom data
+        if (component is ICustomSaveable customSaveable)
+        {
+            componentData.CustomData = customSaveable.SaveData();
+        }
+
         return componentData;
     }
 
@@ -99,12 +105,12 @@ public sealed class SaveableComponents : MonoBehaviour
         {
             if (data.Components.TryGetValue(saveableComponent.Guid, out ComponentData componentData) == true)
             {
-                RestoreComponentData(saveableComponent.Component, componentData.Fields);
+                RestoreComponentData(saveableComponent.Component, componentData);
             }
         }
     }
 
-    private void RestoreComponentData(MonoBehaviour target, Dictionary<string, object> data)
+    private void RestoreComponentData(MonoBehaviour target, ComponentData data)
     {
         Type type = target.GetType();
         var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -118,10 +124,10 @@ public sealed class SaveableComponents : MonoBehaviour
 
             string key = $"{field.Name}";
 
-            if (data.ContainsKey(key) == false)
+            if (data.Fields.ContainsKey(key) == false)
                 continue;
 
-            object value = data[key];
+            object value = data.Fields[key];
 
             if (value.GetType() == typeof(SerializableVector3))
             {
@@ -133,6 +139,12 @@ public sealed class SaveableComponents : MonoBehaviour
             }
 
             field.SetValue(target, value);
+        }
+
+        // Custom data
+        if (target is ICustomSaveable customSaveable)
+        {
+            customSaveable.LoadData(data.CustomData);
         }
     }
 
@@ -147,4 +159,13 @@ public class ComponentsData
 public class ComponentData
 {
     public Dictionary<string, object> Fields = new Dictionary<string, object>();
+    public object CustomData;
+
+}
+
+public interface ICustomSaveable
+{
+    public object SaveData();
+    public void LoadData(object data);
+
 }

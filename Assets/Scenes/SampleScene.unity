@@ -25126,8 +25126,9 @@ GameObject:
   - component: {fileID: 1179191229}
   - component: {fileID: 1179191230}
   - component: {fileID: 1179191232}
+  - component: {fileID: 1179191233}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Static Saveable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25162,6 +25163,8 @@ MonoBehaviour:
   _saveableComponents:
   - Component: {fileID: 1179191232}
     Guid: f8dfb015-7ecc-4d00-9e32-46977422dd92
+  - Component: {fileID: 1179191233}
+    Guid: f87e328e-4557-468e-be59-07ee4cf17e44
 --- !u!4 &1179191231
 Transform:
   m_ObjectHideFlags: 0
@@ -25193,6 +25196,19 @@ MonoBehaviour:
   _bananaSize:
     Size: Boba
   _whateverPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &1179191233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179191228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d24c5628a4ea2a4c90d0395d8d31680, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemsAmount: 0
 --- !u!64 &1179396567
 MeshCollider:
   m_ObjectHideFlags: 0
