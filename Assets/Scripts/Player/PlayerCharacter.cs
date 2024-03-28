@@ -410,8 +410,6 @@ public sealed class PlayerCharacter : Pawn
 
         var currentMouseInput = input.MouseY;
 
-        Debug.Log(input.MouseY);
-
         // If Y recoil is present
         if (_targetRecoilY > 0f)
         {

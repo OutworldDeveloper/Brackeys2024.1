@@ -20,7 +20,7 @@ public class Zombie : MonoBehaviour
     private TimeSince _timeSinceLastAttackStarted;
     private bool _isAttackPointReached;
 
-    private bool _isDead;
+    [Persistent] private bool _isDead;
 
     public bool HasTarget => _target != null;
 
@@ -28,6 +28,11 @@ public class Zombie : MonoBehaviour
     {
         _agent = GetComponent<NavMeshAgent>();
         _agent.updateRotation = false;
+    }
+
+    private void Start()
+    {
+        _animator.SetBool("dead", _isDead);
     }
 
     public void StartChase(PlayerCharacter target)
@@ -47,7 +52,7 @@ public class Zombie : MonoBehaviour
 
         _animator.SetFloat("velocity", _agent.velocity.magnitude);
 
-        if (HasTarget == true)
+        if (HasTarget == true && _isDead == false)
         {
             _agent.stoppingDistance = _attackDistance - 0.12f;
             _agent.SetDestination(_target.transform.position);

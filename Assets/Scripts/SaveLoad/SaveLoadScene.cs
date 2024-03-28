@@ -3,24 +3,54 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
+using Newtonsoft.Json.UnityConverters;
+using Newtonsoft.Json.UnityConverters.Math;
 
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+
+[DefaultExecutionOrder(-1000)]
 public class SaveLoadScene : MonoBehaviour
 {
     private static string SavePath => $"{Application.persistentDataPath}/save.txt";
 
-    private readonly JsonSerializer _serializer = new JsonSerializer()
-    {
-        NullValueHandling = NullValueHandling.Ignore,
-        TypeNameHandling = TypeNameHandling.Auto,
-        Formatting = Formatting.Indented,
-        MissingMemberHandling = MissingMemberHandling.Error,
-        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-    };
+    private readonly JsonSerializer _serializer;
+    private JsonSerializerSettings _settings;
 
     private LevelData _sceneData;
 
+    private BinaryFormatter _binaryFormatter;
+
     private void Awake()
     {
+        _settings = new JsonSerializerSettings()
+        {
+            NullValueHandling = NullValueHandling.Include,
+
+            TypeNameHandling = TypeNameHandling.Auto,
+
+            Formatting = Formatting.Indented,
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+
+            ReferenceLoopHandling = ReferenceLoopHandling.Error, // Fixes vector3 and stuff
+
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+
+            Converters = new JsonConverter[]
+            {
+                new Vector3Converter(),
+                new QuaternionConverter(),
+            },
+        };
+
+        _binaryFormatter = new BinaryFormatter();
+
+        SurrogateSelector surrogateSelector = new SurrogateSelector();
+        Vector3SerializationSurrogate vector3SS = new Vector3SerializationSurrogate();
+
+        surrogateSelector.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), vector3SS);
+        _binaryFormatter.SurrogateSelector = surrogateSelector;
+
         // Если false всё равно можно прогреть и удалить все обьекты что бы не было отличий никак
         if (File.Exists(SavePath) == false)
         {
@@ -31,12 +61,32 @@ public class SaveLoadScene : MonoBehaviour
                 _sceneData.DynamicTheyExist.Add(dynamicSaveable.SceneGuid);
             }
 
+            foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
+            {
+                var components = staticSaveable.GetComponent<SaveableComponents>().GetAll();
+
+                foreach (var component in components)
+                {
+                    (component as IFreshStartable)?.FreshStart(); 
+                    // This is wrong! We should do it no matter if we loaded or created save
+                    // So items added in patches receive the callback too!
+                }
+            }
+
             return;
         }
 
-        using (StreamReader stream = File.OpenText(SavePath))
+        //var text = File.ReadAllText(SavePath);
+        //_sceneData = JsonConvert.DeserializeObject<LevelData>(text, _settings);
+
+        //using (StreamReader stream = File.OpenText(SavePath))
+        //{
+        //    _sceneData = (LevelData)_serializer.Deserialize(stream, typeof(LevelData));
+        //}
+
+        using (var stream = File.Open(SavePath, FileMode.Open))
         {
-            _sceneData = (LevelData)_serializer.Deserialize(stream, typeof(LevelData));
+            _sceneData =  (LevelData)_binaryFormatter.Deserialize(stream);
         }
 
         foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
@@ -135,9 +185,17 @@ public class SaveLoadScene : MonoBehaviour
         }
 
         // Save file
-        using (var stream = File.CreateText(SavePath))
+        //string text = JsonConvert.SerializeObject(_sceneData, _settings);
+        //File.WriteAllText(SavePath, text);
+
+        //using (var stream = File.CreateText(SavePath))
+        //{
+        //    _serializer.Serialize(stream, _sceneData);
+        //}
+
+        using (var stream = File.Open(SavePath, FileMode.Create))
         {
-            _serializer.Serialize(stream, _sceneData);
+            _binaryFormatter.Serialize(stream, _sceneData);
         }
     }
 
@@ -171,8 +229,8 @@ public struct DynamicSaveableData
 {
     public string Guid;
     public string ResourcesPath;
-    public SerializableVector3 Position;
-    public SerializableVector3 Rotation;
+    public Vector3 Position;
+    public Vector3 Rotation;
     public ComponentsData Components;
 
 }
@@ -180,16 +238,19 @@ public struct DynamicSaveableData
 [Serializable]
 public struct StaticSaveableData
 {
-    public SerializableVector3 Position;
-    public SerializableVector3 Rotation;
+    public Vector3 Position;
+    public Vector3 Rotation;
     public ComponentsData Components;
+    public bool IsStarted;
 
 }
 
 [Serializable]
 public sealed class SaveData
 {
-
+    // For non scene static objects. They will be deserialized in every scene
+    // Example: Player
+    public Dictionary<string, StaticSaveableData> StaticSaveableDatas = new Dictionary<string, StaticSaveableData>();
     public Dictionary<string, LevelData> ScenesData = new Dictionary<string, LevelData>();
 
 }
@@ -205,6 +266,32 @@ public static class DictionaryExtensions
         }
 
         dictionary.Add(key, value);
+    }
+
+}
+
+public class Vector3SerializationSurrogate : ISerializationSurrogate
+{
+
+    // Method called to serialize a Vector3 object
+    public void GetObjectData(System.Object obj, SerializationInfo info, StreamingContext context)
+    {
+        Vector3 v3 = (Vector3)obj;
+        info.AddValue("x", v3.x);
+        info.AddValue("y", v3.y);
+        info.AddValue("z", v3.z);
+    }
+
+    // Method called to deserialize a Vector3 object
+    public System.Object SetObjectData(System.Object obj, SerializationInfo info,
+                                       StreamingContext context, ISurrogateSelector selector)
+    {
+        Vector3 v3 = (Vector3)obj;
+        v3.x = (float)info.GetValue("x", typeof(float));
+        v3.y = (float)info.GetValue("y", typeof(float));
+        v3.z = (float)info.GetValue("z", typeof(float));
+        obj = v3;
+        return obj;
     }
 
 }

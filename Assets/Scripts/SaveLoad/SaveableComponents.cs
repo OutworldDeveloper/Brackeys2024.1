@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections;
 
 public sealed class SaveableComponents : MonoBehaviour
 {
@@ -39,6 +40,18 @@ public sealed class SaveableComponents : MonoBehaviour
         _saveableComponents.RemoveAt(index);
     }
 
+    public MonoBehaviour[] GetAll()
+    {
+        var array = new MonoBehaviour[_saveableComponents.Count];
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            array[i] = _saveableComponents[i].Component;
+        }
+
+        return array;
+    }
+
     [ContextMenu("Gather data")]
     public ComponentsData GatherData()
     {
@@ -48,18 +61,6 @@ public sealed class SaveableComponents : MonoBehaviour
         {
             var componentData = GatherComponentData(saveableComponent.Component);
             componentsData.Components.Add(saveableComponent.Guid, componentData);
-        }
-
-        Debug.Log($"Data is gathered, results:");
-
-        foreach (var itemA in componentsData.Components)
-        {
-            Debug.Log($"{itemA.Key}");
-            foreach (var itemB in itemA.Value.Fields)
-            {
-                Debug.Log($"{itemB.Key}: {itemB.Value}");
-                Debug.Log($"Type: {itemB.Value.GetType()}");
-            }
         }
 
         return componentsData;
@@ -80,14 +81,7 @@ public sealed class SaveableComponents : MonoBehaviour
                 continue;
 
             object value = field.GetValue(component);
-
-            if (field.FieldType == typeof(Vector3))
-            {
-                value = new SerializableVector3((Vector3)value);
-            }
-
-            componentData.Fields.Add($"{field.Name}", value);
-            //Debug.Log($"{field.Name} is a persistent field. We will save it's value {field.GetValue(component)}.");
+            componentData.Fields.Add(field.Name, value);
         }
 
         // Custom data
@@ -122,22 +116,12 @@ public sealed class SaveableComponents : MonoBehaviour
             if (isPersistent == false)
                 continue;
 
-            string key = $"{field.Name}";
+            string key = field.Name;
 
             if (data.Fields.ContainsKey(key) == false)
                 continue;
 
             object value = data.Fields[key];
-
-            if (value.GetType() == typeof(SerializableVector3))
-            {
-                value = (Vector3)(SerializableVector3)value;
-            }
-            else
-            {
-                value = Convert.ChangeType(value, field.FieldType);
-            }
-
             field.SetValue(target, value);
         }
 
@@ -150,12 +134,25 @@ public sealed class SaveableComponents : MonoBehaviour
 
 }
 
+[AttributeUsage(AttributeTargets.Field)]
+public class PersistentAttribute : Attribute { }
+
+[Serializable]
+public sealed class SaveableComponentInfo
+{
+    public MonoBehaviour Component;
+    public string Guid;
+
+}
+
+[Serializable]
 public class ComponentsData
 {
     public Dictionary<string, ComponentData> Components = new Dictionary<string, ComponentData>();
 
 }
 
+[Serializable]
 public class ComponentData
 {
     public Dictionary<string, object> Fields = new Dictionary<string, object>();

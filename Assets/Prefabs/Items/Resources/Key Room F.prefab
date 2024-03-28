@@ -91,7 +91,8 @@ MonoBehaviour:
   <IsItem>k__BackingField: 1
   <Sprite>k__BackingField: {fileID: 21300000, guid: 86bcf1296a1dd3540bd708d3b026e3bd,
     type: 3}
-  _tags: []
+  _tags:
+  - {fileID: 11400000, guid: d713da12f3745cc4dbd962bcb48aed2a, type: 2}
   _colliders:
   - {fileID: 5330932033359355858}
   _visuals:

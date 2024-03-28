@@ -36,3 +36,9 @@ public class StaticSaveable : MonoBehaviour
     }
 
 }
+
+public interface IFreshStartable
+{
+    public void FreshStart();
+
+}

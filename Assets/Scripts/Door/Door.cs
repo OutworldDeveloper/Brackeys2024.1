@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class Door : MonoBehaviour
+public sealed class Door : MonoBehaviour, IFreshStartable
 {
 
     public event Action SomeoneKnocked;
@@ -29,12 +29,12 @@ public sealed class Door : MonoBehaviour
 
     [SerializeField] private BoxCheck _blockersCheck;
 
-    private bool _isOpen;
+    [Persistent] private bool _isOpen;
     private bool _isAnimating;
     private bool _isCollisionSynched;
     private TimeSince _timeSinceAnimationStarted;
     private int _blockedTimes;
-    private bool _isLockedByKey;
+    [Persistent] private bool _isLockedByKey;
 
     private TimeSince _timeSinceLastKnocked = new TimeSince(float.NegativeInfinity);
 
@@ -42,6 +42,11 @@ public sealed class Door : MonoBehaviour
     public bool IsLocked => _isLockedByKey == true || _blockedTimes > 0;
 
     private void Start()
+    {
+        SetRotation(_isOpen ? _openAngle : 0f);
+    }
+
+    public void FreshStart()
     {
         _isLockedByKey = _keyTag != null;
     }

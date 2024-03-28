@@ -20,6 +20,7 @@ public class TestSaveableComponentCustomData : MonoBehaviour, ICustomSaveable
         _itemsAmount = (data as InventoryData).ItemsAmount;
     }
 
+    [System.Serializable]
     private class InventoryData
     {
         public int ItemsAmount;
