@@ -37,8 +37,8 @@ public class StaticSaveable : MonoBehaviour
 
 }
 
-public interface IFreshStartable
+public interface IFirstLoadCallback
 {
-    public void FreshStart();
+    public void OnFirstLoad();
 
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class Door : MonoBehaviour, IFreshStartable
+public sealed class Door : MonoBehaviour, IFirstLoadCallback
 {
 
     public event Action SomeoneKnocked;
@@ -41,14 +41,14 @@ public sealed class Door : MonoBehaviour, IFreshStartable
     public bool IsOpen => _isOpen;
     public bool IsLocked => _isLockedByKey == true || _blockedTimes > 0;
 
+    public void OnFirstLoad()
+    {
+        _isLockedByKey = _keyTag != null;
+    }
+
     private void Start()
     {
         SetRotation(_isOpen ? _openAngle : 0f);
-    }
-
-    public void FreshStart()
-    {
-        _isLockedByKey = _keyTag != null;
     }
 
     [ContextMenu("Open")]

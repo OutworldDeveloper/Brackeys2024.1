@@ -40,16 +40,9 @@ public sealed class SaveableComponents : MonoBehaviour
         _saveableComponents.RemoveAt(index);
     }
 
-    public MonoBehaviour[] GetAll()
+    public SaveableComponentInfo[] GetAll()
     {
-        var array = new MonoBehaviour[_saveableComponents.Count];
-
-        for (int i = 0; i < array.Length; i++)
-        {
-            array[i] = _saveableComponents[i].Component;
-        }
-
-        return array;
+        return _saveableComponents.ToArray();
     }
 
     [ContextMenu("Gather data")]
