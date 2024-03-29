@@ -2,46 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-1000)]
 public class SaveLoadScene : MonoBehaviour
 {
-    private static string SavePath => $"{Application.persistentDataPath}/save.txt";
+    public static SaveLoadScene Current { get; private set; }
 
     private LevelData _sceneData;
-    private BinaryFormatter _binaryFormatter;
 
     private void Awake()
     {
-        _binaryFormatter = new BinaryFormatter();
-
-        SurrogateSelector surrogateSelector = new SurrogateSelector();
-        Vector3SerializationSurrogate vector3SS = new Vector3SerializationSurrogate();
-
-        surrogateSelector.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), vector3SS);
-        _binaryFormatter.SurrogateSelector = surrogateSelector;
-
-        // Если false всё равно можно прогреть и удалить все обьекты что бы не было отличий никак
-        if (File.Exists(SavePath) == false)
+        if (Current != null)
         {
-            _sceneData = new LevelData();
-
-            foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
-            {
-                _sceneData.DynamicTheyExist.Add(dynamicSaveable.SceneGuid);
-            }
+            Debug.LogError($"There should be only one {nameof(SaveLoadScene)} in a scene");
         }
         else
         {
-            // Deserialize save file
-            using (var stream = File.Open(SavePath, FileMode.Open))
+            Current = this;
+        }
+
+        _sceneData = SaveLoadSystem.CurrentSave.GetSceneData(SceneManager.GetActiveScene().name);
+
+        if (_sceneData.EverLoaded == false)
+        {
+            foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
             {
-                _sceneData = (LevelData)_binaryFormatter.Deserialize(stream);
+                // Что-то тут странное. Если у нас уже есть сохранение, то новые (В патче) динамические обьекты не появятся?
+                _sceneData.DynamicTheyExist.Add(dynamicSaveable.SceneGuid);
             }
 
+            _sceneData.EverLoaded = true;
+        }
+        else
+        {
             // Remove initial dynamic objects
             foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
             {
@@ -100,6 +96,11 @@ public class SaveLoadScene : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        Current = null;
+    }
+
     private string PrefabPathToResourcePath(string path)
     {
         int index = path.IndexOf("Resources/");
@@ -117,7 +118,7 @@ public class SaveLoadScene : MonoBehaviour
     } // Written by ChatGPT :D
 
     [ContextMenu("Save")]
-    public void SaveGame()
+    public void SaveData()
     {
         //var levelData = new LevelData(); // We used to create new LevelData every time. Let's try to keep the old one
 
@@ -150,11 +151,6 @@ public class SaveLoadScene : MonoBehaviour
             data.Rotation = staticSaveable.transform.eulerAngles;
             data.Components = staticSaveable.GetComponent<SaveableComponents>().GatherData();
         }
-
-        using (var stream = File.Open(SavePath, FileMode.Create))
-        {
-            _binaryFormatter.Serialize(stream, _sceneData);
-        }
     }
 
 }
@@ -168,6 +164,8 @@ public class LevelData
     public List<DynamicSaveableData> DynamicSaveableDatas = new List<DynamicSaveableData>();
 
     public HashSet<string> DynamicTheyExist = new HashSet<string>(); // Dynamic objects that do exist or something
+
+    public bool EverLoaded;
 
     public bool ContainsDynamicSaveable(string guid)
     {
@@ -223,6 +221,91 @@ public sealed class SaveData
     // Example: Player
     public Dictionary<string, StaticSaveableData> StaticSaveableDatas = new Dictionary<string, StaticSaveableData>();
     public Dictionary<string, LevelData> ScenesData = new Dictionary<string, LevelData>();
+
+    public DateTime LastSaveTime;
+    public int SavedTimes;
+
+    public LevelData GetSceneData(string scene)
+    {
+        if (ScenesData.ContainsKey(scene) == false)
+            ScenesData.Add(scene, new LevelData());
+
+        return ScenesData[scene];
+    }
+
+}
+
+public static class SaveLoadSystem
+{
+    public static SaveData CurrentSave { get; private set; } = new SaveData();
+
+    public static string GetSavePath(int slot) => $"{Application.persistentDataPath}/save{slot}.txt";
+
+    public static SaveData GetSaveDataInSlot(int slot)
+    {
+        return BinarySaveDataSerializer.Deserialize(GetSavePath(slot));
+    }
+
+    public static void SaveCurrentDataToSlot(int slot)
+    {
+        SaveLoadScene.Current?.SaveData(); // Костыль?
+        CurrentSave.LastSaveTime = DateTime.Now;
+        CurrentSave.SavedTimes++;
+        BinarySaveDataSerializer.Serialize(GetSavePath(slot), CurrentSave);
+    }
+
+    public static bool HasDataInSlot(int slot)
+    {
+        return BinarySaveDataSerializer.DoesFileExist(GetSavePath(slot));
+    }
+
+    public static void LoadDataFromSlot(int slot)
+    {
+        if (HasDataInSlot(slot) == false)
+            Debug.LogError("Trying to load an empty slot");
+
+        CurrentSave = GetSaveDataInSlot(slot);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // CurrentSave should have a scene name to load
+    }
+
+}
+
+public static class BinarySaveDataSerializer
+{
+
+    private static readonly BinaryFormatter _binaryFormatter;
+
+    static BinarySaveDataSerializer()
+    {
+        _binaryFormatter = new BinaryFormatter();
+
+        SurrogateSelector surrogateSelector = new SurrogateSelector();
+        Vector3SerializationSurrogate vector3SS = new Vector3SerializationSurrogate();
+
+        surrogateSelector.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), vector3SS);
+        _binaryFormatter.SurrogateSelector = surrogateSelector;
+    }
+
+    public static SaveData Deserialize(string filePath)
+    {
+        using (var stream = File.Open(filePath, FileMode.Open))
+        {
+            return (SaveData)_binaryFormatter.Deserialize(stream);
+        }
+    }
+
+    public static void Serialize(string filePath, SaveData data)
+    {
+        using (var stream = File.Open(filePath, FileMode.Create))
+        {
+            _binaryFormatter.Serialize(stream, data);
+        }
+    }
+
+    public static bool DoesFileExist(string filePath)
+    {
+        return File.Exists(filePath);
+    }
 
 }
 
