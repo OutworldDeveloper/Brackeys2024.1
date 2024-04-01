@@ -18,7 +18,6 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private FloatParameter _mouseSensitivity;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
-    [SerializeField] private float _respawnTime = 2f;
     [SerializeField] private float _maxHealth = 5f;
     [SerializeField] private bool _allowJumping;
     [SerializeField] private bool _allowCrouching;
@@ -43,8 +42,7 @@ public sealed class PlayerCharacter : Pawn
     private Vector3 _velocityXZ;
     private float _velocityY;
     private TimeSince _timeSinceLastDeath = TimeSince.Never;
-    private Vector3 _spawnPosition;
-    private Quaternion _spawnRotation;
+
     private readonly List<CharacterModifier> _modifiers = new List<CharacterModifier>();
     private TimeSince _timeSinceLastDamage = TimeSince.Never;
     private PlayerInput _currentInput;
@@ -76,7 +74,6 @@ public sealed class PlayerCharacter : Pawn
     public Inventory Inventory => _inventory;
     public Grip Grip => _grip;
     public bool IsDead { get; private set; }
-    public float RespawnTime => _respawnTime;
     public float MaxHealth => _maxHealth;
     public float Health { get; private set; }
     public Vector3 HorizontalVelocity => _velocityXZ;
@@ -129,9 +126,6 @@ public sealed class PlayerCharacter : Pawn
         _defaultCameraHeight = _head.localPosition.y;
 
         Health = _maxHealth;
-
-        _spawnPosition = transform.position;
-        _spawnRotation = transform.rotation;
 
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
     }
@@ -274,11 +268,6 @@ public sealed class PlayerCharacter : Pawn
             };
         }
 
-        if (IsDead == true && _timeSinceLastDeath > _respawnTime)
-        {
-            Respawn();
-        }
-
         if (IsDead == false && _timeSinceLastDamage > 10f)
         {
             Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
@@ -318,26 +307,6 @@ public sealed class PlayerCharacter : Pawn
         Died?.Invoke(type);
         GetComponent<Animator>().SetBool("dead", true);
         _modifiers.Clear();
-    }
-
-    public void Respawn()
-    {
-        GetComponent<Animator>().SetBool("dead", false);
-
-        _velocityXZ = Vector3.zero;
-        _velocityY = 0f;
-
-        transform.position = _spawnPosition;
-        transform.rotation = _spawnRotation;
-        Physics.SyncTransforms();
-
-        _head.localRotation = Quaternion.identity;
-        Health = _maxHealth;
-
-        ApplyModifier(new SpawnBlockModifier(), 0.4f);
-
-        IsDead = false;
-        Respawned?.Invoke();
     }
 
     public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier

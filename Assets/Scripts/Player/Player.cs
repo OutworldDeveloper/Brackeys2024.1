@@ -13,6 +13,7 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private GameObject _hud;
     [SerializeField] private Prefab<UI_PauseMenu> _pauseMenu;
     [SerializeField] private Prefab<UI_InventoryScreen> _inventoryScreen;
+    [SerializeField] private Prefab<UI_Panel> _deathScreen;
     [SerializeField] private bool _smoothPawnCameraChange;
 
     [SerializeField] private Volume _blurVolume;
@@ -181,8 +182,7 @@ public sealed class Player : MonoBehaviour
 
     private void OnCharacterDied(DeathType deathType)
     {
-        Possess(_character);
-        UpdateState();
+        Delayed.Do(() => _panels.InstantiateAndOpenFrom(_deathScreen), 2.75f);
     }
 
     private void OnCharacterRespawned()

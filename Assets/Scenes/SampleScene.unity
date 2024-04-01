@@ -2084,6 +2084,9 @@ MonoBehaviour:
   _inventoryScreen:
     _asset: {fileID: 1180456696886016216, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
       type: 3}
+  _deathScreen:
+    _asset: {fileID: 6997847314003538359, guid: 18dfac60672f56b4c8ae363d27de1622,
+      type: 3}
   _smoothPawnCameraChange: 0
   _blurVolume: {fileID: 716291999}
   _panels: {fileID: 1975297824}
@@ -41101,7 +41104,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2146391282}
   - component: {fileID: 2146391283}
-  - component: {fileID: 2146391284}
   m_Layer: 0
   m_Name: Effects
   m_TagString: Untagged
@@ -41139,19 +41141,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerCharacter: {fileID: 668565586}
   _sound: {fileID: 11400000, guid: 60d065bc889ad744fbbb254ac64536f0, type: 2}
---- !u!114 &2146391284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2146391281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04df39b3ac892df41ae750c08a6a077a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _character: {fileID: 668565586}
 --- !u!33 &75088116132142951
 MeshFilter:
   m_ObjectHideFlags: 0
