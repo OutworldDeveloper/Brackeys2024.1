@@ -11,14 +11,18 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
-    [SerializeField] private UI_PauseMenu _pauseMenu;
+    [SerializeField] private Prefab<UI_PauseMenu> _pauseMenu;
+    [SerializeField] private Prefab<UI_InventoryScreen> _inventoryScreen;
     [SerializeField] private bool _smoothPawnCameraChange;
 
     [SerializeField] private Volume _blurVolume;
 
-    private bool _isPauseMenuOpen;
+    [SerializeField] private UI_PanelsManager _panels;
+
     private Pawn _currentPawn;
     private TimeSince _timeSincePawnChanged;
+
+    public UI_PanelsManager Panels => _panels;
 
     private void OnEnable()
     {
@@ -37,16 +41,23 @@ public sealed class Player : MonoBehaviour
     private void Start()
     {
         Possess(_character);
-        OpenPauseMenu(true);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab) == true || Input.GetKeyDown(KeyCode.Escape))
+        UpdateState(); // Хы
+
+        if (Input.GetKeyDown(KeyCode.Escape) == true)
             HandleEscapeButton();
 
-        if (_isPauseMenuOpen == true)
+        if (Input.GetKeyDown(KeyCode.Tab) == true)
+            HandleTabButton();
+
+        if (_panels.HasActivePanel == true)
+        {
+            _panels.Active.InputUpdate();
             return;
+        }    
 
         if (_currentPawn != null)
         {
@@ -96,9 +107,9 @@ public sealed class Player : MonoBehaviour
 
     private void HandleEscapeButton()
     {
-        if (_isPauseMenuOpen == true)
+        if (_panels.HasActivePanel == true)
         {
-            ClosePauseMenu();
+            _panels.TryCloseActivePanel();
             return;
         }
 
@@ -108,7 +119,18 @@ public sealed class Player : MonoBehaviour
         }
         else
         {
-            OpenPauseMenu(false);
+            OpenPauseMenu();
+        }
+    }
+
+    private void HandleTabButton()
+    {
+        if (_panels.HasActivePanel == true)
+            return;
+
+        if (_currentPawn == _character)
+        {
+            _panels.InstantiateAndOpenFrom(_inventoryScreen).SetTarget(_character.GetComponent<ExpInventory>());
         }
     }
 
@@ -168,34 +190,27 @@ public sealed class Player : MonoBehaviour
         UpdateState();
     }
 
-    public void OpenPauseMenu(bool menu)
+    public void OpenPauseMenu()
     {
-        _pauseMenu.SetMode(menu);
-        _isPauseMenuOpen = true;
+        _panels.InstantiateAndOpenFrom(_pauseMenu);
         UpdateState();
-    }
-
-    public void ClosePauseMenu()
-    {
-        _isPauseMenuOpen = false;
-        UpdateState();
-
-        PlayerPrefs.Save();
     }
 
     private void UpdateState()
     {
-        bool showHud = _isPauseMenuOpen == false && _character.IsDead == false && _currentPawn == _character;
+        bool showHud = 
+            _panels.HasActivePanel == false &&
+            _character.IsDead == false && 
+            _currentPawn == _character;
 
         _hud.SetActive(showHud);
-        _pauseMenu.gameObject.SetActive(_isPauseMenuOpen == true);
 
-        bool showCursor = _isPauseMenuOpen == true || _currentPawn.ShowCursor == true;
+        bool showCursor = _panels.HasActivePanel == true || _currentPawn.ShowCursor == true;
 
-        Cursor.visible = showCursor ? true : false;
+        Cursor.visible = showCursor;
         Cursor.lockState = showCursor ? CursorLockMode.None : CursorLockMode.Locked;
 
-        bool pauseGame = _isPauseMenuOpen == true;
+        bool pauseGame = _panels.HasActivePanel == true;
 
         Time.timeScale = pauseGame ? 0f : 1f;
     }

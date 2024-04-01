@@ -14,7 +14,7 @@ public class StaticSaveable : MonoBehaviour
 
     private void OnValidate()
     {
-        Debug.Log("Update");
+        //Debug.Log("Update");
 
         if (gameObject.scene.IsValid() == false)
         {
@@ -24,12 +24,12 @@ public class StaticSaveable : MonoBehaviour
             return;
         }
 
-        Debug.Log("We're not a prefab");
+        //Debug.Log("We're not a prefab");
 
         if (_hasSceneGuid == true)
             return;
 
-        Debug.Log("String is empty");
+        //Debug.Log("String is empty");
 
         _sceneGuid = Guid.NewGuid().ToString();
         _hasSceneGuid = true;

@@ -4,16 +4,12 @@ using UnityEngine;
 
 public class SaveGameStation : MonoBehaviour
 {
-    public void SaveGame()
+
+    [SerializeField] private Prefab<UI_SaveGameWindow> _windowPrefab;
+
+    public void SaveGame(PlayerCharacter character)
     {
-        //FindObjectOfType<SaveLoadScene>().SaveGame();
-
-        FindObjectOfType<UI_SaveGameWindow>(true).gameObject.SetActive(true);
-
-        Delayed.Do(() =>
-        {
-            FindObjectOfType<UI_SaveGameWindow>().gameObject.SetActive(false);
-        }, 6f);
+        character.Player.Panels.InstantiateAndOpenFrom(_windowPrefab);
     }
 
 }

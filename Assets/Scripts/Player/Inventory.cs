@@ -82,6 +82,32 @@ public class Inventory : MonoBehaviour, ICustomSaveable
 
 }
 
+public class ItemSlot
+{
+
+    private readonly List<Item> _items;
+
+    public bool HasItem => _items.Count > 0;
+    public Item First => _items[0];
+
+    public bool TryAdd(Item item)
+    {
+        if (HasItem == true)
+            return false;
+
+        _items.Add(item);
+        return true;
+    }
+
+    public Item RemoveAt(int i)
+    {
+        Item toRemove = _items[i];
+        _items.RemoveAt(i);
+        return toRemove;
+    }
+
+}
+
 public static class SaveLoadUtility
 {
     public static DynamicSaveableData SerializeGameObject(GameObject gameObject)

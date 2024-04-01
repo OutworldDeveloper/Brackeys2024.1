@@ -4,22 +4,17 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 
-public sealed class UI_PauseMenu : MonoBehaviour
+[DefaultExecutionOrder(Order.UI)]
+public sealed class UI_PauseMenu : UI_Panel
 {
 
     [SerializeField] private CanvasGroup _mainPanel;
     [SerializeField] private RectTransform _buttonsPanel;
     [SerializeField] private Transform _buttonsParent;
-    [SerializeField] private TextMeshProUGUI _menuText;
-    [SerializeField] private TextMeshProUGUI _continueButtonText;
+
+    [SerializeField] private Prefab<UI_LoadGameWindow> _loadGameWindowPrefab;
 
     private Sequence _sequeence;
-
-    public void SetMode(bool menu)
-    {
-        _menuText.text = menu ? "Escape the hallway" : "Pause Menu";
-        _continueButtonText.text = menu ? "Start" : "Continue";
-    }
 
     private void OnEnable()
     {
@@ -43,6 +38,16 @@ public sealed class UI_PauseMenu : MonoBehaviour
     private void OnDisable()
     {
         _sequeence?.Kill();
+    }
+
+    public void ContinueButton()
+    {
+        CloseAndDestroy();
+    }
+
+    public void LoadGameButton()
+    {
+        Owner.InstantiateAndOpenFrom(_loadGameWindowPrefab);
     }
 
 }
