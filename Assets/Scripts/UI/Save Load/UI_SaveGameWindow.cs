@@ -11,22 +11,6 @@ public sealed class UI_SaveGameWindow : UI_Panel
         _saveSlots.SlotSelected += ClickedOnSlot;
     }
 
-    private void OnEnable()
-    {
-        for (int i = 0; i < 6; i++)
-        {
-            if (SaveLoadSystem.HasDataInSlot(i) == true)
-            {
-                var data = SaveLoadSystem.GetSaveDataInSlot(i);
-                _saveSlots.SetSlotInfo(i, new UI_SaveSlotInfo(data));
-            }
-            else
-            {
-                _saveSlots.ClearSlot(i);
-            }
-        }
-    }
-
     private void ClickedOnSlot(int slot)
     {
         if (SaveLoadSystem.HasDataInSlot(slot) == false)
@@ -50,9 +34,7 @@ public sealed class UI_SaveGameWindow : UI_Panel
 
         SaveLoadSystem.SaveCurrentDataToSlot(slot);
 
-        // Костыль (обновить слот)
-        var data = SaveLoadSystem.GetSaveDataInSlot(slot);
-        _saveSlots.SetSlotInfo(slot, new UI_SaveSlotInfo(data));
+        _saveSlots.Refresh();
 
         Owner.InstantiateAndOpenFrom(_yesNoWindow).
             Setup("Success", "The game was successfuly saved.", () => { }, false);

@@ -11,7 +11,7 @@ public class UI_SaveSlots : MonoBehaviour
 
     [SerializeField] private UI_SaveSlot[] _slots;
 
-    private void Awake()
+    private void Start()
     {
         for (int i = 0; i < _slots.Length; i++)
         {
@@ -21,16 +21,24 @@ public class UI_SaveSlots : MonoBehaviour
                 SlotSelected?.Invoke(x);
             });
         }
+
+        Refresh();
     }
 
-    public void SetSlotInfo(int slot, UI_SaveSlotInfo info)
+    public void Refresh()
     {
-        _slots[slot].Display(info);
-    }
-
-    public void ClearSlot(int slot)
-    {
-        _slots[slot].DisplayEmpty();
+        for (int i = 0; i < _slots.Length; i++)
+        {
+            if (SaveLoadSystem.HasDataInSlot(i) == true)
+            {
+                var data = SaveLoadSystem.GetSaveDataInSlot(i);
+                _slots[i].Display(new UI_SaveSlotInfo(data));
+            }
+            else
+            {
+                _slots[i].DisplayEmpty();
+            }
+        }
     }
 
 }
