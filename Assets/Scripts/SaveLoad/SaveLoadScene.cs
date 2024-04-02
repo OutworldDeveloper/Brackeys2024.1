@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Runtime.Serialization;
 using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-1000)]
@@ -10,6 +9,7 @@ public class SaveLoadScene : MonoBehaviour
     public static SaveLoadScene Current { get; private set; }
 
     private LevelData _sceneData;
+    private TimeSince _timeSinceSceneLoaded;
 
     private void Awake()
     {
@@ -101,8 +101,14 @@ public class SaveLoadScene : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _timeSinceSceneLoaded = TimeSince.Now();
+    }
+
     private void OnDestroy()
     {
+        SaveData();
         Current = null;
     }
 
@@ -125,12 +131,13 @@ public class SaveLoadScene : MonoBehaviour
     [ContextMenu("Save")]
     public void SaveData()
     {
+        _sceneData.AddPlayTime(_timeSinceSceneLoaded); // Adds time but doesn't reset TimeSince causing to dublicate
+        _timeSinceSceneLoaded = TimeSince.Now();
+
         //var levelData = new LevelData(); // We used to create new LevelData every time. Let's try to keep the old one
 
-        // we still need to clear it though
         _sceneData.DynamicSaveableDatas.Clear();
         //_sceneData.StaticSaveableDatas.Clear();
-        //
 
         foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
         {
@@ -172,6 +179,8 @@ public class LevelData
 
     public bool EverLoaded;
 
+    public float PlayTime { get; private set; }
+
     public bool ContainsDynamicSaveable(string guid)
     {
         foreach (var dynamicSaveableData in DynamicSaveableDatas)
@@ -194,6 +203,11 @@ public class LevelData
     public void SetStaticData(string guid, StaticSaveableData data)
     {
         StaticSaveableDatas.AddOrUpdate(guid, data);
+    }
+
+    public void AddPlayTime(float time)
+    {
+        PlayTime += time;
     }
 
 }
@@ -236,6 +250,18 @@ public sealed class SaveData
             ScenesData.Add(scene, new LevelData());
 
         return ScenesData[scene];
+    }
+
+    public float GetTotalPlayTime()
+    {
+        float playTime = 0f;
+
+        foreach (var scene in ScenesData)
+        {
+            playTime += scene.Value.PlayTime;
+        }
+
+        return playTime;
     }
 
 }

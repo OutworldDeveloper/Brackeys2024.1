@@ -52,7 +52,7 @@ public readonly struct UI_SaveSlotInfo
     public UI_SaveSlotInfo(SaveData data)
     {
         LastSavedTime = data.LastSaveTime;
-        PlayTime = 0f;
+        PlayTime = data.GetTotalPlayTime();
         SavedTimes = data.SavedTimes;
     }
 
