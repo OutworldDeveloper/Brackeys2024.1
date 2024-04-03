@@ -10,6 +10,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 {
 
     public event Action<UI_Slot> Selected;
+    public event Action<UI_Slot> Hovered;
 
     [SerializeField] private Image _itemImage;
     [SerializeField] private TextMeshProUGUI _numberLabel;
@@ -91,6 +92,8 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         //_border.rectTransform.DOScale(1.15f, 0.1f).From(1f).SetUpdate(true);
         //_borderImage.DOColor(_borderColorHighlighted, 0.1f).From(_borderColor).SetUpdate(true);
         _borderImage.color = _borderColorHighlighted;
+
+        Hovered?.Invoke(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)

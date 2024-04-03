@@ -15,8 +15,10 @@ public class UI_InventoryScreen : UI_Panel
     [SerializeField] private Image _itemMovePreview;
     [SerializeField] private TextMeshProUGUI _itemsCountPreview;
 
-    [SerializeField] private Prefab<Item> _itemTest1;
-    [SerializeField] private Prefab<Item> _itemTest2;
+    [SerializeField] private TextMeshProUGUI _selectedNameLabel;
+    [SerializeField] private TextMeshProUGUI _selectedDescriptionLabel;
+
+    [SerializeField] private Prefab<Item>[] _itemsTest;
 
     private PlayerCharacter _character;
 
@@ -67,7 +69,7 @@ public class UI_InventoryScreen : UI_Panel
         {
             if (Input.GetKeyDown(testKeys[i]) == true)
             {
-                Prefab<Item> toSpawn = Input.GetKey(KeyCode.LeftControl) ? _itemTest1 : _itemTest2;
+                Prefab<Item> toSpawn = _itemsTest[Random.Range(0, _itemsTest.Length)];
                 _character.GetComponent<ExpInventory>()[i].TryAdd(toSpawn.Instantiate());
             }
         }
@@ -76,11 +78,13 @@ public class UI_InventoryScreen : UI_Panel
     protected void RegisterSlot(UI_Slot slot)
     {
         slot.Selected += OnSlotSelected;
+        slot.Hovered += OnSlotHovered;
     }
 
     protected void RegisterGrid(UI_InventoryGrid grid)
     {
         grid.SlotSelected += OnSlotSelected;
+        grid.SlotHovered += OnSlotHovered;
     }
 
     private void OnSlotSelected(UI_Slot slot)
@@ -139,6 +143,18 @@ public class UI_InventoryScreen : UI_Panel
                 _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.ItemsCount > 1);
                 _itemsCountPreview.text = _movingFromSlot.TargetSlot.ItemsCount.ToString();
             }
+        }
+    }
+
+    private void OnSlotHovered(UI_Slot slot)
+    {
+        _selectedNameLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
+        _selectedDescriptionLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
+
+        if (slot.TargetSlot.IsEmpty == false)
+        {
+            _selectedNameLabel.text = slot.TargetSlot.FirstItem.DisplayName;
+            _selectedDescriptionLabel.text = $"Item with a name {slot.TargetSlot.FirstItem.DisplayName}";
         }
     }
 

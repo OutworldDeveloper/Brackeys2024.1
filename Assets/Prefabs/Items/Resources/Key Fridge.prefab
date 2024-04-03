@@ -89,8 +89,9 @@ MonoBehaviour:
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 1
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 86bcf1296a1dd3540bd708d3b026e3bd,
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 49c01d6cdac48a046b57a1b1bb789b6c,
     type: 3}
+  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders:
   - {fileID: 8540947311750181338}
@@ -122,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selfPrefab: {fileID: 8540947311750181336}
-  _prefabPath: Assets/Prefabs/Items/Resources/Key Fridge.prefab
+  _prefabPath: 
   _hasSceneID: 0
   _sceneID: 
 --- !u!1001 &8540947311892039942
