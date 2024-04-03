@@ -176,6 +176,8 @@ MonoBehaviour:
   <IsItem>k__BackingField: 1
   <Sprite>k__BackingField: {fileID: 21300000, guid: 8c5d4243b5d6ce54f895a48335943c9c,
     type: 3}
+  <StackType>k__BackingField: {fileID: 11400000, guid: 7288706a665206643a998786d32b519c,
+    type: 2}
   _tags: []
   _colliders:
   - {fileID: 7509157159175730441}
@@ -235,6 +237,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selfPrefab: {fileID: 7509157159175730443}
-  _prefabPath: Assets/Prefabs/Items/Resources/Rope.prefab
+  _prefabPath: 
   _hasSceneID: 0
   _sceneID: 

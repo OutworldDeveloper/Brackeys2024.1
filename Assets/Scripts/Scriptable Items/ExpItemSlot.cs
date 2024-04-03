@@ -1,44 +1,80 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class ExpItemSlot
 {
 
     public event Action<ExpItemSlot> Changed;
 
-    public ItemStack Stack { get; private set; }
-    public bool IsEmpty => Stack == null;
+    public readonly MonoBehaviour Owner;
+    public readonly string SlotName;
+    private readonly List<Item> _items = new List<Item>();
 
-    public ItemStack RemoveStack()
+    public bool IsEmpty => _items.Count < 1;
+    public Item FirstItem => _items[0];
+    public int ItemsCount => _items.Count;
+
+    public ExpItemSlot(MonoBehaviour owner, string name)
     {
-        Stack.Updated -= OnStackUpdated;
-        var result = Stack;
-        Stack = null;
-        Changed?.Invoke(this);
-        return result;
+        Owner = owner;
+        SlotName = name;
     }
 
-    public void SetStack(ItemStack stack)
+    public Item GetItem(int index)
     {
-        // Remove Stack?
-        Stack = stack;
-        Stack.Updated += OnStackUpdated;
-        Changed?.Invoke(this);
+        return _items[index];
     }
 
-    private void OnStackUpdated()
+    public Item[] GetItems()
     {
-        Changed?.Invoke(this);
+        return _items.ToArray();
     }
 
-    public bool TryAddStack(ItemStack stack)
+    public Item Take()
     {
         if (IsEmpty == true)
-        {
-            SetStack(stack);
-            return true;
-        }
+            throw new Exception("Trying to take an item from an Empty slot.");
 
-        return Stack.TryAddToStack(stack);
+        return RemoveAt(0);
+    }
+
+    // TODO: Upgrade
+    public Item RemoveAt(int index)
+    {
+        Item item = _items[index];
+        item.transform.SetParent(Owner.transform, false);
+        item.DisableCollision();
+        item.DisableVisuals();
+        _items.RemoveAt(index);
+        Changed?.Invoke(this);
+        return item;
+    }
+
+    public bool TryAdd(Item item)
+    {
+        if (CanAdd(item) == false)
+            return false;
+
+        item.transform.SetParent(Owner.transform, false);
+        item.DisableCollision();
+        item.DisableVisuals();
+        _items.Add(item);
+        Changed?.Invoke(this);
+        return true;
+    }
+
+    public bool CanAdd(Item item)
+    {
+        if (IsEmpty == true)
+            return true;
+
+        return FirstItem.StackType != null && FirstItem.StackType == item.StackType && ItemsCount + 1 <= FirstItem.StackType.MaxCount;
+    }
+
+    public override string ToString()
+    {
+        return $"Slot {SlotName} [" + (IsEmpty ? "Empty" : FirstItem.DisplayName) + "]"; 
     }
 
 }

@@ -131,7 +131,7 @@ public sealed class Player : MonoBehaviour
 
         if (_currentPawn == _character)
         {
-            _panels.InstantiateAndOpenFrom(_inventoryScreen).SetTarget(_character.GetComponent<ExpInventory>());
+            _panels.InstantiateAndOpenFrom(_inventoryScreen).SetTarget(_character);
         }
     }
 

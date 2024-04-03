@@ -10,6 +10,7 @@ public class Item : MonoBehaviour
     [field: SerializeField] public float Distance { get; private set; } = 0.3f;
     [field: SerializeField] public bool IsItem { get; private set; }
     [field: SerializeField] public Sprite Sprite { get; private set; }
+    [field:SerializeField] public StackType StackType { get; private set; }
 
     [SerializeField] private ItemTag[] _tags;
     [SerializeField] private Collider[] _colliders;
