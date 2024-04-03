@@ -268,7 +268,7 @@ public sealed class PlayerCharacter : Pawn
             };
         }
 
-        if (IsDead == false && _timeSinceLastDamage > 10f)
+        if (IsDead == false && _timeSinceLastDamage > 10f && CanRegnerateHealth() == true)
         {
             Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
         }
@@ -523,8 +523,9 @@ public sealed class PlayerCharacter : Pawn
         multipler = Mathf.Max(0f, multipler);
 
         var crouchMultipler = _isCrouching ? 0.4f : 1f;
+        var woundedMultipler = Health / _maxHealth < 0.3f ? 0.6f : 1f;
 
-        return baseSpeed * multipler * crouchMultipler;
+        return baseSpeed * multipler * crouchMultipler * woundedMultipler;
     }
 
     public bool CanCrouch()
@@ -568,6 +569,11 @@ public sealed class PlayerCharacter : Pawn
     public bool CanShoot()
     {
         return IsDead == false && _isAiming == true && _controller.isGrounded == true;
+    }
+
+    public bool CanRegnerateHealth()
+    {
+        return false;
     }
 
     public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
