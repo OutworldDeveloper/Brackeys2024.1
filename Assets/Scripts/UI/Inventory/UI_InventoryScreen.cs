@@ -52,10 +52,21 @@ public class UI_InventoryScreen : UI_Panel
             _itemMovePreviewGO.position = Input.mousePosition;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
+        KeyCode[] keyCodes = new KeyCode[]
         {
-            ItemDefinition item = _itemsTest[Random.Range(0, _itemsTest.Length)];
-            _character.GetComponent<ExpInventory>().TryAdd(new ItemStack(item));
+            KeyCode.Alpha1,
+            KeyCode.Alpha2,
+            KeyCode.Alpha3,
+            KeyCode.Alpha4,
+            KeyCode.Alpha5,
+        };
+
+        for (int i = 0; i < _itemsTest.Length; i++)
+        {
+            if (Input.GetKeyDown(keyCodes[i]) == true)
+            {
+                _character.GetComponent<ExpInventory>().TryAdd(new ItemStack(_itemsTest[i]));
+            }
         }
     }
 
