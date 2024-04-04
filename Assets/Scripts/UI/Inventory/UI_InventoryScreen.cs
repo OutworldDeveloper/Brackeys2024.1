@@ -59,6 +59,11 @@ public class UI_InventoryScreen : UI_Panel
             KeyCode.Alpha3,
             KeyCode.Alpha4,
             KeyCode.Alpha5,
+            KeyCode.Alpha6,
+            KeyCode.Alpha7,
+            KeyCode.Alpha8,
+            KeyCode.Alpha9,
+            KeyCode.Alpha0,
         };
 
         for (int i = 0; i < _itemsTest.Length; i++)

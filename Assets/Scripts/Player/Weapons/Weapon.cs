@@ -5,6 +5,8 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
 
+    [field: SerializeField] public int AnimationSet { get; private set; } 
+
     [SerializeField] private float _cooldown = 0.2f;
     
     [SerializeField] private Sound _shootSound;
@@ -13,11 +15,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private GameObject _muzzleFlash;
     [SerializeField] private float _muzzleFlashDuration = 0.035f;
 
-    [SerializeField] private LayerMask _shootMask;
-
     private TimeSince _timeSinceLastShoot;
-
-    public bool CanAim => true;
 
     public void OnAttack(Vector3 origin, Vector3 direction)
     {

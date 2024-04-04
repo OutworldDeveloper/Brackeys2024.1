@@ -164,11 +164,11 @@ public sealed class PlayerCharacter : Pawn
                 weapon.Shoot(null, _head.transform.position, _head.transform.forward);
                 _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
                 _timeSinceLastShoot = TimeSince.Now();
-                _targetRecoilY += UnityEngine.Random.Range(15f, 20f);
+                _targetRecoilY += UnityEngine.Random.Range(weapon.RecoilVerticalMin, weapon.RecoilVerticalMax);
                 //_targetRecoilY += UnityEngine.Random.Range(25f, 35f);
                 bool recoilRight = UnityEngine.Random.Range(0, 2) == 0;
                 Notification.ShowDebug(recoilRight ? "Right" : "Left");
-                _targetRecoilX += UnityEngine.Random.Range(5f, 7f) * (recoilRight ? 1 : -1);
+                _targetRecoilX += UnityEngine.Random.Range(weapon.RecoilHorizontalMin, weapon.RecoilHorizontalMax) * (recoilRight ? 1 : -1);
 
                 //_armsAnimator.Play("shotgun_shoot", 0);
                 _armsAnimator.SetTrigger("shoot");
@@ -201,10 +201,10 @@ public sealed class PlayerCharacter : Pawn
                 break;
             case WeaponState.Equipping:
                 _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItemDefinition).WeaponModel);
-                _armsAnimator.SetInteger("current_weapon", 1);
+                _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
                 break;
             case WeaponState.Ready:
-                _armsAnimator.SetInteger("current_weapon", 1);
+                _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
                 break;
             case WeaponState.Unequipping:
                 _armsAnimator.SetInteger("current_weapon", 0);

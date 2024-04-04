@@ -378,14 +378,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b0230a582ba2624a85988f425b20ad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <AnimationSet>k__BackingField: 1
   _cooldown: 0.3
   _shootSound: {fileID: 11400000, guid: a310438c6ee69ee46bae12677be46022, type: 2}
   _shootSource: {fileID: 746464302063259891}
   _muzzleFlash: {fileID: 7292816801575226516}
   _muzzleFlashDuration: 0.1
-  _shootMask:
-    serializedVersion: 2
-    m_Bits: 1
 --- !u!1001 &8961845798472419269
 PrefabInstance:
   m_ObjectHideFlags: 0
