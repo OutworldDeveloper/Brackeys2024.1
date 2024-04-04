@@ -630,16 +630,10 @@ MonoBehaviour:
   _selectedNameLabel: {fileID: 6683208973904822370}
   _selectedDescriptionLabel: {fileID: 5814756763379014484}
   _itemsTest:
-  - _asset: {fileID: 4379060530580784002, guid: e41ebd3de85d8f54d8d0ef3533ca04fe,
-      type: 3}
-  - _asset: {fileID: 8298798086133482717, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
-      type: 3}
-  - _asset: {fileID: 5501020257973529301, guid: 1098f7b4b3073fd458685008e737460f,
-      type: 3}
-  - _asset: {fileID: 2718569519719374001, guid: 675883925206cdb4ca3e1605ac64f2e5,
-      type: 3}
-  - _asset: {fileID: 4520232625056119107, guid: 919f7a670d594db41955ae2783fd5d78,
-      type: 3}
+  - {fileID: 11400000, guid: dcc0ee489de56154bbbdfe5322e1b33d, type: 2}
+  - {fileID: 11400000, guid: e47302faa20d86144900e0af70aff1b0, type: 2}
+  - {fileID: 11400000, guid: 62160f6e9a25d26488d32216164126f1, type: 2}
+  - {fileID: 11400000, guid: 33be8dc0e0c960849b30cc06b6597bb6, type: 2}
 --- !u!1 &4467125925545380040
 GameObject:
   m_ObjectHideFlags: 0

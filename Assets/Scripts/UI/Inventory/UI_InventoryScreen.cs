@@ -18,13 +18,14 @@ public class UI_InventoryScreen : UI_Panel
     [SerializeField] private TextMeshProUGUI _selectedNameLabel;
     [SerializeField] private TextMeshProUGUI _selectedDescriptionLabel;
 
-    [SerializeField] private Prefab<Item>[] _itemsTest;
+    [SerializeField] private ItemDefinition[] _itemsTest;
 
     private PlayerCharacter _character;
 
     private bool _isMovingItem;
     private UI_Slot _movingFromSlot;
     private float _lastMoveStartTime;
+    private int _moveAmount;
 
     public void SetTarget(PlayerCharacter character)
     {
@@ -51,27 +52,10 @@ public class UI_InventoryScreen : UI_Panel
             _itemMovePreviewGO.position = Input.mousePosition;
         }
 
-        KeyCode[] testKeys = new KeyCode[]
+        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
         {
-            KeyCode.Alpha1,
-            KeyCode.Alpha2,
-            KeyCode.Alpha3,
-            KeyCode.Alpha4,
-            KeyCode.Alpha5,
-            KeyCode.Alpha6,
-            KeyCode.Alpha7,
-            KeyCode.Alpha8,
-            KeyCode.Alpha9,
-            KeyCode.Alpha0,
-        };
-
-        for (int i = 0; i < testKeys.Length; i++)
-        {
-            if (Input.GetKeyDown(testKeys[i]) == true)
-            {
-                Prefab<Item> toSpawn = _itemsTest[Random.Range(0, _itemsTest.Length)];
-                _character.GetComponent<ExpInventory>()[i].TryAdd(toSpawn.Instantiate());
-            }
+            ItemDefinition item = _itemsTest[Random.Range(0, _itemsTest.Length)];
+            _character.GetComponent<ExpInventory>().TryAdd(new ItemStack(item));
         }
     }
 
@@ -97,15 +81,18 @@ public class UI_InventoryScreen : UI_Panel
             {
                 _isMovingItem = true;
                 _movingFromSlot = slot;
+
+                _moveAmount = _movingFromSlot.TargetSlot.Stack.Count;
+
                 slot.Hide();
 
                 _lastMoveStartTime = Time.unscaledTime;
 
-                _itemMovePreview.sprite = _movingFromSlot.TargetSlot.FirstItem.Sprite;
+                _itemMovePreview.sprite = _movingFromSlot.TargetSlot.Stack.Item.Sprite;
                 _itemMovePreviewGO.gameObject.SetActive(true);
 
-                _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.ItemsCount > 1);
-                _itemsCountPreview.text = _movingFromSlot.TargetSlot.ItemsCount.ToString();
+                _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.Stack.Count > 1);
+                _itemsCountPreview.text = _movingFromSlot.TargetSlot.Stack.Count.ToString();
             }
         }
         else
@@ -114,12 +101,12 @@ public class UI_InventoryScreen : UI_Panel
 
             if (_movingFromSlot.TargetSlot != slot.TargetSlot)
             {
-                int itemsCount = _movingFromSlot.TargetSlot.ItemsCount;
+                //for (int i = 0; i < _moveAmount; i++)
+                //{
+                //    InventoryManager.TryTransfer(_movingFromSlot.TargetSlot, slot.TargetSlot);
+                //}
 
-                for (int i = 0; i < itemsCount; i++)
-                {
-                    InventoryManager.TryTransfer(_movingFromSlot.TargetSlot, slot.TargetSlot);
-                }
+                InventoryManager.TryTransfer(_movingFromSlot.TargetSlot, slot.TargetSlot, _moveAmount);
 
                 if (_movingFromSlot.TargetSlot.IsEmpty == true)
                     shouldStopMoving = true;
@@ -140,8 +127,8 @@ public class UI_InventoryScreen : UI_Panel
             }
             else
             {
-                _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.ItemsCount > 1);
-                _itemsCountPreview.text = _movingFromSlot.TargetSlot.ItemsCount.ToString();
+                _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.Stack.Count > 1);
+                _itemsCountPreview.text = _movingFromSlot.TargetSlot.Stack.Count.ToString();
             }
         }
     }
@@ -153,8 +140,8 @@ public class UI_InventoryScreen : UI_Panel
 
         if (slot.TargetSlot.IsEmpty == false)
         {
-            _selectedNameLabel.text = slot.TargetSlot.FirstItem.DisplayName;
-            _selectedDescriptionLabel.text = $"Item with a name {slot.TargetSlot.FirstItem.DisplayName}";
+            _selectedNameLabel.text = slot.TargetSlot.Stack.Item.DisplayName;
+            _selectedDescriptionLabel.text = slot.TargetSlot.Stack.Item.Description;
         }
     }
 

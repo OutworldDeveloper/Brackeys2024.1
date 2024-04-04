@@ -20,9 +20,9 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
     private int _isHidden;
 
-    public ExpItemSlot TargetSlot { get; private set; }
+    public ItemSlot TargetSlot { get; private set; }
 
-    public void SetTarget(ExpItemSlot slot)
+    public void SetTarget(ItemSlot slot)
     {
         TargetSlot = slot;
         TargetSlot.Changed += OnTargetSlotChanged;
@@ -48,7 +48,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         TargetSlot.Changed -= OnTargetSlotChanged;
     }
 
-    private void OnTargetSlotChanged(ExpItemSlot slot)
+    private void OnTargetSlotChanged(ItemSlot slot)
     {
         Refresh();
     }
@@ -62,9 +62,9 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
         if (showEmptySlot == false)
         {
-            _itemImage.sprite = TargetSlot.FirstItem.Sprite;
-            _numberLabel.enabled = TargetSlot.ItemsCount > 1;
-            _numberLabel.text = TargetSlot.ItemsCount.ToString();
+            _itemImage.sprite = TargetSlot.Stack.Item.Sprite;
+            _numberLabel.enabled = TargetSlot.Stack.Count > 1;
+            _numberLabel.text = TargetSlot.Stack.Count.ToString();
         }
 
     }

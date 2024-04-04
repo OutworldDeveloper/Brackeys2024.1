@@ -3,13 +3,13 @@
 public class Equipment : MonoBehaviour
 {
 
-    private ExpItemSlot _weaponSlot;
+    private ItemSlot _weaponSlot;
 
-    public ExpItemSlot WeaponSlot => _weaponSlot;
+    public ItemSlot WeaponSlot => _weaponSlot;
 
     private void Awake()
     {
-        _weaponSlot = new ExpItemSlot(this, nameof(_weaponSlot));
+        _weaponSlot = new ItemSlot(this, nameof(_weaponSlot), typeof(WeaponItemDefinition));
     }
 
 }
