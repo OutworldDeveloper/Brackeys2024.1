@@ -19,22 +19,15 @@ public class Weapon : MonoBehaviour
 
     public bool CanAim => true;
 
-    public void Attack(Vector3 origin, Vector3 direction)
+    public void OnAttack(Vector3 origin, Vector3 direction)
     {
-        if (_timeSinceLastShoot < _cooldown)
-            return;
-
         _timeSinceLastShoot = TimeSince.Now();
-
         _shootSound.Play(_shootSource);
+    }
 
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, 25f, _shootMask) == false)
-            return;
-
-        if (hit.transform.TryGetComponent(out Zombie zombie) == true)
-        {
-            zombie.Kill();
-        }
+    private void Start()
+    {
+        _muzzleFlash.SetActive(false);
     }
 
     private void Update()

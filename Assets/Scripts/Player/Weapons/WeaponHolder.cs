@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,22 +6,25 @@ using UnityEngine;
 public class WeaponHolder : MonoBehaviour
 {
 
-    [SerializeField] private Weapon _debugWeaponToGrab;
     [SerializeField] private Transform _weaponBone;
 
     public Weapon ActiveWeapon { get; private set; }
+    public bool IsWeaponEquiped => ActiveWeapon != null;
 
-    private void Start()
+    public void Equip(Prefab<Weapon> weapon)
     {
-        Equip(_debugWeaponToGrab);
+        RemoveWeapon();
+
+        ActiveWeapon = weapon.Instantiate();
+        ActiveWeapon.transform.SetParent(_weaponBone, false);
+        ActiveWeapon.transform.localPosition = Vector3.zero;
+        ActiveWeapon.transform.localRotation = Quaternion.identity;
     }
 
-    public void Equip(Weapon weapon)
+    public void RemoveWeapon()
     {
-        weapon.transform.SetParent(_weaponBone, false);
-        weapon.transform.localPosition = Vector3.zero;
-        weapon.transform.localRotation = Quaternion.identity;
-        ActiveWeapon = weapon;
+        if (ActiveWeapon != null)
+            Destroy(ActiveWeapon.gameObject);
     }
 
 }

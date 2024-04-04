@@ -38,6 +38,8 @@ public sealed class PlayerCharacter : Pawn
 
     [SerializeField] private Animator _armsAnimator;
 
+    [SerializeField] private Equipment _equipment;
+
     private CharacterController _controller;
     private Vector3 _velocityXZ;
     private float _velocityY;
@@ -69,6 +71,9 @@ public sealed class PlayerCharacter : Pawn
 
     private float _cameraTargetRotX;
     private float _cameraTargetRotY;
+
+    private EnumState<WeaponState> _weaponState;
+    private TimeSince _timeSinceLastWeaponStateChange = TimeSince.Never;
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -119,6 +124,8 @@ public sealed class PlayerCharacter : Pawn
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
+
+        _weaponState = new EnumState<WeaponState>(OnWeaponStateChanged);
     }
 
     private void Start()
@@ -128,6 +135,12 @@ public sealed class PlayerCharacter : Pawn
         Health = _maxHealth;
 
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
+
+        _equipment.WeaponSlot.Changed += ItemSlot =>
+        {
+            if (_weaponState.Current != WeaponState.NoWeapon)
+                _weaponState.Set(WeaponState.Unequipping);
+        };
     }
 
     public override void InputTick()
@@ -145,9 +158,11 @@ public sealed class PlayerCharacter : Pawn
 
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {
-            if (_weaponHolder.ActiveWeapon != null && CanShoot() == true)
+            if (CanShoot() == true &&
+                _equipment.WeaponSlot.Stack.Item is WeaponItemDefinition weapon)
             {
-                _weaponHolder.ActiveWeapon.Attack(_head.transform.position, _head.transform.forward);
+                weapon.Shoot(null, _head.transform.position, _head.transform.forward);
+                _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
                 _timeSinceLastShoot = TimeSince.Now();
                 _targetRecoilY += UnityEngine.Random.Range(15f, 20f);
                 //_targetRecoilY += UnityEngine.Random.Range(25f, 35f);
@@ -176,8 +191,66 @@ public sealed class PlayerCharacter : Pawn
         }
     }
 
+    private void OnWeaponStateChanged(WeaponState newState)
+    {
+        switch (newState)
+        {
+            case WeaponState.NoWeapon:
+                _weaponHolder.RemoveWeapon();
+                _armsAnimator.SetInteger("current_weapon", 0);
+                break;
+            case WeaponState.Equipping:
+                _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItemDefinition).WeaponModel);
+                _armsAnimator.SetInteger("current_weapon", 1);
+                break;
+            case WeaponState.Ready:
+                _armsAnimator.SetInteger("current_weapon", 1);
+                break;
+            case WeaponState.Unequipping:
+                _armsAnimator.SetInteger("current_weapon", 0);
+                break;
+        }
+
+        _timeSinceLastWeaponStateChange = TimeSince.Now();
+    }
+
     private void Update()
     {
+        // Weapon Equipment
+        switch (_weaponState.Current)
+        {
+            case WeaponState.NoWeapon:
+                {
+                    bool shouldEquip = _equipment.WeaponSlot.IsEmpty == false;
+                    if (shouldEquip == true)
+                        _weaponState.Set(WeaponState.Equipping);
+                }
+                break;
+
+            case WeaponState.Equipping:
+                {
+                    if (_timeSinceLastWeaponStateChange > 0.8f)
+                        _weaponState.Set(WeaponState.Ready);
+                }
+                break;
+
+            case WeaponState.Ready:
+                {
+                    bool shouldUnequip = _equipment.WeaponSlot.IsEmpty;
+
+                    if (shouldUnequip == true)
+                        _weaponState.Set(WeaponState.Unequipping);
+                }
+                break;
+
+            case WeaponState.Unequipping:
+                {
+                    if (_timeSinceLastWeaponStateChange > 0.8f)
+                        _weaponState.Set(WeaponState.NoWeapon);
+                }
+                break;
+        }
+
         // Recoil
         _targetRecoilY = Mathf.Max(0f, _targetRecoilY -= Time.deltaTime * 45f);
         _currentRecoilY = Mathf.Lerp(_currentRecoilY, _targetRecoilY, Time.deltaTime * 50f);
@@ -283,7 +356,7 @@ public sealed class PlayerCharacter : Pawn
 
         // test Smooth camera Y
         _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, _head.transform.position.y, 15f * Time.deltaTime);
-  
+
         _currentInput.Clear();
     }
 
@@ -554,11 +627,11 @@ public sealed class PlayerCharacter : Pawn
 
     public bool CanAim()
     {
-        return 
-            IsDead == false && 
-            _controller.isGrounded == true && 
-            _weaponHolder.ActiveWeapon != null &&
-            _weaponHolder.ActiveWeapon.CanAim == true;
+        return
+            IsDead == false &&
+            _controller.isGrounded == true &&
+            _equipment.WeaponSlot.IsEmpty == false &&
+            _weaponState.Current == WeaponState.Ready;
     }
 
     public float GetMouseSensetivityMultiplier()
@@ -574,6 +647,11 @@ public sealed class PlayerCharacter : Pawn
     public bool CanRegnerateHealth()
     {
         return false;
+    }
+
+    public bool CanEquipWeapon()
+    {
+        return true;
     }
 
     public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
@@ -604,6 +682,14 @@ public sealed class PlayerCharacter : Pawn
             WantsAim = false;
         }
 
+    }
+
+    private enum WeaponState
+    {
+        NoWeapon,
+        Equipping,
+        Ready,
+        Unequipping
     }
 
 }
@@ -657,6 +743,26 @@ public sealed class SpawnBlockModifier : CharacterModifier
     public override float GetSpeedMultiplier()
     {
         return 0f;
+    }
+
+}
+
+public sealed class EnumState<T> where T : Enum
+{
+
+    private readonly Action<T> _stateChangedAction;
+
+    public EnumState(Action<T> stateChangeEvent)
+    {
+        _stateChangedAction = stateChangeEvent;
+    }
+
+    public T Current { get; private set; }
+
+    public void Set(T newState)
+    {
+        Current = newState;
+        _stateChangedAction.Invoke(Current);
     }
 
 }
