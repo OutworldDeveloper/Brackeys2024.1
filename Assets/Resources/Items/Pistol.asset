@@ -17,6 +17,7 @@ MonoBehaviour:
   <Sprite>k__BackingField: {fileID: 21300000, guid: 259a661acf0c45a46849fcd31787b771,
     type: 3}
   <StackSize>k__BackingField: 1
+  _tags: []
   <WeaponModel>k__BackingField:
     _asset: {fileID: 7825687577795487276, guid: a26363d610261e041bed4153bb34a93e,
       type: 3}

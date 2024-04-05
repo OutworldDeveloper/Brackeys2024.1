@@ -63,8 +63,20 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         if (showEmptySlot == false)
         {
             _itemImage.sprite = TargetSlot.Stack.Item.Sprite;
-            _numberLabel.enabled = TargetSlot.Stack.Count > 1;
-            _numberLabel.text = TargetSlot.Stack.Count.ToString();
+
+            string numberText = string.Empty;
+
+            if (TargetSlot.Stack.Components.Has(out LoadedAmmoComponent ammoComponent) == true)
+            {
+                numberText = ammoComponent.Value.ToString();
+            }
+            else if (TargetSlot.Stack.Count > 1)
+            {
+                numberText = TargetSlot.Stack.Count.ToString();
+            }
+
+            _numberLabel.text = numberText;
+            _numberLabel.enabled = numberText != string.Empty;
         }
 
     }

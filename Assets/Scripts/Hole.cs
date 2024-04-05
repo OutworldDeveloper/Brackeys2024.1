@@ -6,7 +6,7 @@ public sealed class Hole : MonoBehaviour
 
     [SerializeField] private ItemTag _ropeItemTag;
     [SerializeField] private ItemTag _hookItemTag;
-    [SerializeField] private Prefab<Item> _rewardItemPrefab;
+    [SerializeField] private Item _reward;
     [SerializeField] private Animator _animator;
     [SerializeField] private float _animationDuration;
     [SerializeField] private MoviePawn _moviePawn;
@@ -57,9 +57,9 @@ public sealed class Hole : MonoBehaviour
 
     private void GiveReward(PlayerCharacter player)
     {
-        var rewardItem = _rewardItemPrefab.Instantiate();
+        //var rewardItem = _reward.Instantiate();
         //player.Inventory.AddItem(rewardItem);
-        Notification.Show($"{rewardItem.DisplayName}!");
+        //Notification.Show($"{rewardItem.DisplayName}!");
     }
 
     private void GiveNothing()

@@ -21,7 +21,7 @@ public class ItemSlot
         SlotType = slotType;
     }
 
-    public ItemSlot(MonoBehaviour owner, string name) : this(owner, name, typeof(ItemDefinition)) { }
+    public ItemSlot(MonoBehaviour owner, string name) : this(owner, name, typeof(Item)) { }
 
     public IReadOnlyStack Stack => _stack;
     public bool IsEmpty => _stack == null;
@@ -31,7 +31,7 @@ public class ItemSlot
         return _stack;
     }
 
-    public bool IsCompatableWith(ItemDefinition item)
+    public bool IsCompatableWith(Item item)
     {
         return item.GetType().IsSubclassOf(SlotType) || item.GetType() == SlotType;
     }

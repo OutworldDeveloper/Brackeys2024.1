@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu]
-public class WeaponItemDefinition : ItemDefinition
+public class WeaponItem : Item
 {
 
     [field: Header("Weapon")]
@@ -12,6 +12,12 @@ public class WeaponItemDefinition : ItemDefinition
     [field: SerializeField] public float RecoilVerticalMax { get; private set; }
     [field: SerializeField] public float RecoilHorizontalMin { get; private set; }
     [field: SerializeField] public float RecoilHorizontalMax { get; private set; }
+
+    public override void CreateComponents(ItemComponents components)
+    {
+        base.CreateComponents(components);
+        components.Add(new LoadedAmmoComponent() { Value = 5 });
+    }
 
     public virtual void Shoot(ItemStack stack, Vector3 origin, Vector3 direction)
     {

@@ -85,7 +85,7 @@ public sealed class PlayerCharacter : Pawn
     public bool IsGrounded => _controller.isGrounded;
     public bool IsCrouching => _isCrouching;
 
-    public void Inspect(Item target, bool noAnimation = false)
+    public void Inspect(Inspectable target, bool noAnimation = false)
     {
         _inspectionPawn.SetTarget(target, noAnimation);
         Player.Possess(_inspectionPawn);
@@ -149,10 +149,21 @@ public sealed class PlayerCharacter : Pawn
     {
         _currentInput = GatherInput();
 
+        if (Input.GetKeyDown(KeyCode.R) == true)
+        {
+            if (_equipment.WeaponSlot.IsEmpty == false && 
+                _equipment.WeaponSlot.Stack.Components.Has<LoadedAmmoComponent>(out var ammoComponent))
+            {
+                ammoComponent.Value += 5;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {
             if (CanShoot() == true &&
-                _equipment.WeaponSlot.Stack.Item is WeaponItemDefinition weapon && _timeSinceLastShoot > weapon.Cooldown)
+                _equipment.WeaponSlot.Stack.Item is WeaponItem weapon && 
+                _timeSinceLastShoot > weapon.Cooldown &&
+                _equipment.WeaponSlot.Stack.Components.Has<LoadedAmmoComponent>(out var ammoComponent) && ammoComponent.Value > 0)
             {
                 weapon.Shoot(null, _head.transform.position, _head.transform.forward);
                 _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
@@ -166,6 +177,8 @@ public sealed class PlayerCharacter : Pawn
                 //_armsAnimator.Play("shotgun_shoot", 0);
                 //_armsAnimator.SetTrigger("shoot");
                 _armsAnimator.CrossFadeInFixedTime($"shoot{_weaponHolder.ActiveWeapon.AnimationSet}", 0.02f, 0);
+
+                ammoComponent.Value--;
             }
         }
 
@@ -194,7 +207,7 @@ public sealed class PlayerCharacter : Pawn
                 _armsAnimator.SetInteger("current_weapon", 0);
                 break;
             case WeaponState.Equipping:
-                _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItemDefinition).WeaponModel);
+                _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItem).WeaponModel);
                 _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
                 break;
             case WeaponState.Ready:

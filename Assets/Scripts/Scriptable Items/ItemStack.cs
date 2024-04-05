@@ -4,20 +4,21 @@
 public sealed class ItemStack : IReadOnlyStack
 {
 
-    public ItemStack(ItemDefinition definition, int count = 1)
+    public ItemStack(Item definition, int count = 1)
     {
         Item = definition;
-        Data = new RuntimeItemData();
+        Components = new ItemComponents();
+        Item.CreateComponents(Components);
         Count = count;
     }
 
-    public ItemStack(ItemDefinition definition, RuntimeItemData data, int count = 1) : this(definition, count)
+    public ItemStack(Item definition, ItemComponents components, int count = 1) : this(definition, count)
     {
-        Data = data;
+        Components = components;
     }
 
-    public ItemDefinition Item { get; private set; }
-    public RuntimeItemData Data { get; private set; }
+    public Item Item { get; private set; }
+    public ItemComponents Components { get; private set; }
     public int Count { get; private set; }
 
     public bool CanAdd(ItemStack other)
@@ -28,10 +29,10 @@ public sealed class ItemStack : IReadOnlyStack
         if (Item != other.Item)
             return false;
 
-        if (Data.IsEmpty == false)
+        if (Components.IsEmpty == false)
             return false;
 
-        if (other.Data.IsEmpty == false)
+        if (other.Components.IsEmpty == false)
             return false;
 
         if (Count + other.Count > Item.StackSize)
@@ -47,7 +48,7 @@ public sealed class ItemStack : IReadOnlyStack
 
         Count += stack.Count;
         Item = stack.Item;
-        Data = stack.Data;
+        Components = stack.Components;
     }
 
     public ItemStack Take(int amount)
@@ -58,7 +59,7 @@ public sealed class ItemStack : IReadOnlyStack
         }
 
         Count -= amount;
-        var result = new ItemStack(Item, Data.Copy(), amount);
+        var result = new ItemStack(Item, Components.Copy(), amount);
         return result;
     }
 
@@ -71,8 +72,8 @@ public sealed class ItemStack : IReadOnlyStack
 
 public interface IReadOnlyStack
 {
-    public ItemDefinition Item { get; }
-    public RuntimeItemData Data { get; }
+    public Item Item { get; }
+    public ItemComponents Components { get; }
     public int Count { get; }
 
 }

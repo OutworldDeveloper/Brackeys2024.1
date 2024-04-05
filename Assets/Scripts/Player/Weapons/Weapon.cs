@@ -6,8 +6,6 @@ public class Weapon : MonoBehaviour
 {
 
     [field: SerializeField] public int AnimationSet { get; private set; } 
-
-    [SerializeField] private float _cooldown = 0.2f;
     
     [SerializeField] private Sound _shootSound;
     [SerializeField] private AudioSource _shootSource;

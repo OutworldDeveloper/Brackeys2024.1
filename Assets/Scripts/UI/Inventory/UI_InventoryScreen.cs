@@ -18,7 +18,7 @@ public class UI_InventoryScreen : UI_Panel
     [SerializeField] private TextMeshProUGUI _selectedNameLabel;
     [SerializeField] private TextMeshProUGUI _selectedDescriptionLabel;
 
-    [SerializeField] private ItemDefinition[] _itemsTest;
+    [SerializeField] private Item[] _itemsTest;
 
     private PlayerCharacter _character;
 

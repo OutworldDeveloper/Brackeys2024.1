@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class ItemDefinition : ScriptableObject
+public class Item : ScriptableObject
 {
 
     [field: Header("Item")]
@@ -14,32 +14,43 @@ public class ItemDefinition : ScriptableObject
     [field: SerializeField] public Sprite Sprite { get; private set; }
     [field: SerializeField] public int StackSize { get; private set; } = 1;
 
+    [SerializeField, HideInInspector] private List<ItemTag> _tags = new List<ItemTag>();
+
     public virtual ItemStack Create(int count)
     {
         return new ItemStack(this, count);
     }
 
-}
+    public virtual void CreateComponents(ItemComponents components) { }
 
-public class BoxItemDefinition : ItemDefinition
-{
+    public bool HasTag<T>(out T tag) where T : ItemTag
+    {
+        foreach (var inspectedTag in _tags)
+        {
+            if (inspectedTag is T)
+            {
+                tag = inspectedTag as T;
+                return true;
+            }
+        }
 
-    [field: Header("Box")]
-    [field: SerializeField] public ItemDefinition Reward { get; private set; }
+        tag = default;
+        return false;
+    }
 
 }
 
 [Serializable]
-public sealed class RuntimeItemData
+public sealed class ItemComponents
 {
 
     private readonly Dictionary<Type, ItemComponent> _components = new Dictionary<Type, ItemComponent>();
 
-    public RuntimeItemData() { }
+    public ItemComponents() { }
 
     public bool IsEmpty => _components.Keys.Count == 0;
 
-    public T GetComponent<T>() where T : ItemComponent
+    public T Get<T>() where T : ItemComponent
     {
         if (_components.ContainsKey(typeof(T)) == false)
             return default;
@@ -47,14 +58,31 @@ public sealed class RuntimeItemData
         return (T)_components[typeof(T)];
     }
 
-    public void SetComponent(ItemComponent component)
+    public void Add(ItemComponent component)
     {
-        _components.AddOrUpdate(component.GetType(), component);
+        _components.Add(component.GetType(), component);
     }
 
-    public RuntimeItemData Copy()
+    public bool Has<T>(out T component) where T : ItemComponent
     {
-        var copy = new RuntimeItemData();
+        if (_components.TryGetValue(typeof(T), out ItemComponent result))
+        {
+            component = result as T;
+            return true;
+        }
+
+        component = null;
+        return false;
+    }
+
+    public bool Has<T>() where T : ItemComponent
+    {
+        return Has(out T component);
+    }
+
+    public ItemComponents Copy()
+    {
+        var copy = new ItemComponents();
 
         foreach (var key in _components.Keys)
         {
@@ -85,33 +113,6 @@ public sealed class LoadedAmmoComponent : ItemComponent
         {
             Value = Value,
         };
-    }
-
-}
-
-public static class Order
-{
-    public const int UI = 10000;
-
-}
-
-public static class Items
-{
-
-    private static Dictionary<string, ItemDefinition> _items = new Dictionary<string, ItemDefinition>();
-
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void LoadItems()
-    {
-        foreach (var itemDefinition in Resources.LoadAll<ItemDefinition>(string.Empty))
-        {
-            _items.Add(itemDefinition.name, itemDefinition);
-        }
-    }
-
-    public static ItemDefinition Get(string id)
-    {
-        return _items[id];
     }
 
 }

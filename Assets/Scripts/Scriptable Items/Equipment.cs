@@ -10,7 +10,7 @@ public class Equipment : MonoBehaviour, ICustomSaveable
 
     public void Initialize()
     {
-        _weaponSlot = new ItemSlot(this, nameof(_weaponSlot), typeof(WeaponItemDefinition));
+        _weaponSlot = new ItemSlot(this, nameof(_weaponSlot), typeof(WeaponItem));
     }
 
     public object SaveData()

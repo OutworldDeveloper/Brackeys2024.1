@@ -4815,7 +4815,6 @@ GameObject:
   - component: {fileID: 289661274}
   - component: {fileID: 289661279}
   - component: {fileID: 289661278}
-  - component: {fileID: 289661280}
   m_Layer: 6
   m_Name: Red Painting
   m_TagString: Untagged
@@ -4937,27 +4936,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: -90, y: 0, z: 0}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 3
---- !u!114 &289661280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289661272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1001 &289749136
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5506,10 +5484,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 303580178}
-    - targetCorrespondingSourceObject: {fileID: 5221931396924991185, guid: b9ef509c704ce5143801335c634e377f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 303580183}
   m_SourcePrefab: {fileID: 100100000, guid: b9ef509c704ce5143801335c634e377f, type: 3}
 --- !u!4 &303580175 stripped
 Transform:
@@ -5551,27 +5525,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
---- !u!114 &303580183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303580176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.65
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1 &315338654
 GameObject:
   m_ObjectHideFlags: 0
@@ -6382,6 +6335,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Door F
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284442354415670065, guid: 90ac0f9ea35279040b237a9745610a7d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8284442354415670070, guid: 90ac0f9ea35279040b237a9745610a7d,
         type: 3}
@@ -16384,10 +16342,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7302747316022579292}
-    - targetCorrespondingSourceObject: {fileID: 5097191150627284742, guid: 383ddb31f4dd152469a1dd8415ecfa89,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7302747316022579296}
   m_SourcePrefab: {fileID: 100100000, guid: 383ddb31f4dd152469a1dd8415ecfa89, type: 3}
 --- !u!1 &883969301
 GameObject:
@@ -16647,15 +16601,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1 &898191552
 GameObject:
   m_ObjectHideFlags: 0
@@ -19270,6 +19215,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3556186017302634852, guid: e41ebd3de85d8f54d8d0ef3533ca04fe,
+        type: 3}
+      propertyPath: _item
+      value: 
+      objectReference: {fileID: 11400000, guid: 33be8dc0e0c960849b30cc06b6597bb6,
+        type: 2}
     - target: {fileID: 3556186017302634855, guid: e41ebd3de85d8f54d8d0ef3533ca04fe,
         type: 3}
       propertyPath: m_Name
@@ -19278,9 +19229,10 @@ PrefabInstance:
     - target: {fileID: 3556186017302634855, guid: e41ebd3de85d8f54d8d0ef3533ca04fe,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4379060530580784002, guid: e41ebd3de85d8f54d8d0ef3533ca04fe, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -19850,10 +19802,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1028016978}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 894dfaefcbc517649ab843fe6c0b7aaf,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1028016981}
   m_SourcePrefab: {fileID: 100100000, guid: 894dfaefcbc517649ab843fe6c0b7aaf, type: 3}
 --- !u!1 &1028016971 stripped
 GameObject:
@@ -19936,27 +19884,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 1.3
---- !u!114 &1028016981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028016971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1 &1030934721
 GameObject:
   m_ObjectHideFlags: 0
@@ -20808,9 +20735,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ropeItemTag: {fileID: 11400000, guid: 745f8422c60c2d84b95887a7579d85b1, type: 2}
   _hookItemTag: {fileID: 11400000, guid: fc7b3d6e32a321646bdd8c7eef48ecb4, type: 2}
-  _rewardItemPrefab:
-    _asset: {fileID: -5208819654772647016, guid: 675883925206cdb4ca3e1605ac64f2e5,
-      type: 3}
+  _reward: {fileID: 0}
   _animator: {fileID: 315338656}
   _animationDuration: 4
   _moviePawn: {fileID: 947420019}
@@ -23284,15 +23209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!114 &1151565958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23605,107 +23521,6 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
---- !u!1 &1179191228
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1179191231}
-  - component: {fileID: 1179191229}
-  - component: {fileID: 1179191230}
-  - component: {fileID: 1179191232}
-  - component: {fileID: 1179191233}
-  m_Layer: 0
-  m_Name: Static Saveable
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1179191229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179191228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 666a2a3582e3e4a4fb8268c9b9d3edeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hasSceneGuid: 1
-  _sceneGuid: a7cebaf7-d8bf-42c3-b033-9141f078c72f
---- !u!114 &1179191230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179191228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba35cd1c90a4c2f4a94301d23ac62f4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _saveableComponents:
-  - Component: {fileID: 1179191232}
-    Guid: f8dfb015-7ecc-4d00-9e32-46977422dd92
-  - Component: {fileID: 1179191233}
-    Guid: f87e328e-4557-468e-be59-07ee4cf17e44
---- !u!4 &1179191231
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179191228}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.111963, y: -0.00000047683716, z: -3.7477086}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1179191232
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179191228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1be14dbe439ad744bac48e878f618f98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _spellPower: 4
-  _bananaSize:
-    Size: Boba
-    BananaOffset: {x: 0, y: 0, z: 0}
-  _fucker:
-    x: 0
-    y: 0
-    z: 0
-  _whateverPosition: {x: 0, y: 0, z: 0}
-  _randomInts: 
---- !u!114 &1179191233
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179191228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d24c5628a4ea2a4c90d0395d8d31680, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _itemsAmount: 0
 --- !u!64 &1179396567
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -23939,6 +23754,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5139447908683837605, guid: b32e58c37ff314b4685f881656ce5a04,
+        type: 3}
+      propertyPath: _item
+      value: 
+      objectReference: {fileID: 11400000, guid: 67bcf4f0cc3634543a3c02934390d06b,
+        type: 2}
+    - target: {fileID: 5139447908683837605, guid: b32e58c37ff314b4685f881656ce5a04,
+        type: 3}
+      propertyPath: _amount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5139447908683837606, guid: b32e58c37ff314b4685f881656ce5a04,
         type: 3}
       propertyPath: m_Name
@@ -23947,9 +23773,10 @@ PrefabInstance:
     - target: {fileID: 5139447908683837606, guid: b32e58c37ff314b4685f881656ce5a04,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4827355307600938403, guid: b32e58c37ff314b4685f881656ce5a04, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -24075,7 +23902,18 @@ PrefabInstance:
     - target: {fileID: 8540947311750181336, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540947311750181339, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
+        type: 3}
+      propertyPath: _item
+      value: 
+      objectReference: {fileID: 11400000, guid: d07c5fb4dc6a8b248b7b7fbf6f8d0369,
+        type: 2}
+    - target: {fileID: 8540947311750181339, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
+        type: 3}
+      propertyPath: _amount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8540947311750181351, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
         type: 3}
@@ -24127,7 +23965,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8298798086133482717, guid: 58002e6dc4e8a39428fcfaf331bf30ac, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -24522,10 +24361,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1235305486}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 288886b99b28cc5489f596c1bb0c172a,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1235305485}
   m_SourcePrefab: {fileID: 100100000, guid: 288886b99b28cc5489f596c1bb0c172a, type: 3}
 --- !u!4 &1235305483 stripped
 Transform:
@@ -24539,27 +24374,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1235305482}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1235305485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1235305484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 90, y: 45, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0.09}
-  <Distance>k__BackingField: 0.5
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!114 &1235305486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26226,7 +26040,6 @@ GameObject:
   - component: {fileID: 1335913861}
   - component: {fileID: 1335913866}
   - component: {fileID: 1335913865}
-  - component: {fileID: 1335913867}
   m_Layer: 6
   m_Name: Yellow Painting
   m_TagString: Untagged
@@ -26348,27 +26161,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: -90, y: 0, z: 0}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 3
---- !u!114 &1335913867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335913859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1 &1336517387
 GameObject:
   m_ObjectHideFlags: 0
@@ -26746,15 +26538,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.65
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!114 &1352314792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26891,10 +26674,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1356063713}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 288886b99b28cc5489f596c1bb0c172a,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1356063717}
   m_SourcePrefab: {fileID: 100100000, guid: 288886b99b28cc5489f596c1bb0c172a, type: 3}
 --- !u!1 &1356063706 stripped
 GameObject:
@@ -26977,27 +26756,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1356063705}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1356063717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356063706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 90, y: 45, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0.09}
-  <Distance>k__BackingField: 0.5
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1 &1357501152
 GameObject:
   m_ObjectHideFlags: 0
@@ -31438,7 +31196,18 @@ PrefabInstance:
     - target: {fileID: 720687746943849400, guid: 675883925206cdb4ca3e1605ac64f2e5,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1368059712397126442, guid: 675883925206cdb4ca3e1605ac64f2e5,
+        type: 3}
+      propertyPath: _item
+      value: 
+      objectReference: {fileID: 11400000, guid: 62160f6e9a25d26488d32216164126f1,
+        type: 2}
+    - target: {fileID: 1368059712397126442, guid: 675883925206cdb4ca3e1605ac64f2e5,
+        type: 3}
+      propertyPath: _amount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3099178629264171897, guid: 675883925206cdb4ca3e1605ac64f2e5,
         type: 3}
@@ -31505,7 +31274,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2718569519719374001, guid: 675883925206cdb4ca3e1605ac64f2e5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -34705,7 +34475,6 @@ GameObject:
   - component: {fileID: 1811678628}
   - component: {fileID: 1811678633}
   - component: {fileID: 1811678632}
-  - component: {fileID: 1811678634}
   m_Layer: 6
   m_Name: Violet Painting
   m_TagString: Untagged
@@ -34827,27 +34596,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: -90, y: 0, z: 0}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 3
---- !u!114 &1811678634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1811678626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1 &1812775415
 GameObject:
   m_ObjectHideFlags: 0
@@ -35394,7 +35142,6 @@ GameObject:
   - component: {fileID: 1836699839}
   - component: {fileID: 1836699844}
   - component: {fileID: 1836699843}
-  - component: {fileID: 1836699845}
   m_Layer: 6
   m_Name: Green Painting
   m_TagString: Untagged
@@ -35516,27 +35263,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: -90, y: 0, z: 0}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 3
---- !u!114 &1836699845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1836699837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1001 &1847349819
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39057,7 +38783,18 @@ PrefabInstance:
     - target: {fileID: 5330932033359355856, guid: 1098f7b4b3073fd458685008e737460f,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5330932033359355859, guid: 1098f7b4b3073fd458685008e737460f,
+        type: 3}
+      propertyPath: _item
+      value: 
+      objectReference: {fileID: 11400000, guid: dcc0ee489de56154bbbdfe5322e1b33d,
+        type: 2}
+    - target: {fileID: 5330932033359355859, guid: 1098f7b4b3073fd458685008e737460f,
+        type: 3}
+      propertyPath: _amount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5330932033359355887, guid: 1098f7b4b3073fd458685008e737460f,
         type: 3}
@@ -39124,7 +38861,8 @@ PrefabInstance:
       propertyPath: _prefabPath
       value: Assets/Prefabs/Items/Resources/Key Room F.prefab
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5501020257973529301, guid: 1098f7b4b3073fd458685008e737460f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -40941,6 +40679,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7509157159175730442, guid: 919f7a670d594db41955ae2783fd5d78,
+        type: 3}
+      propertyPath: _item
+      value: 
+      objectReference: {fileID: 11400000, guid: e47302faa20d86144900e0af70aff1b0,
+        type: 2}
+    - target: {fileID: 7509157159175730442, guid: 919f7a670d594db41955ae2783fd5d78,
+        type: 3}
+      propertyPath: _amount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7509157159175730443, guid: 919f7a670d594db41955ae2783fd5d78,
         type: 3}
       propertyPath: m_Name
@@ -40949,9 +40698,10 @@ PrefabInstance:
     - target: {fileID: 7509157159175730443, guid: 919f7a670d594db41955ae2783fd5d78,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4520232625056119107, guid: 919f7a670d594db41955ae2783fd5d78, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -41225,27 +40975,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 0.65
---- !u!114 &543450653674313535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560305456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.65
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!23 &562581499733456198
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -43541,10 +43270,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 543450653674313530}
-    - targetCorrespondingSourceObject: {fileID: 5221931396924991185, guid: b9ef509c704ce5143801335c634e377f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 543450653674313535}
   m_SourcePrefab: {fileID: 100100000, guid: b9ef509c704ce5143801335c634e377f, type: 3}
 --- !u!33 &5000533220366063325
 MeshFilter:
@@ -44854,27 +44579,6 @@ MonoBehaviour:
   <FaceDirection>k__BackingField: {x: 0, y: 0, z: 1}
   <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
   <Distance>k__BackingField: 0.3
---- !u!114 &7302747316022579296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5097191150297571927}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: 
-  <FaceDirection>k__BackingField: {x: 0, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 0
-  <Sprite>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders: []
-  _visuals: []
 --- !u!1001 &7418940684577292008
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46728,7 +46432,6 @@ SceneRoots:
   - {fileID: 766806897}
   - {fileID: 655979839}
   - {fileID: 821816672}
-  - {fileID: 1179191231}
   - {fileID: 1487247520}
   - {fileID: 382404547}
   - {fileID: 1013620558}

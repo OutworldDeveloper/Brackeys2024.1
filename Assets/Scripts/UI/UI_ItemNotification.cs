@@ -33,10 +33,10 @@ public sealed class UI_ItemNotification : MonoBehaviour
         RunShowcaseSequence();
     }
 
-    private void OnItemRemoved(Item item)
+    private void OnItemRemoved(ItemStack stack)
     {
-        _itemImage.sprite = item.Sprite;
-        _itemLabel.text = $"{item.DisplayName} removed";
+        _itemImage.sprite = stack.Item.Sprite;
+        _itemLabel.text = $"{stack.Item.DisplayName} removed";
         RunShowcaseSequence();
     }
 

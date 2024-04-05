@@ -16,7 +16,7 @@ public sealed class InspectionPawn : Pawn
     [SerializeField] private Vector2 _rotationMouseSpeed = new Vector2(2.5f, 3.5f);
     [SerializeField] private Light _light;
 
-    private Item _target;
+    private Inspectable _target;
     private Vector3 _originalPosition;
     private Quaternion _originalRotation;
 
@@ -41,7 +41,7 @@ public sealed class InspectionPawn : Pawn
         _light.enabled = false;
     }
 
-    public void SetTarget(Item target, bool noAnimation = false)
+    public void SetTarget(Inspectable target, bool noAnimation = false)
     {
         _target = target;
         _originalPosition = target.transform.position;
@@ -82,8 +82,6 @@ public sealed class InspectionPawn : Pawn
 
         _targetData.Init();
         _targetData.SetLayers(LayerMask.NameToLayer("Inspected"));
-
-        _target.EnableVisuals();
     }
 
     public override void OnUnpossessed()
@@ -98,8 +96,6 @@ public sealed class InspectionPawn : Pawn
         _light.enabled = false;
 
         _targetData.RestoreLayers();
-
-        _target.DisableVisuals();
 
         Debug.Log($"InspectionPawn OnUnpossessed");
     }

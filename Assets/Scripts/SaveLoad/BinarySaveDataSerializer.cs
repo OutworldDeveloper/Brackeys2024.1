@@ -81,7 +81,7 @@ public class ItemStackSerializationSurrogate : ISerializationSurrogate
         ItemStack stack = (ItemStack)obj;
         info.AddValue("item_id", stack.Item.name);
         info.AddValue("count", stack.Count);
-        info.AddValue("data", stack.Data, typeof(RuntimeItemData));
+        info.AddValue("data", stack.Components, typeof(ItemComponents));
     }
 
     // Method called to deserialize a Vector3 object
@@ -89,9 +89,9 @@ public class ItemStackSerializationSurrogate : ISerializationSurrogate
                                        StreamingContext context, ISurrogateSelector selector)
     {
         string itemId = (string)info.GetValue("item_id", typeof(string));
-        ItemDefinition item = Items.Get(itemId);
+        Item item = Items.Get(itemId);
         int count = (int)info.GetValue("count", typeof(int));
-        RuntimeItemData data = (RuntimeItemData)info.GetValue("data", typeof(RuntimeItemData));
+        ItemComponents data = (ItemComponents)info.GetValue("data", typeof(ItemComponents));
 
         obj = new ItemStack(item, data, count);
         return obj;
