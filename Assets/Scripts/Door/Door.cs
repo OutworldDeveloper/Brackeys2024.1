@@ -110,18 +110,19 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
             }
             else
             {
-                if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
-                {
-                    PlayLockedSound();
-                    Notification.Show("Locked!");
-                }
-                else
-                {
-                    player.Inventory.RemoveAndDestroyItem(key);
-                    _isLockedByKey = false;
-                    success = true;
-                    Notification.Show($"Unlocked");
-                }
+                throw new NotImplementedException();
+                //if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
+                //{
+                //    PlayLockedSound();
+                //    Notification.Show("Locked!");
+                //}
+                //else
+                //{
+                //    player.Inventory.RemoveAndDestroyItem(key);
+                //    _isLockedByKey = false;
+                //    success = true;
+                //    Notification.Show($"Unlocked");
+                //}
             }
         }
         else

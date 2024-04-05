@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(Order.UI)]
 public sealed class ItemAddedSoundEffect : MonoBehaviour
 {
 
@@ -18,7 +19,7 @@ public sealed class ItemAddedSoundEffect : MonoBehaviour
         _playerCharacter.Inventory.ItemAdded -= OnItemAdded;
     }
 
-    private void OnItemAdded(Item item)
+    private void OnItemAdded(ItemStack item)
     {
         var audioSource = GetComponent<AudioSource>();
 

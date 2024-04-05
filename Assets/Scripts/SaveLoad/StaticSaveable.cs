@@ -18,7 +18,7 @@ public class StaticSaveable : MonoBehaviour
 
         if (gameObject.scene.IsValid() == false)
         {
-            Debug.Log("We're a prefab");
+            //Debug.Log("We're a prefab");
             _hasSceneGuid = false;
             _sceneGuid = null;
             return;

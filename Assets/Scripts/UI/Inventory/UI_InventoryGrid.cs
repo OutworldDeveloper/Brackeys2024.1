@@ -11,10 +11,10 @@ public class UI_InventoryGrid : MonoBehaviour
 
     [SerializeField] private UI_Slot _slotPrefab;
 
-    private ExpInventory _inventory;
+    private Inventory _inventory;
     private readonly List<UI_Slot> _slots = new List<UI_Slot>();
 
-    public void SetTarget(ExpInventory inventory)
+    public void SetTarget(Inventory inventory)
     {
         _inventory = inventory;
     }

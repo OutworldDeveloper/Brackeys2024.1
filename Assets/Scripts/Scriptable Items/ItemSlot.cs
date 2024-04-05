@@ -26,6 +26,11 @@ public class ItemSlot
     public IReadOnlyStack Stack => _stack;
     public bool IsEmpty => _stack == null;
 
+    public ItemStack GetStack() // Should copy?
+    {
+        return _stack;
+    }
+
     public bool IsCompatableWith(ItemDefinition item)
     {
         return item.GetType().IsSubclassOf(SlotType) || item.GetType() == SlotType;

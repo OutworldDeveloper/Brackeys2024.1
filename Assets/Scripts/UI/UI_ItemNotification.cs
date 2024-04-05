@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[DefaultExecutionOrder(Order.UI)]
 public sealed class UI_ItemNotification : MonoBehaviour
 {
 
@@ -17,18 +18,18 @@ public sealed class UI_ItemNotification : MonoBehaviour
     private void OnEnable()
     {
         _character.Inventory.ItemAdded += OnItemAdded;
-        _character.Inventory.ItemRemoved += OnItemRemoved;
+        //_character.Inventory.ItemRemoved += OnItemRemoved;
     }
     private void OnDisable()
     {
         _character.Inventory.ItemAdded -= OnItemAdded;
-        _character.Inventory.ItemRemoved -= OnItemRemoved;
+        //_character.Inventory.ItemRemoved -= OnItemRemoved;
     }
 
-    private void OnItemAdded(Item item)
+    private void OnItemAdded(ItemStack stack)
     {
-        _itemImage.sprite = item.Sprite;
-        _itemLabel.text = $"{item.DisplayName} added";
+        _itemImage.sprite = stack.Item.Sprite;
+        _itemLabel.text = $"{stack.Item.DisplayName} added";
         RunShowcaseSequence();
     }
 

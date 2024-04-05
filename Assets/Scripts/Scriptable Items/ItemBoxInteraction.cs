@@ -5,7 +5,7 @@ using UnityEngine;
 public sealed class ItemBoxInteraction : Interaction
 {
 
-    [SerializeField] private ExpInventory _containerInventory;
+    [SerializeField] private Inventory _containerInventory;
     [SerializeField] private Prefab<UI_InventoryAndContainerScreen> _containerScreen;
 
     public override string Text => "Open";

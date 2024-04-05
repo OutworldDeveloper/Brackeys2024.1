@@ -1,5 +1,6 @@
 ﻿using System;
 
+[System.Serializable]
 public sealed class ItemStack : IReadOnlyStack
 {
 

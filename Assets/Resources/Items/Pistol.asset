@@ -20,7 +20,7 @@ MonoBehaviour:
   <WeaponModel>k__BackingField:
     _asset: {fileID: 7825687577795487276, guid: a26363d610261e041bed4153bb34a93e,
       type: 3}
-  <Cooldown>k__BackingField: 0.2
+  <Cooldown>k__BackingField: 0.3
   <ShootMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 1

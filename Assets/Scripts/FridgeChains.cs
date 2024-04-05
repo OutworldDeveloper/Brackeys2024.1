@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,10 +35,11 @@ public sealed class FridgeChains : MonoBehaviour
 
     public void TryUnlock(PlayerCharacter player)
     {
-        if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
-            return;
-
-        player.Inventory.RemoveAndDestroyItem(key);
+        throw new NotImplementedException();
+        //if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
+        //    return;
+        //
+        //player.Inventory.RemoveAndDestroyItem(key);
         _door.Unblock();
         IsUnlocked = true;
         _unlockSound.Play(_audioSource);

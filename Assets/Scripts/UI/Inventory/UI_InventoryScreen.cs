@@ -30,7 +30,7 @@ public class UI_InventoryScreen : UI_Panel
     public void SetTarget(PlayerCharacter character)
     {
         _character = character;
-        _inventoryGrid.SetTarget(character.GetComponent<ExpInventory>());
+        _inventoryGrid.SetTarget(character.GetComponent<Inventory>());
         _weaponSlot.SetTarget(character.GetComponent<Equipment>().WeaponSlot);
     }
 
@@ -70,7 +70,7 @@ public class UI_InventoryScreen : UI_Panel
         {
             if (Input.GetKeyDown(keyCodes[i]) == true)
             {
-                _character.GetComponent<ExpInventory>().TryAdd(new ItemStack(_itemsTest[i]));
+                _character.GetComponent<Inventory>().TryAdd(new ItemStack(_itemsTest[i]));
             }
         }
     }

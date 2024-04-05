@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public sealed class Hole : MonoBehaviour
 {
@@ -20,42 +21,44 @@ public sealed class Hole : MonoBehaviour
 
     public bool TryExtractItem(PlayerCharacter player)
     {
+        throw new NotImplementedException();
+
         if (IsItemExtracted == true)
             return false;
 
-        bool hasRope = player.Inventory.TryGetItemWithTag(_ropeItemTag, out Item ropeItem);
-        bool hasHook = player.Inventory.TryGetItemWithTag(_hookItemTag, out Item hookItem);
+        //bool hasRope = player.Inventory.TryGetItemWithTag(_ropeItemTag, out Item ropeItem);
+        //bool hasHook = player.Inventory.TryGetItemWithTag(_hookItemTag, out Item hookItem);
 
-        if (hasRope == false)
-        {
-            Notification.Show(GetFailResponse(hasRope, hasHook), 1.5f);
-            return false;
-        }
+        //if (hasRope == false)
+        //{
+        //    Notification.Show(GetFailResponse(hasRope, hasHook), 1.5f);
+        //    return false;
+        //}
+        //
+        //bool isSuccess = hasRope == true && hasHook == true;
+        //
+        //if (isSuccess == true)
+        //{
+        //    //player.Inventory.RemoveAndDestroyItem(ropeItem);
+        //    //player.Inventory.RemoveAndDestroyItem(hookItem);
+        //    IsItemExtracted = true;
+        //    Delayed.Do(() => GiveReward(player), _animationDuration - 0.3f);
+        //    _keyPreview?.SetActive(false);
+        //}
+        //else
+        //{
+        //    Delayed.Do(() => GiveNothing(), _animationDuration - 0.3f);
+        //}
 
-        bool isSuccess = hasRope == true && hasHook == true;
-
-        if (isSuccess == true)
-        {
-            player.Inventory.RemoveAndDestroyItem(ropeItem);
-            player.Inventory.RemoveAndDestroyItem(hookItem);
-            IsItemExtracted = true;
-            Delayed.Do(() => GiveReward(player), _animationDuration - 0.3f);
-            _keyPreview?.SetActive(false);
-        }
-        else
-        {
-            Delayed.Do(() => GiveNothing(), _animationDuration - 0.3f);
-        }
-
-        player.Player.Possess(_moviePawn);
-        _animator.Play(isSuccess ? "Extraction" : "ExtractionFailed", 0);
-        return true;
+        //player.Player.Possess(_moviePawn);
+        //_animator.Play(isSuccess ? "Extraction" : "ExtractionFailed", 0);
+        //return true;
     }
 
     private void GiveReward(PlayerCharacter player)
     {
         var rewardItem = _rewardItemPrefab.Instantiate();
-        player.Inventory.AddItem(rewardItem);
+        //player.Inventory.AddItem(rewardItem);
         Notification.Show($"{rewardItem.DisplayName}!");
     }
 

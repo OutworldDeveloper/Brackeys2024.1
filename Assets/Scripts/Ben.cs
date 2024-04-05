@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,16 +46,17 @@ public sealed class Ben : MonoBehaviour
         if (IsHungry == false)
             return false;
 
-        foreach (var item in character.Inventory.Items)
-        {
-            if (item.HasTag(_foodTag) == false)
-                continue;
-
-            character.Inventory.RemoveItem(item);
-            IsHungry = false;
-            TrySayNextAdvice(true);
-            return true;
-        }
+        throw new NotImplementedException();
+        //foreach (var item in character.Inventory.Items)
+        //{
+        //    if (item.HasTag(_foodTag) == false)
+        //        continue;
+        //
+        //    character.Inventory.RemoveItem(item);
+        //    IsHungry = false;
+        //    TrySayNextAdvice(true);
+        //    return true;
+        //}
 
         Delayed.Do(() => _hungrySound.Play(_audioSource), feedDelay);
         return false;
@@ -79,7 +81,7 @@ public sealed class Ben : MonoBehaviour
 
     private void TrySayNextAdvice(bool ignoreCooldown = false)
     {
-        if (Random.Range(0, 1000) == 0)
+        if (Randomize.Int(0, 1000) == 0)
         {
             TrySay(_pohuiSound, $"?");
             return;

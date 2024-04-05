@@ -1655,7 +1655,6 @@ GameObject:
   - component: {fileID: 112382782}
   - component: {fileID: 112382786}
   - component: {fileID: 112382785}
-  - component: {fileID: 112382784}
   - component: {fileID: 112382783}
   m_Layer: 5
   m_Name: Inventory Panel
@@ -1710,21 +1709,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &112382784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 112382781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 068b06aa15d36224c91cd0e66cad970a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _player: {fileID: 668565586}
-  _itemDisplayPrefab: {fileID: 5882926369062889307, guid: 308bd01e19e128f49a94690bd5a29d81,
-    type: 3}
 --- !u!114 &112382785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2580,7 +2564,6 @@ Transform:
   - {fileID: 243055508}
   - {fileID: 1524714461}
   - {fileID: 1865375830}
-  - {fileID: 1168461947}
   - {fileID: 8918370851598504694}
   - {fileID: 1776420936}
   - {fileID: 1738894539}
@@ -4972,7 +4955,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -5205,6 +5187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: c9c439ae04bc647448a54eaa76fbcbb0, type: 2}
+  _amount: 0
 --- !u!65 &292323039
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5586,7 +5569,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.65
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -12128,7 +12110,6 @@ GameObject:
   - component: {fileID: 668565582}
   - component: {fileID: 668565584}
   - component: {fileID: 668565585}
-  - component: {fileID: 668565587}
   - component: {fileID: 668565586}
   - component: {fileID: 668565589}
   - component: {fileID: 668565588}
@@ -12226,7 +12207,7 @@ MonoBehaviour:
   _head: {fileID: 423207318}
   _interactor: {fileID: 668565585}
   _grip: {fileID: 668565589}
-  _inventory: {fileID: 668565587}
+  _inventory: {fileID: 668565594}
   _mouseSensitivity: {fileID: 11400000, guid: 545409adc8a926d4fa62c5387812022e, type: 2}
   _speed: 2
   _jumpForce: 4
@@ -12294,18 +12275,6 @@ MonoBehaviour:
   _fieldOfView: 70
   _armsAnimator: {fileID: 1455822952}
   _equipment: {fileID: 668565595}
---- !u!114 &668565587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668565581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 651c5b082e5974a4da038213e5bc6efd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &668565588
 Animator:
   serializedVersion: 5
@@ -12399,8 +12368,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _saveableComponents:
-  - Component: {fileID: 668565587}
-    Guid: f12605fc-e763-4048-9bfc-92e19dfedcf7
+  - Component: {fileID: 668565594}
+    Guid: dcb8cf61-97d7-407e-8381-25d9b5d37d5b
+  - Component: {fileID: 668565595}
+    Guid: d7410645-62be-48a7-828d-dc137ef556f3
 --- !u!114 &668565594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16682,7 +16653,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -19305,6 +19275,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hook
       objectReference: {fileID: 0}
+    - target: {fileID: 3556186017302634855, guid: e41ebd3de85d8f54d8d0ef3533ca04fe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19392,6 +19367,8 @@ GameObject:
   - component: {fileID: 1013620555}
   - component: {fileID: 1013620554}
   - component: {fileID: 1013620553}
+  - component: {fileID: 1013620560}
+  - component: {fileID: 1013620559}
   m_Layer: 0
   m_Name: Bollard (1)
   m_TagString: Untagged
@@ -19516,6 +19493,35 @@ Transform:
   - {fileID: 1274241278}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1013620559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013620552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 666a2a3582e3e4a4fb8268c9b9d3edeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hasSceneGuid: 1
+  _sceneGuid: 1e0a52ff-7b16-42b9-9118-d485426bebc9
+--- !u!114 &1013620560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013620552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba35cd1c90a4c2f4a94301d23ac62f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _saveableComponents:
+  - Component: {fileID: 1013620554}
+    Guid: 4030bc3d-82c7-46b3-8d62-f68207eed30c
 --- !u!21 &1025036214
 Material:
   serializedVersion: 8
@@ -19948,7 +19954,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -23285,7 +23290,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -23601,95 +23605,6 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
---- !u!1001 &1168461946
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 182942484}
-    m_Modifications:
-    - target: {fileID: 192563156812902959, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: _sceneID
-      value: 0c87d278-b2ed-4508-966a-40b4cb60c8dc
-      objectReference: {fileID: 0}
-    - target: {fileID: 192563156812902959, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: _hasSceneID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 24
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -24.027
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.905
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.713
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509157159175730443, guid: 919f7a670d594db41955ae2783fd5d78,
-        type: 3}
-      propertyPath: m_Name
-      value: Rope (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 919f7a670d594db41955ae2783fd5d78, type: 3}
---- !u!4 &1168461947 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3282167503370232219, guid: 919f7a670d594db41955ae2783fd5d78,
-    type: 3}
-  m_PrefabInstance: {fileID: 1168461946}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1179191228
 GameObject:
   m_ObjectHideFlags: 0
@@ -24029,6 +23944,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Key Electric Box
       objectReference: {fileID: 0}
+    - target: {fileID: 5139447908683837606, guid: b32e58c37ff314b4685f881656ce5a04,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24151,6 +24071,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Key Fridge
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540947311750181336, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8540947311750181351, guid: 58002e6dc4e8a39428fcfaf331bf30ac,
         type: 3}
@@ -24632,7 +24557,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.5
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -26442,7 +26366,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -26829,7 +26752,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.65
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -27073,7 +26995,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.5
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -31028,6 +30949,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: 702626e0e367f82429fc9e0c796f409a, type: 2}
+  _amount: 0
 --- !u!135 &1633315331
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -31512,6 +31434,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pizza
+      objectReference: {fileID: 0}
+    - target: {fileID: 720687746943849400, guid: 675883925206cdb4ca3e1605ac64f2e5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3099178629264171897, guid: 675883925206cdb4ca3e1605ac64f2e5,
         type: 3}
@@ -34918,7 +34845,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -35608,7 +35534,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -39129,6 +39054,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Key Room F
       objectReference: {fileID: 0}
+    - target: {fileID: 5330932033359355856, guid: 1098f7b4b3073fd458685008e737460f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5330932033359355887, guid: 1098f7b4b3073fd458685008e737460f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -41016,6 +40946,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rope
       objectReference: {fileID: 0}
+    - target: {fileID: 7509157159175730443, guid: 919f7a670d594db41955ae2783fd5d78,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -41308,7 +41243,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.65
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -44690,6 +44624,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: a6bcf4502bb24f84f93dc66028abd5e3, type: 2}
+  _amount: 0
 --- !u!135 &7061886922964784746
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -44937,7 +44872,6 @@ MonoBehaviour:
   <Distance>k__BackingField: 0.3
   <IsItem>k__BackingField: 0
   <Sprite>k__BackingField: {fileID: 0}
-  <StackType>k__BackingField: {fileID: 0}
   _tags: []
   _colliders: []
   _visuals: []
@@ -46475,6 +46409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: ef7038cc351db6a4ea0d2c3a5abbaca0, type: 2}
+  _amount: 0
 --- !u!1 &8885084141489763762
 GameObject:
   m_ObjectHideFlags: 0

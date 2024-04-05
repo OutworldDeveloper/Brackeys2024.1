@@ -58,7 +58,9 @@ public sealed class SaveableComponentsEditor : Editor
 
             if (wantsRemove == true)
             {
-                string componentName = componentProperty.objectReferenceValue.GetType().Name;
+                string componentName = componentProperty.objectReferenceValue != null ?
+                    componentProperty.objectReferenceValue.GetType().Name :
+                    "missing";
 
                 wantsRemove = EditorUtility.
                     DisplayDialog

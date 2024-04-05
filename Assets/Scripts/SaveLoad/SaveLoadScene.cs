@@ -11,7 +11,7 @@ public class SaveLoadScene : MonoBehaviour
     private LevelData _sceneData;
     private TimeSince _timeSinceSceneLoaded;
 
-    private void Awake()
+    private void Start()
     {
         if (Current != null)
         {
@@ -57,6 +57,7 @@ public class SaveLoadScene : MonoBehaviour
                 //Debug.Log(resourcePath);
                 resourcePath = PrefabPathToResourcePath(resourcePath);
                 //Debug.Log(resourcePath);
+
                 DynamicSaveable dynamicSaveable = Instantiate(Resources.Load<DynamicSaveable>(resourcePath));
 
                 dynamicSaveable.SetSceneGuid(dynamicSaveableData.Guid);
@@ -99,10 +100,7 @@ public class SaveLoadScene : MonoBehaviour
                 }
             }
         }
-    }
 
-    private void Start()
-    {
         _timeSinceSceneLoaded = TimeSince.Now();
     }
 

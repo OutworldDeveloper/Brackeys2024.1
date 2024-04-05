@@ -126,6 +126,14 @@ public sealed class PlayerCharacter : Pawn
         _controller = GetComponent<CharacterController>();
 
         _weaponState = new EnumState<WeaponState>(OnWeaponStateChanged);
+
+        _equipment.Initialize();
+
+        _equipment.WeaponSlot.Changed += ItemSlot =>
+        {
+            if (_weaponState.Current != WeaponState.NoWeapon)
+                _weaponState.Set(WeaponState.Unequipping);
+        };
     }
 
     private void Start()
@@ -135,31 +143,16 @@ public sealed class PlayerCharacter : Pawn
         Health = _maxHealth;
 
         ApplyModifier(new SpawnBlockModifier(), 0.4f);
-
-        _equipment.WeaponSlot.Changed += ItemSlot =>
-        {
-            if (_weaponState.Current != WeaponState.NoWeapon)
-                _weaponState.Set(WeaponState.Unequipping);
-        };
     }
 
     public override void InputTick()
     {
         _currentInput = GatherInput();
 
-        if (Input.GetKeyDown(KeyCode.Alpha1) == true)
-            Inspect(_inventory.Items[0], true);
-
-        if (Input.GetKeyDown(KeyCode.Alpha2) == true)
-            Inspect(_inventory.Items[1], true);
-
-        if (Input.GetKeyDown(KeyCode.Alpha3) == true)
-            Inspect(_inventory.Items[2], true);
-
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {
             if (CanShoot() == true &&
-                _equipment.WeaponSlot.Stack.Item is WeaponItemDefinition weapon)
+                _equipment.WeaponSlot.Stack.Item is WeaponItemDefinition weapon && _timeSinceLastShoot > weapon.Cooldown)
             {
                 weapon.Shoot(null, _head.transform.position, _head.transform.forward);
                 _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
@@ -171,7 +164,8 @@ public sealed class PlayerCharacter : Pawn
                 _targetRecoilX += UnityEngine.Random.Range(weapon.RecoilHorizontalMin, weapon.RecoilHorizontalMax) * (recoilRight ? 1 : -1);
 
                 //_armsAnimator.Play("shotgun_shoot", 0);
-                _armsAnimator.SetTrigger("shoot");
+                //_armsAnimator.SetTrigger("shoot");
+                _armsAnimator.CrossFadeInFixedTime($"shoot{_weaponHolder.ActiveWeapon.AnimationSet}", 0.02f, 0);
             }
         }
 

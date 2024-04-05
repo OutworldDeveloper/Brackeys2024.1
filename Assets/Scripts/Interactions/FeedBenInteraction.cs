@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public sealed class FeedBenInteraction : Interaction
 {
@@ -9,7 +10,8 @@ public sealed class FeedBenInteraction : Interaction
 
     public override bool IsAvaliable(PlayerCharacter player)
     {
-        return _ben.IsHungry == true && player.Inventory.HasItemWithTag(_ben.FoodTag);
+        throw new NotImplementedException();
+        //return _ben.IsHungry == true && player.Inventory.HasItemWithTag(_ben.FoodTag);
     }
 
     public override void Perform(PlayerCharacter player)

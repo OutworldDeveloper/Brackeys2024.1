@@ -229,7 +229,7 @@ MonoBehaviour:
   _shootSound: {fileID: 11400000, guid: f9fb1a8eb96c3a24e8ac74a97315ad6a, type: 2}
   _shootSource: {fileID: 6370144277648154742}
   _muzzleFlash: {fileID: 6274115849168488048}
-  _muzzleFlashDuration: 0.035
+  _muzzleFlashDuration: 0.1
 --- !u!1 &2149336859653660560
 GameObject:
   m_ObjectHideFlags: 0
