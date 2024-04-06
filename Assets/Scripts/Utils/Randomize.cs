@@ -5,19 +5,29 @@ using UnityEngine;
 public static class Randomize
 {
 
-    public static int Int(int from, int to)
+    public static int Index(int from, int length)
     {
-        return Random.Range(from, to);
+        return Random.Range(from, length);
     }
 
-    public static float Float(float from, float to)
+    public static int Index(int length)
     {
-        return Random.Range(from, to);
+        return Index(0, length);
+    }
+
+    public static int Int(int minInclusive, int maxInclusive)
+    {
+        return Random.Range(minInclusive, maxInclusive + 1);
+    }
+
+    public static float Float(float minInclusive, float maxInclusive)
+    {
+        return Random.Range(minInclusive, maxInclusive);
     }
 
     public static bool Bool()
     {
-        return Random.Range(0, 2) == 1;
+        return Int(0, 1) == 0;
     }
 
 }
