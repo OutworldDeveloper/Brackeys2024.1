@@ -4,6 +4,8 @@
 public sealed class ItemStack : IReadOnlyStack
 {
 
+    public event Action Changed;
+
     public ItemStack(Item definition, int count = 1)
     {
         Item = definition;
@@ -49,6 +51,8 @@ public sealed class ItemStack : IReadOnlyStack
         Count += stack.Count;
         Item = stack.Item;
         Components = stack.Components;
+
+        Changed?.Invoke();
     }
 
     public ItemStack Take(int amount)
@@ -60,6 +64,9 @@ public sealed class ItemStack : IReadOnlyStack
 
         Count -= amount;
         var result = new ItemStack(Item, Components.Copy(), amount);
+
+        Changed?.Invoke();
+
         return result;
     }
 

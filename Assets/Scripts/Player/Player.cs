@@ -51,9 +51,6 @@ public sealed class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) == true)
             HandleEscapeButton();
 
-        if (Input.GetKeyDown(KeyCode.Tab) == true)
-            HandleTabButton();
-
         if (_panels.HasActivePanel == true)
         {
             _panels.Active.InputUpdate();
@@ -75,6 +72,9 @@ public sealed class Player : MonoBehaviour
                 }
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Tab) == true)
+            HandleTabButton();
     }
 
     private void LateUpdate()

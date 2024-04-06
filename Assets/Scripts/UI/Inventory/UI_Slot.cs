@@ -10,6 +10,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 {
 
     public event Action<UI_Slot> Selected;
+    public event Action<UI_Slot> SelectedAlt;
     public event Action<UI_Slot> Hovered;
 
     [SerializeField] private Image _itemImage;
@@ -19,6 +20,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] private Color _borderColorHighlighted;
 
     private int _isHidden;
+    private int _fakeSubstraction;
 
     public ItemSlot TargetSlot { get; private set; }
 
@@ -55,13 +57,12 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
     private void Refresh()
     {
-        bool showEmptySlot = TargetSlot.IsEmpty || _isHidden > 0;
+        bool showSlot = false; // || _isHidden > 0;
 
-        _itemImage.gameObject.SetActive(showEmptySlot == false);
-        _numberLabel.gameObject.SetActive(showEmptySlot == false);
-
-        if (showEmptySlot == false)
+        if (TargetSlot.IsEmpty == false)
         {
+            int showCount = TargetSlot.Stack.Count - _fakeSubstraction;
+
             _itemImage.sprite = TargetSlot.Stack.Item.Sprite;
 
             string numberText = string.Empty;
@@ -70,32 +71,44 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
             {
                 numberText = ammoComponent.Value.ToString();
             }
-            else if (TargetSlot.Stack.Count > 1)
+            else if (showCount > 0) // TargetSlot.Stack.Count > 1
             {
-                numberText = TargetSlot.Stack.Count.ToString();
+                numberText = showCount.ToString();
             }
 
             _numberLabel.text = numberText;
             _numberLabel.enabled = numberText != string.Empty;
+
+            showSlot = showCount > 0;
         }
 
+        _itemImage.gameObject.SetActive(showSlot);
+        _numberLabel.gameObject.SetActive(showSlot);
+    }
+
+    public void SetFakeSubstraction(int amount)
+    {
+        _fakeSubstraction = amount;
+        Refresh();
+    }
+
+    public void ClearFakeSubstraction()
+    {
+        _fakeSubstraction = 0;
+        Refresh();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Selected?.Invoke(this);
-    }
-
-    public void Hide()
-    {
-        _isHidden++;
-        Refresh();
-    }
-
-    public void Show()
-    {
-        _isHidden--;
-        Refresh();
+        switch (eventData.button)
+        {
+            case PointerEventData.InputButton.Left:
+                Selected?.Invoke(this);
+                break;
+            case PointerEventData.InputButton.Right:
+                SelectedAlt?.Invoke(this);
+                break;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -114,4 +127,5 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         //_borderImage.DOColor(_borderColor, 0.1f).From(_borderColorHighlighted).SetUpdate(true);
         _borderImage.color = _borderColor;
     }
+
 }

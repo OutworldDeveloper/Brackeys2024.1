@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5330932033359355887}
   - component: {fileID: 5330932033359355858}
   - component: {fileID: 5330932033359355859}
-  - component: {fileID: 5501020257973529301}
   - component: {fileID: 551141496142696347}
   - component: {fileID: 5669025603480959733}
   m_Layer: 6
@@ -71,32 +70,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
-  _item: {fileID: 5501020257973529301}
---- !u!114 &5501020257973529301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5330932033359355856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: Key for room f
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 1
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 86bcf1296a1dd3540bd708d3b026e3bd,
-    type: 3}
-  _tags:
-  - {fileID: 11400000, guid: d713da12f3745cc4dbd962bcb48aed2a, type: 2}
-  _colliders:
-  - {fileID: 5330932033359355858}
-  _visuals:
-  - {fileID: 8490882850280530086}
+  _item: {fileID: 0}
+  _amount: 1
 --- !u!114 &551141496142696347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selfPrefab: {fileID: 5330932033359355856}
-  _prefabPath: Assets/Prefabs/Items/Resources/Key Room F.prefab
+  _prefabPath: 
   _hasSceneID: 0
   _sceneID: 
 --- !u!1001 &5330932033234921230
@@ -223,12 +198,6 @@ PrefabInstance:
 --- !u!4 &996897923388759496 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4913135899021064902, guid: efdcf6bff87a95b44a1a36ac1987eb32,
-    type: 3}
-  m_PrefabInstance: {fileID: 5330932033234921230}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &8490882850280530086 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 4336661359612299176, guid: efdcf6bff87a95b44a1a36ac1987eb32,
     type: 3}
   m_PrefabInstance: {fileID: 5330932033234921230}
   m_PrefabAsset: {fileID: 0}

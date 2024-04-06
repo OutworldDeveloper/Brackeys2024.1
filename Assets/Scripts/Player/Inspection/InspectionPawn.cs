@@ -96,8 +96,6 @@ public sealed class InspectionPawn : Pawn
         _light.enabled = false;
 
         _targetData.RestoreLayers();
-
-        Debug.Log($"InspectionPawn OnUnpossessed");
     }
 
     public override void InputTick()

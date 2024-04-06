@@ -59,7 +59,6 @@ GameObject:
   - component: {fileID: 4854975112523473230}
   - component: {fileID: 6359088091116685117}
   - component: {fileID: 1368059712397126442}
-  - component: {fileID: 2718569519719374001}
   - component: {fileID: 8962795462267843045}
   - component: {fileID: 5696643096157304954}
   - component: {fileID: 6006505080770141467}
@@ -123,32 +122,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
-  _item: {fileID: 2718569519719374001}
---- !u!114 &2718569519719374001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720687746943849400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: Pizza
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.5
-  <IsItem>k__BackingField: 1
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 28b900acc5d659b4bab3133223e8497d,
-    type: 3}
-  _tags:
-  - {fileID: 11400000, guid: 919cf5e2d2fe93e449f9955c44d49267, type: 2}
-  _colliders:
-  - {fileID: 6359088091116685117}
-  _visuals:
-  - {fileID: 8320424783761325606}
+  _item: {fileID: 0}
+  _amount: 1
 --- !u!114 &8962795462267843045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selfPrefab: {fileID: 720687746943849400}
-  _prefabPath: Assets/Prefabs/Items/Resources/Pizza.prefab
+  _prefabPath: 
   _hasSceneID: 0
   _sceneID: 
 --- !u!1 &4645890711315522147

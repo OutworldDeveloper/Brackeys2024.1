@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -22,10 +23,9 @@ public class UI_InventoryScreen : UI_Panel
 
     private PlayerCharacter _character;
 
-    private bool _isMovingItem;
-    private UI_Slot _movingFromSlot;
-    private float _lastMoveStartTime;
-    private int _moveAmount;
+    private StackMoveInfo _currentMove;
+
+    private bool IsMovingStack => _currentMove != null;
 
     public void SetTarget(PlayerCharacter character)
     {
@@ -42,15 +42,7 @@ public class UI_InventoryScreen : UI_Panel
 
     private void Update()
     {
-        if (_isMovingItem == true)
-        {
-            //_itemMovePreviewGO.position = 
-            //    Vector2.Lerp(
-            //        _movingFromSlot.GetComponent<RectTransform>().position, 
-            //        Input.mousePosition, (Time.unscaledTime - _lastMoveStartTime) * 15f);
-
-            _itemMovePreviewGO.position = Input.mousePosition;
-        }
+        _itemMovePreviewGO.position = Input.mousePosition;
 
         KeyCode[] keyCodes = new KeyCode[]
         {
@@ -78,75 +70,112 @@ public class UI_InventoryScreen : UI_Panel
     protected void RegisterSlot(UI_Slot slot)
     {
         slot.Selected += OnSlotSelected;
+        slot.SelectedAlt += OnSlotSelectedAlt;
         slot.Hovered += OnSlotHovered;
     }
 
     protected void RegisterGrid(UI_InventoryGrid grid)
     {
         grid.SlotSelected += OnSlotSelected;
-        grid.SlotHovered += OnSlotHovered;
+        grid.SlotSelectedAlt += OnSlotSelectedAlt;
+        grid.SlotHovered += OnSlotHovered; 
     }
 
-    private void OnSlotSelected(UI_Slot slot)
+    protected virtual void OnSlotSelected(UI_Slot slot)
     {
-        Debug.Log(slot.TargetSlot);
-
-        if (_isMovingItem == false)
+        if (IsMovingStack == false)
         {
             if (slot.TargetSlot.IsEmpty == false)
             {
-                _isMovingItem = true;
-                _movingFromSlot = slot;
-
-                _moveAmount = _movingFromSlot.TargetSlot.Stack.Count;
-
-                slot.Hide();
-
-                _lastMoveStartTime = Time.unscaledTime;
-
-                _itemMovePreview.sprite = _movingFromSlot.TargetSlot.Stack.Item.Sprite;
-                _itemMovePreviewGO.gameObject.SetActive(true);
-
-                _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.Stack.Count > 1);
-                _itemsCountPreview.text = _movingFromSlot.TargetSlot.Stack.Count.ToString();
+                StartMove(slot, slot.TargetSlot.Stack.Count);
             }
         }
         else
         {
-            bool shouldStopMoving = false;
-
-            if (_movingFromSlot.TargetSlot != slot.TargetSlot)
+            if (_currentMove.From.TargetSlot == slot.TargetSlot)
             {
-                //for (int i = 0; i < _moveAmount; i++)
-                //{
-                //    InventoryManager.TryTransfer(_movingFromSlot.TargetSlot, slot.TargetSlot);
-                //}
-
-                InventoryManager.TryTransfer(_movingFromSlot.TargetSlot, slot.TargetSlot, _moveAmount);
-
-                if (_movingFromSlot.TargetSlot.IsEmpty == true)
-                    shouldStopMoving = true;
+                StopMove();
             }
             else
             {
-                shouldStopMoving = true;
-            }
-
-            if (shouldStopMoving == true)
-            {
-                _isMovingItem = false;
-                _movingFromSlot.Show();
-                _movingFromSlot = null;
-
-                _itemsCountPreview.gameObject.SetActive(false);
-                _itemMovePreviewGO.gameObject.SetActive(false);
-            }
-            else
-            {
-                _itemsCountPreview.gameObject.SetActive(_movingFromSlot.TargetSlot.Stack.Count > 1);
-                _itemsCountPreview.text = _movingFromSlot.TargetSlot.Stack.Count.ToString();
+                if (InventoryManager.TryTransfer(_currentMove.From.TargetSlot, slot.TargetSlot, _currentMove.Amount) == true)
+                    StopMove();
             }
         }
+    }
+
+    protected virtual void OnSlotSelectedAlt(UI_Slot slot)
+    {
+        if (IsMovingStack == false)
+        {
+            if (slot.TargetSlot.IsEmpty == false && slot.TargetSlot.Stack.Count > 1)
+            {
+                StartMove(slot, slot.TargetSlot.Stack.Count / 2);
+            }
+        }
+        else
+        {
+            if (_currentMove.From.TargetSlot == slot.TargetSlot)
+            {
+                _currentMove.Amount -= 1;
+
+                if (_currentMove.Amount <= 0)
+                    StopMove();
+
+                RefreshMoveVisuals();
+                return;
+            }
+
+            if (InventoryManager.TryTransfer(_currentMove.From.TargetSlot, slot.TargetSlot, 1) == true)
+            {
+                _currentMove.Amount -= 1;
+
+                if (_currentMove.Amount <= 0)
+                    StopMove();
+
+                RefreshMoveVisuals();
+            }
+        }
+    }
+
+    private void StartMove(UI_Slot from, int amount)
+    {
+        if (IsMovingStack == true)
+            throw new Exception("Cannot start more than one move!");
+
+        if (from.TargetSlot.IsEmpty == true)
+            throw new Exception("Cannot start move from an empty slot!");
+
+        _currentMove = new StackMoveInfo(from, amount);
+
+        RefreshMoveVisuals();
+
+        Debug.Log($"Start StackMove with amount {amount}");
+    }
+
+    private void StopMove()
+    {
+        _currentMove.From.ClearFakeSubstraction();
+
+        _currentMove = null;
+
+        RefreshMoveVisuals();
+    }
+
+    private void RefreshMoveVisuals()
+    {
+        if (IsMovingStack == false)
+        {
+            _itemsCountPreview.gameObject.SetActive(false);
+            _itemMovePreviewGO.gameObject.SetActive(false);
+            return;
+        }
+
+        _itemMovePreview.sprite = _currentMove.From.TargetSlot.Stack.Item.Sprite;
+        _itemMovePreviewGO.gameObject.SetActive(true);
+
+        _itemsCountPreview.gameObject.SetActive(true); // _currentMove.Amount > 1
+        _itemsCountPreview.text = _currentMove.Amount.ToString();
     }
 
     private void OnSlotHovered(UI_Slot slot)
@@ -163,11 +192,41 @@ public class UI_InventoryScreen : UI_Panel
 
     public override void InputUpdate()
     {
-        return;
         if (Input.GetKeyDown(KeyCode.Tab) == true)
         {
             CloseAndDestroy();
         }
+    }
+
+}
+
+public sealed class StackMoveInfo
+{
+
+    public readonly UI_Slot From;
+    private int _amount;
+
+    public StackMoveInfo(UI_Slot from, int amount)
+    {
+        if (amount <= 0)
+            throw new Exception("Invalid amount.");
+
+        From = from;
+        Amount = amount;
+    }
+
+    // No longer just Info then?
+    public int Amount 
+    {
+        get 
+        { 
+            return _amount; 
+        } 
+        set
+        {
+            _amount = value;
+            From.SetFakeSubstraction(_amount);
+        } 
     }
 
 }

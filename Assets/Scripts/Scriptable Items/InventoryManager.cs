@@ -8,6 +8,9 @@ public static class InventoryManager
 
     public static bool TryTransfer(ItemSlot slotA, ItemSlot slotB, int amount)
     {
+        if (amount <= 0)
+            throw new System.Exception("Attempting to transfer an invalid amount of items.");
+
         if (slotA == slotB)
             throw new System.Exception("Attempting to transfer an item to the same slot it's already in.");
 

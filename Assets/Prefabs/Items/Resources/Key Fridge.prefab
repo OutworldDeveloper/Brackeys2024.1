@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8540947311750181351}
   - component: {fileID: 8540947311750181338}
   - component: {fileID: 8540947311750181339}
-  - component: {fileID: 8298798086133482717}
   - component: {fileID: 1878876517521708644}
   - component: {fileID: 5613513540062711214}
   m_Layer: 6
@@ -71,32 +70,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
-  _item: {fileID: 8298798086133482717}
---- !u!114 &8298798086133482717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8540947311750181336}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: Key for fridge
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 1
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 49c01d6cdac48a046b57a1b1bb789b6c,
-    type: 3}
-  <StackType>k__BackingField: {fileID: 0}
-  _tags: []
-  _colliders:
-  - {fileID: 8540947311750181338}
-  _visuals:
-  - {fileID: 5379937691917717166}
+  _item: {fileID: 0}
+  _amount: 1
 --- !u!114 &1878876517521708644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,12 +198,6 @@ PrefabInstance:
 --- !u!4 &3650586711235867584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4913135899021064902, guid: efdcf6bff87a95b44a1a36ac1987eb32,
-    type: 3}
-  m_PrefabInstance: {fileID: 8540947311892039942}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &5379937691917717166 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 4336661359612299176, guid: efdcf6bff87a95b44a1a36ac1987eb32,
     type: 3}
   m_PrefabInstance: {fileID: 8540947311892039942}
   m_PrefabAsset: {fileID: 0}

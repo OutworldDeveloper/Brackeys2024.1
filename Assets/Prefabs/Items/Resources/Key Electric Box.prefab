@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5139447908683837593}
   - component: {fileID: 5139447908683837604}
   - component: {fileID: 5139447908683837605}
-  - component: {fileID: 4827355307600938403}
   - component: {fileID: 5018186147859474630}
   - component: {fileID: 2343596968744776672}
   m_Layer: 6
@@ -71,31 +70,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
-  _item: {fileID: 4827355307600938403}
---- !u!114 &4827355307600938403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5139447908683837606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a786fa2bcdf402c48afeb4ef7615c396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: Key for electric box
-  <FaceDirection>k__BackingField: {x: 270, y: 0, z: 0}
-  <InspectOffset>k__BackingField: {x: 0, y: 0, z: 0}
-  <Distance>k__BackingField: 0.3
-  <IsItem>k__BackingField: 1
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 86bcf1296a1dd3540bd708d3b026e3bd,
-    type: 3}
-  _tags: []
-  _colliders:
-  - {fileID: 5139447908683837604}
-  _visuals:
-  - {fileID: 8898011304312606672}
+  _item: {fileID: 0}
+  _amount: 1
 --- !u!114 &5018186147859474630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selfPrefab: {fileID: 5139447908683837606}
-  _prefabPath: Assets/Prefabs/Items/Resources/Key Electric Box.prefab
+  _prefabPath: 
   _hasSceneID: 0
   _sceneID: 
 --- !u!1001 &5139447908540352632
@@ -222,12 +198,6 @@ PrefabInstance:
 --- !u!4 &251088551921496766 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4913135899021064902, guid: efdcf6bff87a95b44a1a36ac1987eb32,
-    type: 3}
-  m_PrefabInstance: {fileID: 5139447908540352632}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &8898011304312606672 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 4336661359612299176, guid: efdcf6bff87a95b44a1a36ac1987eb32,
     type: 3}
   m_PrefabInstance: {fileID: 5139447908540352632}
   m_PrefabAsset: {fileID: 0}

@@ -24,7 +24,7 @@ public class ItemSlot
     public ItemSlot(MonoBehaviour owner, string name) : this(owner, name, typeof(Item)) { }
 
     public IReadOnlyStack Stack => _stack;
-    public bool IsEmpty => _stack == null;
+    public bool IsEmpty => _stack == null; // || _stack.Count < 1;
 
     public ItemStack GetStack() // Should copy?
     {
@@ -38,6 +38,9 @@ public class ItemSlot
 
     public bool TryAdd(ItemStack stack)
     {
+        if (stack.Count <= 0)
+            throw new Exception("Cannot add stack with an invalid amount of items.");
+
         // Можно ли класть в этот слот предметы такого типа
         if (IsCompatableWith(stack.Item) == false)
             return false;
@@ -46,6 +49,9 @@ public class ItemSlot
         if (IsEmpty == true)
         {
             _stack = stack;
+
+            _stack.Changed += OnStackChanged;
+
             Changed?.Invoke(this);
             return true;
         }
@@ -66,13 +72,25 @@ public class ItemSlot
 
         ItemStack result = _stack.Take(amount);
 
+        //if (_stack.Count <= 0)
+        //{
+        //    _stack.Changed -= OnStackChanged;
+        //    _stack = null;
+        //}
+
+        Changed?.Invoke(this);
+        return result;
+    }
+
+    private void OnStackChanged()
+    {
         if (_stack.Count <= 0)
         {
+            _stack.Changed -= OnStackChanged;
             _stack = null;
         }
 
         Changed?.Invoke(this);
-        return result;
     }
 
     public override string ToString()
