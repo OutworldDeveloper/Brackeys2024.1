@@ -19,7 +19,6 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] private Color _borderColor;
     [SerializeField] private Color _borderColorHighlighted;
 
-    private int _isHidden;
     private int _fakeSubstraction;
 
     public ItemSlot TargetSlot { get; private set; }
@@ -71,7 +70,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
             {
                 numberText = ammoComponent.Value.ToString();
             }
-            else if (showCount > 0) // TargetSlot.Stack.Count > 1
+            else if (showCount > 1)
             {
                 numberText = showCount.ToString();
             }

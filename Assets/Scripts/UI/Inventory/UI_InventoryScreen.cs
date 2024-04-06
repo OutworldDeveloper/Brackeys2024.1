@@ -98,8 +98,19 @@ public class UI_InventoryScreen : UI_Panel
             }
             else
             {
-                if (InventoryManager.TryTransfer(_currentMove.From.TargetSlot, slot.TargetSlot, _currentMove.Amount) == true)
+                int toi = _currentMove.Amount;
+                for (int i = 0; i < toi; i++)
+                {
+                    if (InventoryManager.TryTransfer(_currentMove.From.TargetSlot, slot.TargetSlot, 1) == true)
+                    {
+                        _currentMove.Amount--;
+                    }
+                }
+
+                if (_currentMove.Amount == 0)
                     StopMove();
+                else
+                    RefreshMoveVisuals();
             }
         }
     }
@@ -174,7 +185,7 @@ public class UI_InventoryScreen : UI_Panel
         _itemMovePreview.sprite = _currentMove.From.TargetSlot.Stack.Item.Sprite;
         _itemMovePreviewGO.gameObject.SetActive(true);
 
-        _itemsCountPreview.gameObject.SetActive(true); // _currentMove.Amount > 1
+        _itemsCountPreview.gameObject.SetActive(_currentMove.Amount > 1);
         _itemsCountPreview.text = _currentMove.Amount.ToString();
     }
 
