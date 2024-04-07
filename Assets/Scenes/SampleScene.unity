@@ -43038,6 +43038,7 @@ GameObject:
   - component: {fileID: 5427851809472901138}
   - component: {fileID: 5427851809472901150}
   - component: {fileID: 5427851809472901151}
+  - component: {fileID: 5427851809472901152}
   m_Layer: 5
   m_Name: Item Display UI
   m_TagString: Untagged
@@ -43122,6 +43123,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5427851809472901152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5427851809472901142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e36880e08ec93614cbb4765d2165ceca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _character: {fileID: 668565586}
+  _ammoLabel: {fileID: 6988719523772682600}
 --- !u!4 &5507915726929624160
 Transform:
   m_ObjectHideFlags: 0
