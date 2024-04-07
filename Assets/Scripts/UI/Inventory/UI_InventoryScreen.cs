@@ -214,7 +214,7 @@ public class UI_InventoryScreen : UI_Panel
                 InventoryManager.TryTransfer(slot.TargetSlot, _character.GetComponent<Equipment>().WeaponSlot, 1)));
         }
 
-        // actions.Add(new ItemAction("Destroy", () => { }));
+        actions.Add(new ItemAction("Destroy", () => InventoryManager.TryDestroyStack(slot.TargetSlot, slot.TargetSlot.Stack.Count)));
     }
 
     public void TryExecuteItemAction(ItemAction action)

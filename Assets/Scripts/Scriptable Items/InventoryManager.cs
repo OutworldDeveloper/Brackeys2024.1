@@ -34,4 +34,16 @@ public static class InventoryManager
         return true;
     }
 
+    public static bool TryDestroyStack(ItemSlot slot, int amount)
+    {
+        if (amount <= 0)
+            throw new System.Exception("Trying to destroy an invalid amount of items.");
+
+        if (slot.IsEmpty == true)
+            throw new System.Exception("Trying to destroy a stack in an empty slot.");
+
+        slot.Take(amount);
+        return true;
+    }
+
 }
