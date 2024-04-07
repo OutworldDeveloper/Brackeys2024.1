@@ -34,6 +34,31 @@ public static class InventoryManager
         return true;
     }
 
+    public static bool TryTransfer(ItemSlot fromSlot, Inventory targetInventory, int amount)
+    {
+        if (amount <= 0)
+            throw new System.Exception("Attempting to transfer an invalid amount of items.");
+
+        if (fromSlot.Owner == targetInventory)
+            throw new System.Exception("Attempting to transfer an item to the same inventory.");
+
+        if (fromSlot.IsEmpty == true)
+            throw new System.Exception("Attempting to transfer an item from an empty slot.");
+
+        if (fromSlot.Stack.Count < amount)
+            return false;
+
+        ItemStack stack = fromSlot.Take(amount);
+
+        if (targetInventory.TryAdd(stack) == false)
+        {
+            fromSlot.TryAdd(stack); // Возвращаем с позором :D Может TakeCopy() ?
+            return false;
+        }
+
+        return true;
+    }
+
     public static bool TryDestroyStack(ItemSlot slot, int amount)
     {
         if (amount <= 0)

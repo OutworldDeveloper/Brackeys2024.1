@@ -17,8 +17,6 @@ public class Equipment : MonoBehaviour, ICustomSaveable
     {
         var data = new Dictionary<string, ItemStack>();
 
-        Debug.Log(_weaponSlot.IsEmpty);
-
         if (_weaponSlot.IsEmpty == false)
             data.Add("weapon", _weaponSlot.GetStack());
 

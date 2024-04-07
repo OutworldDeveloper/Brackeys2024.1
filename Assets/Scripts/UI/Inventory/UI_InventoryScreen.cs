@@ -25,8 +25,9 @@ public class UI_InventoryScreen : UI_Panel
     [SerializeField] private RectTransform _itemActionsMenu;
     [SerializeField] private Prefab<UI_ItemActionButton> _itemContextButtonPrefab;
 
-    private PlayerCharacter _character;
     private StackMoveInfo _currentMove;
+
+    protected PlayerCharacter Character { get; private set; }
 
     private bool IsContextMenuOpen 
     { 
@@ -42,9 +43,11 @@ public class UI_InventoryScreen : UI_Panel
 
     private bool IsMovingStack => _currentMove != null;
 
+    protected virtual bool ShowDestroyOption => true;
+
     public void SetTarget(PlayerCharacter character)
     {
-        _character = character;
+        Character = character;
         _inventoryGrid.SetTarget(character.GetComponent<Inventory>());
         _weaponSlot.SetTarget(character.GetComponent<Equipment>().WeaponSlot);
     }
@@ -79,7 +82,7 @@ public class UI_InventoryScreen : UI_Panel
         {
             if (Input.GetKeyDown(keyCodes[i]) == true)
             {
-                _character.GetComponent<Inventory>().TryAdd(new ItemStack(_itemsTest[i]));
+                Character.GetComponent<Inventory>().TryAdd(new ItemStack(_itemsTest[i]));
             }
         }
     }
@@ -203,18 +206,23 @@ public class UI_InventoryScreen : UI_Panel
             actions.Add(new ItemAction("Split", () => StartMove(slot, slot.TargetSlot.Stack.Count / 2)));
         }
 
-        //if (slot == _weaponSlot)
-        //{
-        //    actions.Add(new ItemAction("Unequip", () => { }));
-        //}
-
-        if (slot.TargetSlot.Owner == _character.Inventory && slot.TargetSlot.Stack.Item is WeaponItem)
+        if (slot.TargetSlot == Character.GetComponent<Equipment>().WeaponSlot)
         {
-            actions.Add(new ItemAction("Equip", () =>
-                InventoryManager.TryTransfer(slot.TargetSlot, _character.GetComponent<Equipment>().WeaponSlot, 1)));
+            actions.Add(new ItemAction("Unequip", () => 
+                InventoryManager.TryTransfer(slot.TargetSlot, Character.Inventory, slot.TargetSlot.Stack.Count)));
         }
 
-        actions.Add(new ItemAction("Destroy", () => InventoryManager.TryDestroyStack(slot.TargetSlot, slot.TargetSlot.Stack.Count)));
+        if (slot.TargetSlot.Owner == Character.Inventory && slot.TargetSlot.Stack.Item is WeaponItem)
+        {
+            actions.Add(new ItemAction("Equip", () =>
+                InventoryManager.TryTransfer(slot.TargetSlot, Character.GetComponent<Equipment>().WeaponSlot, 1)));
+        }
+
+        if (ShowDestroyOption == true)
+        {
+            actions.Add(new ItemAction("Destroy", () =>
+                InventoryManager.TryDestroyStack(slot.TargetSlot, slot.TargetSlot.Stack.Count)));
+        }
     }
 
     public void TryExecuteItemAction(ItemAction action)

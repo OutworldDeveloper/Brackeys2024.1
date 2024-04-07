@@ -8,6 +8,8 @@ public sealed class UI_InventorySelectScreen : UI_InventoryScreen
 
     private IItemSelector _itemSelector;
 
+    protected override bool ShowDestroyOption => false;
+
     public void SetSelector(IItemSelector itemSelector)
     {
         _itemSelector = itemSelector;
