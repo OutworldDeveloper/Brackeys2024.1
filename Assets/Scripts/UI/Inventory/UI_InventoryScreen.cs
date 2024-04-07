@@ -247,8 +247,6 @@ public class UI_InventoryScreen : UI_Panel
         _currentMove = new StackMoveInfo(from, amount);
 
         RefreshMoveVisuals();
-
-        Debug.Log($"Start StackMove with amount {amount}");
     }
 
     private void StopMove()

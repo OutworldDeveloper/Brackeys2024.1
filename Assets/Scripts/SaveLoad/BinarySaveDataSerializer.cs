@@ -81,7 +81,7 @@ public class ItemStackSerializationSurrogate : ISerializationSurrogate
         ItemStack stack = (ItemStack)obj;
         info.AddValue("item_id", stack.Item.name);
         info.AddValue("count", stack.Count);
-        info.AddValue("data", stack.Components, typeof(ItemComponents));
+        info.AddValue("data", stack.Attributes, typeof(ItemAttributes));
     }
 
     // Method called to deserialize a Vector3 object
@@ -91,7 +91,7 @@ public class ItemStackSerializationSurrogate : ISerializationSurrogate
         string itemId = (string)info.GetValue("item_id", typeof(string));
         Item item = Items.Get(itemId);
         int count = (int)info.GetValue("count", typeof(int));
-        ItemComponents data = (ItemComponents)info.GetValue("data", typeof(ItemComponents));
+        ItemAttributes data = (ItemAttributes)info.GetValue("data", typeof(ItemAttributes));
 
         obj = new ItemStack(item, data, count);
         return obj;

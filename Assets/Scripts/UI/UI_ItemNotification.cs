@@ -17,12 +17,12 @@ public sealed class UI_ItemNotification : MonoBehaviour
 
     private void OnEnable()
     {
-        _character.Inventory.ItemAdded += OnItemAdded;
+        //_character.Inventory.ItemAdded += OnItemAdded;
         //_character.Inventory.ItemRemoved += OnItemRemoved;
     }
     private void OnDisable()
     {
-        _character.Inventory.ItemAdded -= OnItemAdded;
+        //_character.Inventory.ItemAdded -= OnItemAdded;
         //_character.Inventory.ItemRemoved -= OnItemRemoved;
     }
 

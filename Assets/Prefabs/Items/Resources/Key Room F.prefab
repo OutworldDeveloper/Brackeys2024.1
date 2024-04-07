@@ -70,7 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <InteractionDistance>k__BackingField: 3
-  _item: {fileID: 0}
+  _item: {fileID: 11400000, guid: d07c5fb4dc6a8b248b7b7fbf6f8d0369, type: 2}
   _amount: 1
 --- !u!114 &551141496142696347
 MonoBehaviour:

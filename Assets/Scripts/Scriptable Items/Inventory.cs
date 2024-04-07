@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour, ICustomSaveable
 {
-
-    public event Action<ItemStack> ItemAdded;
+    public event Action Changed;
 
     [SerializeField] private int _slotsCount;
 
@@ -21,7 +20,13 @@ public class Inventory : MonoBehaviour, ICustomSaveable
         for (int i = 0; i < _slots.Length; i++)
         {
             _slots[i] = new ItemSlot(this, $"Inventory{i}");
+            _slots[i].Changed += OnSlotChanged;
         }
+    }
+
+    private void OnSlotChanged(ItemSlot slot)
+    {
+        Changed?.Invoke();
     }
 
     public bool TryAdd(ItemStack stack)
@@ -29,13 +34,26 @@ public class Inventory : MonoBehaviour, ICustomSaveable
         foreach (var slot in _slots)
         {
             if (slot.TryAdd(stack) == true)
-            {
-                ItemAdded?.Invoke(stack);
                 return true;
-            }
         }
     
         return false;
+    }
+
+    public int GetAmountOf(Item item)
+    {
+        int count = 0;
+
+        foreach (var slot in _slots)
+        {
+            if (slot.IsEmpty == true)
+                continue;
+
+            if (slot.Stack.Item == item)
+                count += slot.Stack.Count;
+        }
+
+        return count;
     }
 
     public object SaveData()

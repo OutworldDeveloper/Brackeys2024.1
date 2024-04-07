@@ -30,4 +30,21 @@ public static class Randomize
         return Int(0, 1) == 0;
     }
 
+    public static int Sign()
+    {
+        bool b = Bool();
+        Notification.ShowDebug(b ? "Left" : "Right");
+        return b ? 1 : -1;
+    }
+
+    public static int Sign(int original)
+    {
+        return original * Sign();
+    }
+
+    public static float Sign(float original)
+    {
+        return original * Sign();
+    }
+
 }

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c211c119fff06374fb4645d0b8fba733, type: 3}
-  m_Name: Rope
+  m_Name: Pistol Ammo
   m_EditorClassIdentifier: 
-  <DisplayName>k__BackingField: Rope
-  <Description>k__BackingField: Just some old rope
-  <Sprite>k__BackingField: {fileID: 21300000, guid: 8c5d4243b5d6ce54f895a48335943c9c,
+  <DisplayName>k__BackingField: Pistol Ammo
+  <Description>k__BackingField: Pistol ammo
+  <Sprite>k__BackingField: {fileID: 21300000, guid: e6ced86227f996240a8388a68e6464dd,
     type: 3}
-  <StackSize>k__BackingField: 1
+  <StackSize>k__BackingField: 20
   _tags: []

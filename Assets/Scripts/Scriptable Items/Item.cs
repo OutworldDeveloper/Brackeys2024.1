@@ -16,12 +16,7 @@ public class Item : ScriptableObject
 
     [SerializeField, HideInInspector] private List<ItemTag> _tags = new List<ItemTag>();
 
-    public virtual ItemStack Create(int count)
-    {
-        return new ItemStack(this, count);
-    }
-
-    public virtual void CreateComponents(ItemComponents components) { }
+    public virtual void CreateAttributes(ItemAttributes attributes) { }
 
     public bool HasTag<T>(out T tag) where T : ItemTag
     {
@@ -40,79 +35,56 @@ public class Item : ScriptableObject
 
 }
 
-[Serializable]
-public sealed class ItemComponents
+public sealed class ItemAttribute<T> where T : struct
 {
 
-    private readonly Dictionary<Type, ItemComponent> _components = new Dictionary<Type, ItemComponent>();
+    public readonly string Id;
+    public readonly Type AttributeType;
 
-    public ItemComponents() { }
-
-    public bool IsEmpty => _components.Keys.Count == 0;
-
-    public T Get<T>() where T : ItemComponent
+    public ItemAttribute(string id)
     {
-        if (_components.ContainsKey(typeof(T)) == false)
-            return default;
-
-        return (T)_components[typeof(T)];
+        Id = id;
+        AttributeType = typeof(T);
     }
 
-    public void Add(ItemComponent component)
+}
+
+[Serializable]
+public sealed class ItemAttributes
+{
+
+    private readonly Dictionary<string, object> _attributes = new Dictionary<string, object>();
+
+    public ItemAttributes() { }
+
+    public bool IsEmpty => _attributes.Keys.Count == 0;
+
+    public T Get<T>(ItemAttribute<T> attribute) where T : struct
     {
-        _components.Add(component.GetType(), component);
+        return (T)_attributes[attribute.Id];
     }
 
-    public bool Has<T>(out T component) where T : ItemComponent
+    public void Set<T>(ItemAttribute<T> attribute, T value) where T : struct
     {
-        if (_components.TryGetValue(typeof(T), out ItemComponent result))
+        _attributes.AddOrUpdate(attribute.Id, value);
+    }
+
+    public bool Has<T>(ItemAttribute<T> attribute) where T : struct
+    {
+        return _attributes.ContainsKey(attribute.Id);
+    }
+
+    public ItemAttributes Copy()
+    {
+        var copy = new ItemAttributes();
+
+        foreach (var key in _attributes.Keys)
         {
-            component = result as T;
-            return true;
-        }
-
-        component = null;
-        return false;
-    }
-
-    public bool Has<T>() where T : ItemComponent
-    {
-        return Has(out T component);
-    }
-
-    public ItemComponents Copy()
-    {
-        var copy = new ItemComponents();
-
-        foreach (var key in _components.Keys)
-        {
-            var component = _components[key];
-            copy._components.Add(key, component.Copy());
+            var value = _attributes[key];
+            copy._attributes.Add(key, value);
         }
 
         return copy;
-    }
-
-}
-
-[Serializable]
-public abstract class ItemComponent
-{
-    public abstract ItemComponent Copy();
-
-}
-
-[Serializable]
-public sealed class LoadedAmmoComponent : ItemComponent
-{
-    public int Value;
-
-    public override ItemComponent Copy()
-    {
-        return new LoadedAmmoComponent()
-        {
-            Value = Value,
-        };
     }
 
 }

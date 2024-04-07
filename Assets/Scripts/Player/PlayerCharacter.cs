@@ -131,8 +131,9 @@ public sealed class PlayerCharacter : Pawn
 
         _equipment.WeaponSlot.Changed += ItemSlot =>
         {
-            if (_weaponState.Current != WeaponState.NoWeapon)
-                _weaponState.Set(WeaponState.Unequipping);
+            //if (_weaponState.Current != WeaponState.NoWeapon)
+            //    _weaponState.Set(WeaponState.Unequipping);
+            // throw new NotImplementedException();
         };
     }
 
@@ -151,11 +152,7 @@ public sealed class PlayerCharacter : Pawn
 
         if (Input.GetKeyDown(KeyCode.R) == true)
         {
-            if (_equipment.WeaponSlot.IsEmpty == false && 
-                _equipment.WeaponSlot.Stack.Components.Has<LoadedAmmoComponent>(out var ammoComponent))
-            {
-                ammoComponent.Value += 5;
-            }
+            TryReload();
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
@@ -163,38 +160,21 @@ public sealed class PlayerCharacter : Pawn
             if (CanShoot() == true &&
                 _equipment.WeaponSlot.Stack.Item is WeaponItem weapon && 
                 _timeSinceLastShoot > weapon.Cooldown &&
-                _equipment.WeaponSlot.Stack.Components.Has<LoadedAmmoComponent>(out var ammoComponent) && ammoComponent.Value > 0)
+                _equipment.WeaponSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO) > 0)
             {
-                weapon.Shoot(null, _head.transform.position, _head.transform.forward);
-                _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
                 _timeSinceLastShoot = TimeSince.Now();
-                _targetRecoilY += UnityEngine.Random.Range(weapon.RecoilVerticalMin, weapon.RecoilVerticalMax);
-                //_targetRecoilY += UnityEngine.Random.Range(25f, 35f);
-                bool recoilRight = UnityEngine.Random.Range(0, 2) == 0;
-                Notification.ShowDebug(recoilRight ? "Right" : "Left");
-                _targetRecoilX += UnityEngine.Random.Range(weapon.RecoilHorizontalMin, weapon.RecoilHorizontalMax) * (recoilRight ? 1 : -1);
 
-                //_armsAnimator.Play("shotgun_shoot", 0);
-                //_armsAnimator.SetTrigger("shoot");
+                weapon.Shoot(_equipment.WeaponSlot.GetStack(), _head.transform.position, _head.transform.forward);
+               
+                _targetRecoilY += Randomize.Float(weapon.RecoilVerticalMin, weapon.RecoilVerticalMax);
+                _targetRecoilX += Randomize.Float(weapon.RecoilHorizontalMin, weapon.RecoilHorizontalMax) * Randomize.Sign();
+
+                _equipment.WeaponSlot.Stack.SetAttribute(WeaponItem.LOADED_AMMO, 
+                    _equipment.WeaponSlot.Stack.GetAttribute(WeaponItem.LOADED_AMMO) - 1);
+
                 _armsAnimator.CrossFadeInFixedTime($"shoot{_weaponHolder.ActiveWeapon.AnimationSet}", 0.02f, 0);
-
-                ammoComponent.Value--;
+                _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
             }
-        }
-
-        if (Application.isEditor == true)
-        {
-            if (Input.GetKeyDown(KeyCode.F1))
-                Time.timeScale = 0.1f;
-
-            if (Input.GetKeyDown(KeyCode.F2))
-                Time.timeScale = 0.5f;
-
-            if (Input.GetKeyDown(KeyCode.F3))
-                Time.timeScale = 0.75f;
-
-            if (Input.GetKeyDown(KeyCode.F4))
-                Time.timeScale = 1f;
         }
     }
 
@@ -219,6 +199,25 @@ public sealed class PlayerCharacter : Pawn
         }
 
         _timeSinceLastWeaponStateChange = TimeSince.Now();
+    }
+
+    private void TryReload()
+    {
+        if (_equipment.WeaponSlot.IsEmpty == true)
+            return;
+
+        ItemStack stack = _equipment.WeaponSlot.GetStack();
+        WeaponItem weapon = _equipment.WeaponSlot.Stack.Item as WeaponItem;
+
+        int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
+        int missingAmmo = weapon.MaxAmmo - currentCount;
+        int toReload = Mathf.Min(missingAmmo, _inventory.GetAmountOf(weapon.AmmoItem));
+
+        if (missingAmmo <= 0)
+            return;
+
+        InventoryManager.TryDestroy(_inventory, weapon.AmmoItem, missingAmmo);
+        stack.SetAttribute(WeaponItem.LOADED_AMMO, stack.GetAttribute(WeaponItem.LOADED_AMMO) + toReload);
     }
 
     private void Update()

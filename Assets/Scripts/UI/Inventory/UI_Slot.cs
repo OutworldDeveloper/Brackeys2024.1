@@ -66,9 +66,9 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
             string numberText = string.Empty;
 
-            if (TargetSlot.Stack.Components.Has(out LoadedAmmoComponent ammoComponent) == true)
+            if (TargetSlot.Stack.Attributes.Has(WeaponItem.LOADED_AMMO) == true)
             {
-                numberText = ammoComponent.Value.ToString();
+                numberText = TargetSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO).ToString();
             }
             else if (showCount > 1)
             {

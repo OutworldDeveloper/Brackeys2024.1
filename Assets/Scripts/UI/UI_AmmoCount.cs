@@ -8,23 +8,45 @@ public class UI_AmmoCount : MonoBehaviour
 {
 
     [SerializeField] private PlayerCharacter _character;
+    [SerializeField] private GameObject _counterParent;
     [SerializeField] private TextMeshProUGUI _ammoLabel;
+
+    private ItemSlot _weaponSlot;
 
     private void Awake()
     {
-        _character.GetComponent<Equipment>().WeaponSlot.Changed += OnWeaponSlotChanged;
+        _weaponSlot = _character.GetComponent<Equipment>().WeaponSlot;
+        _weaponSlot.Changed += OnWeaponSlotChanged;
+        _character.Inventory.Changed += OnInventoryChanged;
+    }
+
+    private void Start()
+    {
+        Refresh();
     }
 
     private void OnWeaponSlotChanged(ItemSlot slot)
     {
-        _ammoLabel.gameObject.SetActive(slot.IsEmpty == false);
+        Refresh();
+    }
 
-        if (slot.IsEmpty == true)
+    private void OnInventoryChanged()
+    {
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        _counterParent.gameObject.SetActive(_weaponSlot.IsEmpty == false);
+
+        if (_weaponSlot.IsEmpty == true)
             return;
 
-        int ammoCount = slot.Stack.Components.Get<LoadedAmmoComponent>().Value;
-        int allCount = 15;
-        _ammoLabel.text = $"{ammoCount} / <size=30>{allCount}</size>";
+        WeaponItem weapon = _weaponSlot.Stack.Item as WeaponItem;
+
+        int loadedCount = _weaponSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO);
+        int inventoryCount = _character.Inventory.GetAmountOf(weapon.AmmoItem);
+        _ammoLabel.text = $"{loadedCount} / <size=30>{inventoryCount}</size>";
     }
 
 }

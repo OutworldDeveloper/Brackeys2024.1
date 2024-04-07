@@ -17,6 +17,7 @@ MonoBehaviour:
   <Sprite>k__BackingField: {fileID: 21300000, guid: fa6ec3af13e7242498f45975987b239a,
     type: 3}
   <StackSize>k__BackingField: 1
+  _tags: []
   <WeaponModel>k__BackingField:
     _asset: {fileID: 8688844734213380192, guid: 20d2144512ab9c746943a177c149b9df,
       type: 3}
@@ -24,6 +25,9 @@ MonoBehaviour:
   <ShootMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 1
+  <AmmoItem>k__BackingField: {fileID: 11400000, guid: ed6014256d9de8c4882aa2c75e2e7bb9,
+    type: 2}
+  <MaxAmmo>k__BackingField: 2
   <RecoilVerticalMin>k__BackingField: 15
   <RecoilVerticalMax>k__BackingField: 20
   <RecoilHorizontalMin>k__BackingField: 5

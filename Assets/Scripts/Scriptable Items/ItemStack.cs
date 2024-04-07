@@ -9,19 +9,20 @@ public sealed class ItemStack : IReadOnlyStack
     public ItemStack(Item definition, int count = 1)
     {
         Item = definition;
-        Components = new ItemComponents();
-        Item.CreateComponents(Components);
+        Attributes = new ItemAttributes();
+        Item.CreateAttributes(Attributes);
         Count = count;
     }
 
-    public ItemStack(Item definition, ItemComponents components, int count = 1) : this(definition, count)
+    public ItemStack(Item definition, ItemAttributes attributes, int count = 1) : this(definition, count)
     {
-        Components = components;
+        Attributes = attributes;
     }
 
     public Item Item { get; private set; }
-    public ItemComponents Components { get; private set; }
+    public ItemAttributes Attributes { get; private set; }
     public int Count { get; private set; }
+
 
     public bool CanAdd(ItemStack other)
     {
@@ -31,10 +32,10 @@ public sealed class ItemStack : IReadOnlyStack
         if (Item != other.Item)
             return false;
 
-        if (Components.IsEmpty == false)
+        if (Attributes.IsEmpty == false)
             return false;
 
-        if (other.Components.IsEmpty == false)
+        if (other.Attributes.IsEmpty == false)
             return false;
 
         if (Count + other.Count > Item.StackSize)
@@ -50,7 +51,7 @@ public sealed class ItemStack : IReadOnlyStack
 
         Count += stack.Count;
         Item = stack.Item;
-        Components = stack.Components;
+        Attributes = stack.Attributes;
 
         Changed?.Invoke();
     }
@@ -63,11 +64,27 @@ public sealed class ItemStack : IReadOnlyStack
         }
 
         Count -= amount;
-        var result = new ItemStack(Item, Components.Copy(), amount);
+        var result = new ItemStack(Item, Attributes.Copy(), amount);
 
         Changed?.Invoke();
 
         return result;
+    }
+
+    public T GetAttribute<T>(ItemAttribute<T> attribute) where T : struct
+    {
+        return Attributes.Get(attribute);
+    }
+
+    public void SetAttribute<T>(ItemAttribute<T> attribute, T value) where T : struct
+    {
+        Attributes.Set(attribute, value);
+        Changed?.Invoke();
+    }
+
+    public bool HasAttribute<T>(ItemAttribute<T> attribute) where T : struct
+    {
+        return Attributes.Has(attribute);
     }
 
     public override string ToString()
@@ -80,7 +97,10 @@ public sealed class ItemStack : IReadOnlyStack
 public interface IReadOnlyStack
 {
     public Item Item { get; }
-    public ItemComponents Components { get; }
+    public ItemAttributes Attributes { get; }
     public int Count { get; }
+    public T GetAttribute<T>(ItemAttribute<T> attribute) where T : struct;
+    public void SetAttribute<T>(ItemAttribute<T> attribute, T value) where T : struct;
+    public bool HasAttribute<T>(ItemAttribute<T> attribute) where T : struct;
 
 }
