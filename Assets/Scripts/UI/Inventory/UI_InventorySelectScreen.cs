@@ -15,19 +15,32 @@ public sealed class UI_InventorySelectScreen : UI_InventoryScreen
 
     protected override void OnSlotSelected(UI_Slot slot)
     {
+        TrySelect(slot);
+    }
+
+    protected override void CreateActionsFor(UI_Slot slot, List<ItemAction> actions)
+    {
         if (slot.TargetSlot.IsEmpty == true)
             return;
 
-        if (_itemSelector.CanAccept(slot.TargetSlot.Stack) == true)
-        {
-            _itemSelector.Select(slot.TargetSlot.GetStack());
-            CloseAndDestroy();
-        }
+        actions.Add(new ItemAction("Select", () => TrySelect(slot)));
     }
 
-    protected override void OnSlotSelectedAlt(UI_Slot slot)
+    private bool CanAccept(UI_Slot slot)
     {
-        return;
+        return _itemSelector.CanAccept(slot.TargetSlot.Stack);
+    }
+
+    private void TrySelect(UI_Slot slot)
+    {
+        if (slot.TargetSlot.IsEmpty == true)
+            return;
+
+        if (CanAccept(slot) == false)
+            return;
+
+        _itemSelector.Select(slot.TargetSlot.GetStack());
+        CloseAndDestroy();
     }
 
 }

@@ -21,9 +21,24 @@ public class UI_InventoryScreen : UI_Panel
 
     [SerializeField] private Item[] _itemsTest;
 
-    private PlayerCharacter _character;
+    [SerializeField] private GameObject _contextMenuBackground;
+    [SerializeField] private RectTransform _itemActionsMenu;
+    [SerializeField] private Prefab<UI_ItemActionButton> _itemContextButtonPrefab;
 
+    private PlayerCharacter _character;
     private StackMoveInfo _currentMove;
+
+    private bool IsContextMenuOpen 
+    { 
+        get
+        {
+            return _itemActionsMenu.gameObject.activeSelf;
+        }
+        set
+        {
+            _contextMenuBackground.gameObject.SetActive(value);
+        }
+    }
 
     private bool IsMovingStack => _currentMove != null;
 
@@ -38,6 +53,8 @@ public class UI_InventoryScreen : UI_Panel
     {
         RegisterGrid(_inventoryGrid);
         RegisterSlot(_weaponSlot);
+
+        IsContextMenuOpen = false;
     }
 
     private void Update()
@@ -83,6 +100,11 @@ public class UI_InventoryScreen : UI_Panel
 
     protected virtual void OnSlotSelected(UI_Slot slot)
     {
+        if (IsContextMenuOpen == true)
+        {
+            IsContextMenuOpen = false;
+        }
+
         if (IsMovingStack == false)
         {
             if (slot.TargetSlot.IsEmpty == false)
@@ -119,10 +141,32 @@ public class UI_InventoryScreen : UI_Panel
     {
         if (IsMovingStack == false)
         {
-            if (slot.TargetSlot.IsEmpty == false && slot.TargetSlot.Stack.Count > 1)
+            var corners = new Vector3[4];
+            slot.GetComponent<RectTransform>().GetWorldCorners(corners);
+            _itemActionsMenu.position = corners[0] + Vector3.right * slot.GetComponent<RectTransform>().rect.width / 2 * GetComponentInParent<Canvas>().scaleFactor;
+
+            foreach (Transform button in _itemActionsMenu)
             {
-                StartMove(slot, slot.TargetSlot.Stack.Count / 2);
+                Destroy(button.gameObject);
             }
+
+            var actions = new List<ItemAction>();
+            CreateActionsFor(slot, actions);
+
+            foreach (var action in actions)
+            {
+                var actionButton = _itemContextButtonPrefab.Instantiate();
+                actionButton.transform.SetParent(_itemActionsMenu, false);
+                actionButton.SetAction(this, action);
+            }
+
+            if (actions.Count > 0)
+                IsContextMenuOpen = true;
+
+            //if (slot.TargetSlot.IsEmpty == false && slot.TargetSlot.Stack.Count > 1)
+            //{
+            //    StartMove(slot, slot.TargetSlot.Stack.Count / 2);
+            //}
         }
         else
         {
@@ -147,6 +191,41 @@ public class UI_InventoryScreen : UI_Panel
                 RefreshMoveVisuals();
             }
         }
+    }
+
+    protected virtual void CreateActionsFor(UI_Slot slot, List<ItemAction> actions)
+    {
+        if (slot.TargetSlot.IsEmpty == true)
+            return;
+
+        if (slot.TargetSlot.Stack.Count > 1)
+        {
+            actions.Add(new ItemAction("Split", () => StartMove(slot, slot.TargetSlot.Stack.Count / 2)));
+        }
+
+        //if (slot == _weaponSlot)
+        //{
+        //    actions.Add(new ItemAction("Unequip", () => { }));
+        //}
+
+        if (slot.TargetSlot.Owner == _character.Inventory && slot.TargetSlot.Stack.Item is WeaponItem)
+        {
+            actions.Add(new ItemAction("Equip", () =>
+                InventoryManager.TryTransfer(slot.TargetSlot, _character.GetComponent<Equipment>().WeaponSlot, 1)));
+        }
+
+        // actions.Add(new ItemAction("Destroy", () => { }));
+    }
+
+    public void TryExecuteItemAction(ItemAction action)
+    {
+        action.Action.Invoke();
+        IsContextMenuOpen = false;
+    }
+
+    public void CloseContextMenu()
+    {
+        IsContextMenuOpen = false;
     }
 
     private void StartMove(UI_Slot from, int amount)
@@ -203,6 +282,14 @@ public class UI_InventoryScreen : UI_Panel
 
     public override void InputUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.Mouse0) == true)
+        {
+            if (IsContextMenuOpen == true)
+            {
+                //IsContextMenuOpen = false;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Tab) == true)
         {
             CloseAndDestroy();
@@ -238,6 +325,20 @@ public sealed class StackMoveInfo
             _amount = value;
             From.SetFakeSubstraction(_amount);
         } 
+    }
+
+}
+
+public sealed class ItemAction
+{
+
+    public readonly string DisplayName;
+    public readonly Action Action;
+
+    public ItemAction(string displayName, Action action)
+    {
+        DisplayName = displayName;
+        Action = action;
     }
 
 }

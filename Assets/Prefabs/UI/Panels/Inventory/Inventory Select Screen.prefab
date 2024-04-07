@@ -413,6 +413,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3222373221191947562}
   m_SourcePrefab: {fileID: 100100000, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3, type: 3}
+--- !u!1 &728974922049956184 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4684379940550490608, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 5413208455337906344}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &732868963447667593 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4698441989580548897, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
@@ -461,6 +467,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e2d590071021f409bec60d53a74f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &5224661453171698646 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 260695864274008958, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 5413208455337906344}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6561584454519928416 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1157700132681819848, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
@@ -494,6 +506,11 @@ MonoBehaviour:
   _selectedNameLabel: {fileID: 1702381893242212554}
   _selectedDescriptionLabel: {fileID: 1994459250533796860}
   _itemsTest: []
+  _contextMenuBackground: {fileID: 728974922049956184}
+  _itemActionsMenu: {fileID: 5224661453171698646}
+  _itemContextButtonPrefab:
+    _asset: {fileID: 4066342004266936578, guid: 8c96d78b03abb41449eb9102a35d1057,
+      type: 3}
 --- !u!114 &8862533572431386870 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3594329061711775838, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
