@@ -283,6 +283,11 @@ public class UI_InventoryScreen : UI_Panel
         {
             _selectedNameLabel.text = slot.TargetSlot.Stack.Item.DisplayName;
             _selectedDescriptionLabel.text = slot.TargetSlot.Stack.Item.Description;
+
+            if (slot.TargetSlot.Stack.Item is WeaponItem weapon)
+            {
+                _selectedDescriptionLabel.text += $"\nHas a maximum ammo capacity of {weapon.MaxAmmo}.";
+            }
         }
     }
 

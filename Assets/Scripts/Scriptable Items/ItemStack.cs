@@ -5,6 +5,8 @@ public sealed class ItemStack : IReadOnlyStack
 {
 
     public event Action Changed;
+    // CountChanged
+    // AttributesChanged
 
     public ItemStack(Item definition, int count = 1)
     {
