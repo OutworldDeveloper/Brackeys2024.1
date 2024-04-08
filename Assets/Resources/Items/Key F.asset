@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16ae7e223859a243ad3b67107185a30, type: 3}
+  m_Name: Key F
+  m_EditorClassIdentifier: 
+  <DisplayName>k__BackingField: Key F
+  <Description>k__BackingField: Strange looking key
+  <Sprite>k__BackingField: {fileID: 21300000, guid: 86bcf1296a1dd3540bd708d3b026e3bd,
+    type: 3}
+  <StackSize>k__BackingField: 1
+  _tags: []
+  <KeyModel>k__BackingField:
+    _asset: {fileID: 0}

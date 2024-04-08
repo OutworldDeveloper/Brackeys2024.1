@@ -150,6 +150,14 @@ public sealed class PlayerCharacter : Pawn
     {
         _currentInput = GatherInput();
 
+        if (Input.GetKeyDown(KeyCode.Tab) == true)
+        {
+            if (CanOpenInventory() == true)
+            {
+                Player.OpenInventory();
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.R) == true)
         {
             TryReload();
@@ -658,6 +666,11 @@ public sealed class PlayerCharacter : Pawn
     public bool CanEquipWeapon()
     {
         return true;
+    }
+
+    public bool CanOpenInventory()
+    {
+        return IsDead == false && _isAiming == false && _controller.isGrounded == true;
     }
 
     public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);

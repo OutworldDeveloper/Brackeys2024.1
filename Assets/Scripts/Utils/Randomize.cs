@@ -32,9 +32,7 @@ public static class Randomize
 
     public static int Sign()
     {
-        bool b = Bool();
-        Notification.ShowDebug(b ? "Left" : "Right");
-        return b ? 1 : -1;
+        return Bool() ? 1 : -1;
     }
 
     public static int Sign(int original)

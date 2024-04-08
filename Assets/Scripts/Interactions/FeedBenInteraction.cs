@@ -10,16 +10,36 @@ public sealed class FeedBenInteraction : Interaction
 
     public override bool IsAvaliable(PlayerCharacter player)
     {
-        throw new NotImplementedException();
-        //return _ben.IsHungry == true && player.Inventory.HasItemWithTag(_ben.FoodTag);
+        return _ben.IsHungry == true;
     }
 
     public override void Perform(PlayerCharacter player)
     {
-        if (_ben.TryFeed(player) == false)
-        {
-            Notification.Show("I don't have any food...");
-        }
+        player.Player.OpenItemSelection(new PizzaSelector(_ben));
     }
+
+    private sealed class PizzaSelector : IItemSelector
+    {
+
+        private readonly Ben _ben;
+
+        public PizzaSelector(Ben ben)
+        {
+            _ben = ben;
+        }
+
+        public bool CanAccept(IReadOnlyStack stack)
+        {
+            return _ben.CanEat(stack);
+        }
+
+        public void Select(ItemStack stack)
+        {
+            var foodStack = stack.Take(1);
+            _ben.TryFeed(foodStack);
+        }
+
+    }
+
 }
 

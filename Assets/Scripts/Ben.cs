@@ -18,9 +18,8 @@ public sealed class Ben : MonoBehaviour
     [SerializeField] private Sound _goodbyeSound;
     [SerializeField] private Sound _screamSound;
     [SerializeField] private Sound _pohuiSound;
-    [SerializeField] private ItemTag _foodTag;
+    [SerializeField] private Item _foodItem;
     [SerializeField] private Code _codeReward;
-
     [SerializeField] private SafeLock _safeLock;
     [SerializeField] private Door _trapSwitch;
     [SerializeField] private PlayerTrigger _trapRoomTrigger;
@@ -28,7 +27,6 @@ public sealed class Ben : MonoBehaviour
 
     private TimeSince _timeSinceLastSpoke = new TimeSince(float.NegativeInfinity);
 
-    public ItemTag FoodTag => _foodTag;
     public bool IsHungry { get; private set; } = true;
 
     private void OnEnable()
@@ -41,25 +39,22 @@ public sealed class Ben : MonoBehaviour
         GetComponent<Door>().SomeoneKnocked -= OnDoorKnocked;
     }
 
-    public bool TryFeed(PlayerCharacter character)
+    public bool CanEat(IReadOnlyStack stack)
+    {
+        return stack.Item == _foodItem;
+    }
+
+    public bool TryFeed(ItemStack stack)
     {
         if (IsHungry == false)
             return false;
 
-        throw new NotImplementedException();
-        //foreach (var item in character.Inventory.Items)
-        //{
-        //    if (item.HasTag(_foodTag) == false)
-        //        continue;
-        //
-        //    character.Inventory.RemoveItem(item);
-        //    IsHungry = false;
-        //    TrySayNextAdvice(true);
-        //    return true;
-        //}
+        if (CanEat(stack) == false)
+            return false;
 
-        Delayed.Do(() => _hungrySound.Play(_audioSource), feedDelay);
-        return false;
+        IsHungry = false;
+        TrySayNextAdvice(true);
+        return true;
     }
 
     private void OnDoorKnocked()

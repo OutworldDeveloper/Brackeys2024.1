@@ -5,11 +5,31 @@ using UnityEngine;
 public class SaveGameStation : MonoBehaviour
 {
 
-    [SerializeField] private Prefab<UI_SaveGameWindow> _windowPrefab;
-
     public void SaveGame(PlayerCharacter character)
     {
-        character.Player.Panels.InstantiateAndOpenFrom(_windowPrefab);
+        character.Player.OpenItemSelection(new SaveItemSelector(character));
+    }
+
+    private sealed class SaveItemSelector : IItemSelector
+    {
+
+        private readonly PlayerCharacter _playerCharacter;
+
+        public SaveItemSelector(PlayerCharacter playerCharacter)
+        {
+            _playerCharacter = playerCharacter;
+        }
+
+        public bool CanAccept(IReadOnlyStack stack)
+        {
+            return true;
+        }
+
+        public void Select(ItemStack stack)
+        {
+            _playerCharacter.Player.OpenSaveScreen();
+        }
+
     }
 
 }

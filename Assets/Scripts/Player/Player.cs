@@ -11,10 +11,12 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
+    [SerializeField] private bool _smoothPawnCameraChange;
     [SerializeField] private Prefab<UI_PauseMenu> _pauseMenu;
     [SerializeField] private Prefab<UI_InventoryScreen> _inventoryScreen;
     [SerializeField] private Prefab<UI_Panel> _deathScreen;
-    [SerializeField] private bool _smoothPawnCameraChange;
+    [SerializeField] private Prefab<UI_InventorySelectScreen> _itemSelectionScreen;
+    [SerializeField] private Prefab<UI_SaveGameWindow> _saveGameScreen;
 
     [SerializeField] private Volume _blurVolume;
 
@@ -72,9 +74,6 @@ public sealed class Player : MonoBehaviour
                 }
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.Tab) == true)
-            HandleTabButton();
     }
 
     private void LateUpdate()
@@ -121,17 +120,6 @@ public sealed class Player : MonoBehaviour
         else
         {
             OpenPauseMenu();
-        }
-    }
-
-    private void HandleTabButton()
-    {
-        if (_panels.HasActivePanel == true)
-            return;
-
-        if (_currentPawn == _character)
-        {
-            _panels.InstantiateAndOpenFrom(_inventoryScreen).SetTarget(_character);
         }
     }
 
@@ -213,6 +201,26 @@ public sealed class Player : MonoBehaviour
         bool pauseGame = _panels.HasActivePanel == true;
 
         Time.timeScale = pauseGame ? 0f : 1f;
+    }
+
+    public UI_InventoryScreen OpenInventory()
+    {
+        var inventoryScreen = _panels.InstantiateAndOpenFrom(_inventoryScreen);
+        inventoryScreen.SetTarget(_character);
+        return inventoryScreen;
+    }
+
+    public UI_InventorySelectScreen OpenItemSelection(IItemSelector selector)
+    {
+        var selectionScreen = Panels.InstantiateAndOpenFrom(_itemSelectionScreen);
+        selectionScreen.SetTarget(_character);
+        selectionScreen.SetSelector(selector);
+        return selectionScreen;
+    }
+
+    public UI_SaveGameWindow OpenSaveScreen()
+    {
+        return Panels.InstantiateAndOpenFrom(_saveGameScreen);
     }
 
 }

@@ -19,7 +19,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     [SerializeField] private float _animationDuration;
     [SerializeField] private AnimationCurve _openAnimationCurve;
     [SerializeField] private float _openAngle;
-    [SerializeField] private ItemTag _keyTag;
+    [SerializeField] private KeyItem _keyItem;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _openSound;
     [SerializeField] private Sound _closeSound;
@@ -43,7 +43,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
     public void OnFirstLoad()
     {
-        _isLockedByKey = _keyTag != null;
+        _isLockedByKey = _keyItem != null;
     }
 
     private void Start()
@@ -51,7 +51,6 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         SetRotation(_isOpen ? _openAngle : 0f);
     }
 
-    [ContextMenu("Open")]
     public void Open()
     {
         if (_isAnimating == true)
@@ -74,7 +73,6 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         Opening?.Invoke();
     }
 
-    [ContextMenu("Close")]
     public void Close()
     {
         if (_isAnimating == true)
@@ -95,53 +93,35 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         Closing?.Invoke();
     }
 
-    public bool TryOpen(PlayerCharacter player, bool ignoreLocks = false)
+    public bool TryUnlock(ItemStack stack)
+    {
+        if (stack.Item != _keyItem)
+            return false;
+
+        _isLockedByKey = false;
+        return true;
+    }
+
+    public bool TryOpen()
     {
         if (_isOpen == true)
             return false;
 
-        bool success = false;
-
-        if (IsLocked == true && ignoreLocks == false)
+        if (IsLocked == true)
         {
-            if (player == null)
-            {
-                Notification.ShowDebug("Tried opening door without player provided");
-            }
-            else
-            {
-                throw new NotImplementedException();
-                //if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
-                //{
-                //    PlayLockedSound();
-                //    Notification.Show("Locked!");
-                //}
-                //else
-                //{
-                //    player.Inventory.RemoveAndDestroyItem(key);
-                //    _isLockedByKey = false;
-                //    success = true;
-                //    Notification.Show($"Unlocked");
-                //}
-            }
-        }
-        else
-        {
-            success = true;
+            PlayLockedSound();
+            Notification.Show($"Locked!");
+            return false;
         }
 
-        if (success == true && _blockersCheck != null && _blockersCheck.Check<Movable>() == true)
+        if (_blockersCheck != null && _blockersCheck.Check<Movable>() == true)
         {
             PlayLockedSound();
             Notification.Show($"Blocked!");
             return false;
         }
 
-        OpeningAttempt?.Invoke(player, success);
-
-        if (success == true)
-            Delayed.Do(Open, _openDelay);
-
+        Open();
         return true;
     }
 
