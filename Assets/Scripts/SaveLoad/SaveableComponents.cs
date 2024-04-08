@@ -10,6 +10,8 @@ public sealed class SaveableComponents : MonoBehaviour
 
     [SerializeField] private List<SaveableComponentInfo> _saveableComponents = new();
 
+#if UNITY_EDITOR
+
     public void TryAdd(MonoBehaviour monoBehaviour)
     {
         bool isPartOfObject = false;
@@ -28,12 +30,23 @@ public sealed class SaveableComponents : MonoBehaviour
         if (_saveableComponents.Any(t => t.Component == monoBehaviour) == true)
             return;
 
-        _saveableComponents.Add(new SaveableComponentInfo()
+        var componentInfo = new SaveableComponentInfo()
         {
             Guid = Guid.NewGuid().ToString(),
             Component = monoBehaviour,
-        });
+        };
+
+        var serialziedObject = new UnityEditor.SerializedObject(this);
+        var componentsProperty = serialziedObject.FindProperty(nameof(_saveableComponents));
+
+        int index = componentsProperty.arraySize;
+        componentsProperty.InsertArrayElementAtIndex(index);
+        componentsProperty.GetArrayElementAtIndex(index).boxedValue = componentInfo;
+
+        serialziedObject.ApplyModifiedProperties();
     }
+
+#endif
 
     public void RemoveAt(int index)
     {

@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 8962795462267843045}
   - component: {fileID: 5696643096157304954}
   - component: {fileID: 6006505080770141467}
-  - component: {fileID: 3099178629264171897}
+  - component: {fileID: 7477874170445225629}
   m_Layer: 6
   m_Name: Pizza
   m_TagString: Untagged
@@ -121,7 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28f5f8013c7b9a4f8e736ca1fc28bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: 62160f6e9a25d26488d32216164126f1, type: 2}
   _amount: 1
 --- !u!114 &8962795462267843045
@@ -136,7 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96800642084b4074087f69dbd4e6751c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
 --- !u!114 &5696643096157304954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,8 +162,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba35cd1c90a4c2f4a94301d23ac62f4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _saveableComponents: []
---- !u!114 &3099178629264171897
+  _saveableComponents:
+  - Component: {fileID: 1368059712397126442}
+    Guid: 6ef3dc78-48ed-4e1a-8ff8-800c8e3e27b9
+--- !u!114 &7477874170445225629
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,13 +174,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 720687746943849400}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0978af87d47900a4f8491035a16da480, type: 3}
+  m_Script: {fileID: 11500000, guid: 666a2a3582e3e4a4fb8268c9b9d3edeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selfPrefab: {fileID: 720687746943849400}
-  _prefabPath: 
-  _hasSceneID: 0
-  _sceneID: 
+  _hasSceneGuid: 0
+  _sceneGuid: 
 --- !u!1 &4645890711315522147
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,6 +29,17 @@ public class Inventory : MonoBehaviour, ICustomSaveable
         Changed?.Invoke();
     }
 
+    public bool CanAdd(ItemStack stack)
+    {
+        foreach (var slot in _slots)
+        {
+            if (slot.CanAdd(stack) == true)
+                return true;
+        }
+
+        return false;
+    }
+
     public bool TryAdd(ItemStack stack)
     {
         foreach (var slot in _slots)

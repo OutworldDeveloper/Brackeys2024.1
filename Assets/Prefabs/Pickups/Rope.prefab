@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 3151982230959982755}
   - component: {fileID: 8893801882705439829}
   - component: {fileID: 4181513443794144289}
-  - component: {fileID: 192563156812902959}
+  - component: {fileID: 3269505148630523065}
   m_Layer: 6
   m_Name: Rope
   m_TagString: Untagged
@@ -154,9 +154,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28f5f8013c7b9a4f8e736ca1fc28bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: e47302faa20d86144900e0af70aff1b0, type: 2}
-  _amount: 1
+  _amount: 4
 --- !u!114 &3151982230959982755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96800642084b4074087f69dbd4e6751c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
 --- !u!114 &8893801882705439829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,8 +195,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba35cd1c90a4c2f4a94301d23ac62f4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _saveableComponents: []
---- !u!114 &192563156812902959
+  _saveableComponents:
+  - Component: {fileID: 7509157159175730442}
+    Guid: a9cea085-1a4f-4856-b445-15b1fd57b00c
+--- !u!114 &3269505148630523065
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,10 +207,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7509157159175730443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0978af87d47900a4f8491035a16da480, type: 3}
+  m_Script: {fileID: 11500000, guid: 666a2a3582e3e4a4fb8268c9b9d3edeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selfPrefab: {fileID: 7509157159175730443}
-  _prefabPath: 
-  _hasSceneID: 0
-  _sceneID: 
+  _hasSceneGuid: 0
+  _sceneGuid: 

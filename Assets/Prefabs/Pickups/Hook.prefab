@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 2558872519696496932}
   - component: {fileID: 5220142310811240070}
   - component: {fileID: 312170512777693530}
-  - component: {fileID: 3323076434886202138}
+  - component: {fileID: 1206499323051152152}
   m_Layer: 6
   m_Name: Hook
   m_TagString: Untagged
@@ -120,7 +120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28f5f8013c7b9a4f8e736ca1fc28bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
   _item: {fileID: 11400000, guid: 33be8dc0e0c960849b30cc06b6597bb6, type: 2}
   _amount: 1
 --- !u!114 &2558872519696496932
@@ -135,7 +134,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96800642084b4074087f69dbd4e6751c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InteractionDistance>k__BackingField: 3
 --- !u!114 &5220142310811240070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,8 +161,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba35cd1c90a4c2f4a94301d23ac62f4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _saveableComponents: []
---- !u!114 &3323076434886202138
+  _saveableComponents:
+  - Component: {fileID: 3556186017302634852}
+    Guid: 33be3f91-1a41-4cc6-b845-ef931c32912f
+--- !u!114 &1206499323051152152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -173,13 +173,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3556186017302634855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0978af87d47900a4f8491035a16da480, type: 3}
+  m_Script: {fileID: 11500000, guid: 666a2a3582e3e4a4fb8268c9b9d3edeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selfPrefab: {fileID: 3556186017302634855}
-  _prefabPath: 
-  _hasSceneID: 0
-  _sceneID: 
+  _hasSceneGuid: 0
+  _sceneGuid: 
 --- !u!1001 &3556186016130736593
 PrefabInstance:
   m_ObjectHideFlags: 0

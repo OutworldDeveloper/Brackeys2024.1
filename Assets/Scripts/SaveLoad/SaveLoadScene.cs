@@ -26,7 +26,7 @@ public class SaveLoadScene : MonoBehaviour
 
         HashSet<string> newSaveables = new HashSet<string>();
 
-        foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
+        foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>(true))
         {
             if (_sceneData.DynamicTheyExist.Contains(dynamicSaveable.SceneGuid) == false)
             {
@@ -43,7 +43,7 @@ public class SaveLoadScene : MonoBehaviour
         else
         {
             // Remove initial dynamic objects
-            foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
+            foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>(true))
             {
                 if (_sceneData.DynamicTheyExist.Contains(dynamicSaveable.SceneGuid) == true &&
                     newSaveables.Contains(dynamicSaveable.SceneGuid) == false)
@@ -71,7 +71,7 @@ public class SaveLoadScene : MonoBehaviour
             }
 
             // Load static objects
-            foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
+            foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>(true))
             {
                 if (_sceneData.StaticSaveableDatas.TryGetValue(staticSaveable.SceneGuid, out StaticSaveableData staticSaveableData) == false)
                     continue;
@@ -84,7 +84,7 @@ public class SaveLoadScene : MonoBehaviour
         }
 
         // Fresh Start
-        foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
+        foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>(true))
         {
             var data = _sceneData.GetStaticData(staticSaveable.SceneGuid);
             var saveableComponents = staticSaveable.GetComponent<SaveableComponents>().GetAll();
@@ -137,7 +137,7 @@ public class SaveLoadScene : MonoBehaviour
         _sceneData.DynamicSaveableDatas.Clear();
         //_sceneData.StaticSaveableDatas.Clear();
 
-        foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>())
+        foreach (var dynamicSaveable in FindObjectsOfType<DynamicSaveable>(true))
         {
             // Don't save those objects that have StaticSaveable as parents
             if (dynamicSaveable.GetComponentInParent<StaticSaveable>() != null)
@@ -154,7 +154,7 @@ public class SaveLoadScene : MonoBehaviour
         }
 
         // Static
-        foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>())
+        foreach (var staticSaveable in FindObjectsOfType<StaticSaveable>(true))
         {
             var data = _sceneData.GetStaticData(staticSaveable.SceneGuid);
             data.Position = staticSaveable.transform.position;

@@ -36,6 +36,23 @@ public class ItemSlot
         return item.GetType().IsSubclassOf(SlotType) || item.GetType() == SlotType;
     }
 
+    public bool CanAdd(ItemStack stack)
+    {
+        if (stack.Count <= 0)
+            throw new Exception("Cannot add stack with an invalid amount of items.");
+
+        if (IsCompatableWith(stack.Item) == false)
+            return false;
+
+        if (IsEmpty == true)
+            return true;
+
+        if (_stack.CanAdd(stack) == false)
+            return false;
+
+        return true;
+    }
+
     public bool TryAdd(ItemStack stack)
     {
         if (stack.Count <= 0)
