@@ -7,8 +7,14 @@ using UnityEngine.AI;
 public class Zombie : MonoBehaviour
 {
 
+    // Когда заагрились доступные действия
+    // >Порычать грозно
+    // Если игрок близко, схватить игрока
+    // Create Zombie Manager when needed (MonoBehaviour)
+
     [SerializeField] private float _speed = 2f;
     [SerializeField] private float _attackDistance = 2.25f;
+    [SerializeField] private float _grabDistance = 2.25f;
     [SerializeField] private float _attackLandDistance = 1.5f;
 
     [SerializeField] private Animator _animator;
@@ -21,6 +27,11 @@ public class Zombie : MonoBehaviour
     private bool _isAttackPointReached;
 
     [Persistent] private bool _isDead;
+
+    private bool _isGrabbingPlayer;
+    private TimeSince _timeSinceLastGrabStarted = TimeSince.Never;
+
+    private TimeSince _timeSinceLastDestinationSet = TimeSince.Never;
 
     public bool HasTarget => _target != null;
 
@@ -54,17 +65,45 @@ public class Zombie : MonoBehaviour
 
         if (HasTarget == true && _isDead == false)
         {
-            _agent.stoppingDistance = _attackDistance - 0.12f;
-            _agent.SetDestination(_target.transform.position);
+            _agent.stoppingDistance = _agent.radius + 0.2f;
+
+            if (_timeSinceLastDestinationSet > 0.3f)
+                _agent.SetDestination(_target.transform.position);
 
             float targetDistance = Vector3.Distance(transform.position, _target.transform.position);
 
-            if (_isAttacking == false && targetDistance < _attackDistance && _timeSinceLastAttackStarted > 2.6f)
+            float angle = FlatVector.Angle(
+                transform.forward.Flat(),
+                (_target.transform.position - transform.position).normalized.Flat());
+
+            if (CanGrab() == true && _target.HasModifier<ZombieGrabCooldownModifier>() == false && targetDistance < _grabDistance && angle < 90f)
+            {
+                _timeSinceLastGrabStarted = TimeSince.Now();
+                _isGrabbingPlayer = true;
+
+                Vector3 lookDirection = (transform.position + Vector3.up * 1.8f - _target.Head.position).normalized;
+
+                _target.ApplyModifier(new GrabbedByZombieModifier(this, lookDirection, new TimeUntil(Time.time + 1.2f)), 1.3f); // Remove on zombie death
+                _target.ApplyModifier(new ZombieGrabCooldownModifier(), 5f);
+
+                _animator.Play("grab");
+            }
+
+            if (CanAttack() == true && targetDistance < _attackDistance)
             {
                 _timeSinceLastAttackStarted = TimeSince.Now();
                 _isAttacking = true;
 
                 _animator.Play("attack");
+            }
+        }
+
+        if (_isGrabbingPlayer == true)
+        {
+            if (_timeSinceLastGrabStarted > 2.5f)
+            {
+                _isGrabbingPlayer = false;
+
             }
         }
 
@@ -76,7 +115,7 @@ public class Zombie : MonoBehaviour
             if (_isAttackPointReached == false && _timeSinceLastAttackStarted > 1.03f)
             {
                 _isAttackPointReached = true;
-                AttackPoint();
+                OnAttackPoint();
             }
 
             if (_timeSinceLastAttackStarted > 2.15f)
@@ -87,7 +126,7 @@ public class Zombie : MonoBehaviour
         }
 
         // Rotation
-        Vector3 desiredFacingDirection = _isAttacking ?
+        Vector3 desiredFacingDirection = (_isAttacking || _isGrabbingPlayer) ?
             (_target.transform.position - transform.position).normalized :
             _agent.velocity.normalized;
 
@@ -98,7 +137,7 @@ public class Zombie : MonoBehaviour
         }
     }
 
-    private void AttackPoint()
+    private void OnAttackPoint()
     {
         float angle = FlatVector.Angle(
             transform.forward.Flat(), 
@@ -120,12 +159,48 @@ public class Zombie : MonoBehaviour
 
     private bool CanMove()
     {
-        return _isDead == false && _isAttacking == false;
+        return _isDead == false && _isAttacking == false && _isGrabbingPlayer == false;
     }
 
     private bool CanAttack()
     {
-        return _isDead == false && _isAttacking == false && _timeSinceLastAttackStarted > 2.6f;
+        return false;
+
+        return _isDead == false && _isAttacking == false  && _isGrabbingPlayer == false && _timeSinceLastAttackStarted > 2.6f;
+    }
+
+    private bool CanGrab()
+    {
+        return _isDead == false && _isAttacking == false && _isGrabbingPlayer == false && _timeSinceLastGrabStarted > 2.5f + 4f;
+    }
+
+}
+
+public sealed class ZombieManager : MonoBehaviour
+{
+
+    private static ZombieManager _instance;
+
+    public static ZombieManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new GameObject(nameof(ZombieManager)).AddComponent<ZombieManager>();
+            }
+
+            return _instance;
+        }
+    }
+
+    private TimeSince _timeSinceLastGrab = TimeSince.Never;
+    
+    public bool IsGrabAvaliable => _timeSinceLastGrab > 5f;
+
+    public void NotifyGrab()
+    {
+        _timeSinceLastGrab = TimeSince.Now();
     }
 
 }
@@ -154,3 +229,53 @@ public sealed class AttackedByZombieModifier : CharacterModifier
     }
 
 }
+
+public sealed class GrabbedByZombieModifier : CharacterModifier
+{
+
+    private readonly Zombie _zombie;
+    private readonly Vector3 _direction;
+    private readonly TimeUntil _timeUntilAllowRotation;
+
+    public GrabbedByZombieModifier(Zombie zombie, Vector3 direction, TimeUntil timeUntilAllowRotation)
+    {
+        _zombie = zombie;
+        _direction = direction;
+        _timeUntilAllowRotation = timeUntilAllowRotation;
+    }
+
+    public override bool CanCrouch()
+    {
+        return false;
+    }
+
+    public override bool CanJump()
+    {
+        return false;
+    }
+
+    public override bool CanInteract()
+    {
+        return false;
+    }
+
+    public override float GetSpeedMultiplier()
+    {
+        return 0.0f;
+    }
+
+    public override bool OverrideLookDirection(out Vector3 direction)
+    {
+        if (_timeUntilAllowRotation < 0)
+        {
+            direction = default;
+            return false;
+        }
+
+        direction = _direction;
+        return true;
+    }
+
+}
+
+public sealed class ZombieGrabCooldownModifier : CharacterModifier { }

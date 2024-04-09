@@ -7,9 +7,8 @@ using UnityEngine;
 public sealed class PlayerCharacter : Pawn
 {
 
-    public event Action<DeathType> Died;
-    public event Action Respawned;
     public event Action Damaged;
+    public event Action Died;
 
     [SerializeField] private Transform _head;
     [SerializeField] private PlayerInteraction _interactor;
@@ -39,6 +38,8 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private Animator _armsAnimator;
 
     [SerializeField] private Equipment _equipment;
+
+    [SerializeField] private KeyCode[] _interactionKeys;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -85,6 +86,8 @@ public sealed class PlayerCharacter : Pawn
     public bool IsGrounded => _controller.isGrounded;
     public bool IsCrouching => _isCrouching;
 
+    public Transform Head => _head;
+
     public void Inspect(Inspectable target, bool noAnimation = false)
     {
         _inspectionPawn.SetTarget(target, noAnimation);
@@ -109,15 +112,6 @@ public sealed class PlayerCharacter : Pawn
             _lastStairsTouchFrame = Time.frameCount;
             _isTouchingStairs = true;
             _controller.stepOffset = 1.5f;
-        }
-    }
-
-    private void LateUpdate()
-    {
-        if (_isTouchingStairs == true && Time.frameCount > _lastStairsTouchFrame)
-        {
-            _controller.stepOffset = 0.3f;
-            _isTouchingStairs = false;
         }
     }
 
@@ -149,6 +143,17 @@ public sealed class PlayerCharacter : Pawn
     public override void InputTick()
     {
         _currentInput = GatherInput();
+
+        for (int i = 0; i < _interactionKeys.Length; i++)
+        {
+            if (Input.GetKeyDown(_interactionKeys[i]) == false)
+                continue;
+
+            if (CanInteract() == false)
+                continue;
+
+            _interactor.TryPerform(i);
+        }
 
         if (Input.GetKeyDown(KeyCode.Tab) == true)
         {
@@ -184,48 +189,6 @@ public sealed class PlayerCharacter : Pawn
                 _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
             }
         }
-    }
-
-    private void OnWeaponStateChanged(WeaponState newState)
-    {
-        switch (newState)
-        {
-            case WeaponState.NoWeapon:
-                _weaponHolder.RemoveWeapon();
-                _armsAnimator.SetInteger("current_weapon", 0);
-                break;
-            case WeaponState.Equipping:
-                _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItem).WeaponModel);
-                _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
-                break;
-            case WeaponState.Ready:
-                _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
-                break;
-            case WeaponState.Unequipping:
-                _armsAnimator.SetInteger("current_weapon", 0);
-                break;
-        }
-
-        _timeSinceLastWeaponStateChange = TimeSince.Now();
-    }
-
-    private void TryReload()
-    {
-        if (_equipment.WeaponSlot.IsEmpty == true)
-            return;
-
-        ItemStack stack = _equipment.WeaponSlot.GetStack();
-        WeaponItem weapon = _equipment.WeaponSlot.Stack.Item as WeaponItem;
-
-        int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
-        int missingAmmo = weapon.MaxAmmo - currentCount;
-        int toReload = Mathf.Min(missingAmmo, _inventory.GetAmountOf(weapon.AmmoItem));
-
-        if (missingAmmo <= 0)
-            return;
-
-        InventoryManager.TryDestroy(_inventory, weapon.AmmoItem, missingAmmo);
-        stack.SetAttribute(WeaponItem.LOADED_AMMO, stack.GetAttribute(WeaponItem.LOADED_AMMO) + toReload);
     }
 
     private void Update()
@@ -274,40 +237,171 @@ public sealed class PlayerCharacter : Pawn
         _targetRecoilX = Mathf.MoveTowards(_targetRecoilX, 0f, Time.deltaTime * 45f);
         _currentRecoilX = Mathf.Lerp(_currentRecoilX, _targetRecoilX, Time.deltaTime * 50f);
 
-        // Modifiers
-        for (int i = _modifiers.Count - 1; i >= 0; i--)
-        {
-            var modifier = _modifiers[i];
+        UpdateModifiers();
+        UpdateCrouching();
+        UpdateAiming();
 
-            if (modifier.IsInfinite == false && modifier.TimeUntilExpires < 0)
+        // Field of view
+        _currentFOV = Mathf.Lerp(_currentFOV, _isAiming ? _aimingFieldOfView : _fieldOfView, Time.deltaTime * 5f);
+
+        // Update camera
+        if (_timeSinceLastPostureChange < _crouchAnimationDuration)
+        {
+            var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
+            var t = _timeSinceLastPostureChange / _crouchAnimationDuration;
+            var animationCurve = _isCrouching ? _crouchAnimation : _uncrouchAnimation;
+            t = animationCurve.Evaluate(t);
+            _head.localPosition = new Vector3()
             {
-                _modifiers.RemoveAt(i);
-            }
-            else
-            {
-                modifier.Tick();
-            }
+                x = _head.localPosition.x,
+                y = Mathf.Lerp(_head.localPosition.y, targetHeight, t),
+                z = _head.localPosition.z
+            };
         }
 
-        // Crouching
-        if (_isCrouching == false)
-        {
-            if (_currentInput.WantsCrouch == true && CanCrouch() == true)
-            {
-                Crouch();
-            }
-        }
-        else
-        {
-            var shouldUncrouch = _currentInput.WantsCrouch == false || CanCrouch() == false;
+        UpdateHealthRegeneration();
+        UpdateRotation(_currentInput);
+        UpdateMovement(_currentInput);
 
-            if (shouldUncrouch == true && CanUncrouch())
-            {
-                Stand();
-            }
+        // test Smooth camera Y
+        _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, _head.transform.position.y, 15f * Time.deltaTime);
+
+        _currentInput = new PlayerInput();
+    }
+
+    private void LateUpdate()
+    {
+        if (_isTouchingStairs == true && Time.frameCount > _lastStairsTouchFrame)
+        {
+            _controller.stepOffset = 0.3f;
+            _isTouchingStairs = false;
+        }
+    }
+
+    private void OnWeaponStateChanged(WeaponState newState)
+    {
+        switch (newState)
+        {
+            case WeaponState.NoWeapon:
+                _weaponHolder.RemoveWeapon();
+                _armsAnimator.SetInteger("current_weapon", 0);
+                break;
+            case WeaponState.Equipping:
+                _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItem).WeaponModel);
+                _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
+                break;
+            case WeaponState.Ready:
+                _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
+                break;
+            case WeaponState.Unequipping:
+                _armsAnimator.SetInteger("current_weapon", 0);
+                break;
         }
 
-        // Aiming
+        _timeSinceLastWeaponStateChange = TimeSince.Now();
+    }
+
+    private void TryReload()
+    {
+        if (_equipment.WeaponSlot.IsEmpty == true)
+            return;
+
+        ItemStack stack = _equipment.WeaponSlot.GetStack();
+        WeaponItem weapon = _equipment.WeaponSlot.Stack.Item as WeaponItem;
+
+        int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
+        int missingAmmo = weapon.MaxAmmo - currentCount;
+        int toReload = Mathf.Min(missingAmmo, _inventory.GetAmountOf(weapon.AmmoItem));
+
+        if (missingAmmo <= 0)
+            return;
+
+        InventoryManager.TryDestroy(_inventory, weapon.AmmoItem, missingAmmo);
+        stack.SetAttribute(WeaponItem.LOADED_AMMO, stack.GetAttribute(WeaponItem.LOADED_AMMO) + toReload);
+    }
+
+    public override void OnUnpossessed()
+    {
+        base.OnUnpossessed();
+        _velocityXZ = Vector3.zero;
+    }
+
+    public void Warp(Vector3 position)
+    {
+        transform.position = position;
+        Physics.SyncTransforms();
+    }
+
+    public void Kill()
+    {
+        _velocityXZ = Vector3.zero;
+        IsDead = true;
+        _timeSinceLastDeath = new TimeSince(Time.time);
+        Died?.Invoke();
+        GetComponent<Animator>().SetBool("dead", true);
+        _modifiers.Clear();
+    }
+
+    public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier
+    {
+        modifier.Init(this, duration);
+        _modifiers.Add(modifier);
+        return modifier;
+    }
+
+    public bool HasModifier<T>() where T : CharacterModifier
+    {
+        foreach (var modifier in _modifiers)
+        {
+            if (modifier is T)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void TryRemoveModifier(CharacterModifier modifier) 
+    {
+        _modifiers.Remove(modifier);
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        if (IsDead == true)
+            return;
+
+        _timeSinceLastDamage = new TimeSince(Time.time);
+        Health = Mathf.Max(0f, Health - damage);
+        Damaged?.Invoke();
+
+        if (Health <= 0f)
+        {
+            Kill();
+        }
+    }
+
+    private PlayerInput GatherInput()
+    {
+        var playerInput = new PlayerInput();
+
+        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+
+        playerInput.Direction = new FlatVector()
+        {
+            x = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0,
+            z = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0
+        }.normalized;
+
+        playerInput.WantsJump = Input.GetKeyDown(KeyCode.Space);
+        playerInput.WantsCrouch = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
+        playerInput.WantsAim = Input.GetKey(KeyCode.Mouse1);
+
+        return playerInput;
+    }
+
+    private void UpdateAiming()
+    {
         if (_isAiming == false)
         {
             if (_currentInput.WantsAim == true && CanAim() == true)
@@ -336,156 +430,89 @@ public sealed class PlayerCharacter : Pawn
                 }
             }
         }
+    }
 
-        // Field of view
-        _currentFOV = Mathf.Lerp(_currentFOV, _isAiming ? _aimingFieldOfView : _fieldOfView, Time.deltaTime * 5f);
-
-        // Update camera
-        if (_timeSinceLastPostureChange < _crouchAnimationDuration)
+    private void UpdateCrouching()
+    {
+        if (_isCrouching == false)
         {
-            var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
-            var t = _timeSinceLastPostureChange / _crouchAnimationDuration;
-            var animationCurve = _isCrouching ? _crouchAnimation : _uncrouchAnimation;
-            t = animationCurve.Evaluate(t);
-            _head.localPosition = new Vector3()
+            if (_currentInput.WantsCrouch == true && CanCrouch() == true)
             {
-                x = _head.localPosition.x,
-                y = Mathf.Lerp(_head.localPosition.y, targetHeight, t),
-                z = _head.localPosition.z
-            };
+                Crouch();
+            }
         }
-
-        if (IsDead == false && _timeSinceLastDamage > 10f && CanRegnerateHealth() == true)
-        {
-            Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
-        }
-
-        UpdateRotation(_currentInput);
-        UpdateMovement(_currentInput);
-
-        if (CanInteract() == true && _currentInput.WantsInteract == true)
-        {
-            _interactor.TryPerform(_currentInput.InteractionIndex);
-        }
-
-        // test Smooth camera Y
-        _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, _head.transform.position.y, 15f * Time.deltaTime);
-
-        _currentInput.Clear();
-    }
-
-    public override void OnUnpossessed()
-    {
-        base.OnUnpossessed();
-        _velocityXZ = Vector3.zero;
-    }
-
-    public void Warp(Vector3 position)
-    {
-        transform.position = position;
-        Physics.SyncTransforms();
-    }
-
-    public void Kill(DeathType type)
-    {
-        _velocityXZ = Vector3.zero;
-        IsDead = true;
-        _timeSinceLastDeath = new TimeSince(Time.time);
-        Died?.Invoke(type);
-        GetComponent<Animator>().SetBool("dead", true);
-        _modifiers.Clear();
-    }
-
-    public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier
-    {
-        modifier.Init(this, duration);
-        _modifiers.Add(modifier);
-        return modifier;
-    }
-
-    public void TryRemoveModifier(CharacterModifier modifier) 
-    {
-        _modifiers.Remove(modifier);
-    }
-
-    public void ApplyDamage(float damage)
-    {
-        if (IsDead == true)
-            return;
-
-        _timeSinceLastDamage = new TimeSince(Time.time);
-        Health = Mathf.Max(0f, Health - damage);
-        Damaged?.Invoke();
-
-        if (Health <= 0f)
-        {
-            Kill(DeathType.Psionic);
-        }
-    }
-
-    private PlayerInput GatherInput()
-    {
-        var playerInput = new PlayerInput();
-
-        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-
-        playerInput.Direction = new FlatVector()
-        {
-            x = Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0,
-            z = Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0
-        }.normalized;
-
-        playerInput.WantsJump = Input.GetKeyDown(KeyCode.Space);
-
-        if (Input.GetKeyDown(KeyCode.F) == true)
-            playerInput.InteractionIndex = 0;
-        else if (Input.GetKeyDown(KeyCode.E) == true)
-            playerInput.InteractionIndex = 1;
-        else if (Input.GetKeyDown(KeyCode.B) == true)
-            playerInput.InteractionIndex = 2;
         else
-            playerInput.InteractionIndex = -1;
+        {
+            var shouldUncrouch = _currentInput.WantsCrouch == false || CanCrouch() == false;
 
-        playerInput.WantsCrouch = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
-        playerInput.WantsAim = Input.GetKey(KeyCode.Mouse1);
+            if (shouldUncrouch == true && CanUncrouch())
+            {
+                Stand();
+            }
+        }
+    }
 
-        return playerInput;
+    private void UpdateModifiers()
+    {
+        for (int i = _modifiers.Count - 1; i >= 0; i--)
+        {
+            var modifier = _modifiers[i];
+
+            if (modifier.IsInfinite == false && modifier.TimeUntilExpires < 0)
+            {
+                _modifiers.RemoveAt(i);
+            }
+            else
+            {
+                modifier.Tick();
+            }
+        }
     }
 
     private void UpdateRotation(PlayerInput input)
     {
-        if (CanRotateHead() == false)
-            return;
-
-        //var yRotation = transform.eulerAngles.y + input.MouseX;
-
-        //_cameraTargetRotY += input.MouseX + _currentRecoilX; permanent apply
-
-        _cameraTargetRotY += input.MouseX;
-
-        var currentMouseInput = input.MouseY;
-
-        // If Y recoil is present
-        if (_targetRecoilY > 0f)
+        if (HasCameraTarget(out Vector3 overrideDirection) == true)
         {
-            // And we want to move camera down, we firstly decrese recoil
-            if (input.MouseY < 0.0001f)
-            {
-                _targetRecoilY += input.MouseY;
-            }
+            Quaternion targetRotation = Quaternion.LookRotation(overrideDirection);
+            Vector3 targetRotationEulerAngles = targetRotation.eulerAngles;
 
-            // If we want to rotate camera UP, we transfer recoil onto rotation
-            if (input.MouseY > 0.0001f)
-            {
-                // Don't know if this shit works
-                _targetRecoilY -= input.MouseY;
-                _cameraTargetRotX -= input.MouseY;
-            }
+            _cameraTargetRotX = Mathf.LerpAngle(_cameraTargetRotX, targetRotationEulerAngles.x, 15f * Time.deltaTime);
+            _cameraTargetRotY = Mathf.LerpAngle(_cameraTargetRotY, targetRotationEulerAngles.y, 15f * Time.deltaTime);
         }
         else
         {
-            _cameraTargetRotX -= input.MouseY;
+            if (CanRotateHead() == true)
+            {
+                //var yRotation = transform.eulerAngles.y + input.MouseX;
+
+                //_cameraTargetRotY += input.MouseX + _currentRecoilX; permanent apply
+
+                _cameraTargetRotY += input.MouseX;
+
+                var currentMouseInput = input.MouseY;
+
+                // If Y recoil is present
+                if (_targetRecoilY > 0f)
+                {
+                    // And we want to move camera down, we firstly decrese recoil
+                    if (input.MouseY < 0.0001f)
+                    {
+                        _targetRecoilY += input.MouseY;
+                    }
+
+                    // If we want to rotate camera UP, we transfer recoil onto rotation
+                    if (input.MouseY > 0.0001f)
+                    {
+                        // Don't know if this shit works
+                        _targetRecoilY -= input.MouseY;
+                        _cameraTargetRotX -= input.MouseY;
+                    }
+                }
+                else
+                {
+                    _cameraTargetRotX -= input.MouseY;
+                }
+            }
         }
 
         _cameraTargetRotX = Mathf.Clamp(_cameraTargetRotX, -70f, 70f);
@@ -525,6 +552,14 @@ public sealed class PlayerCharacter : Pawn
         _controller.Move(finalMove);
     }
 
+    private void UpdateHealthRegeneration()
+    {
+        if (CanRegnerateHealth() == false)
+            return;
+
+        Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
+    }
+
     private void Crouch()
     {
         _isCrouching = true;
@@ -557,6 +592,18 @@ public sealed class PlayerCharacter : Pawn
         }
 
         return true;
+    }
+
+    private bool HasCameraTarget(out Vector3 direction)
+    {
+        foreach (var modifier in _modifiers)
+        {
+            if (modifier.OverrideLookDirection(out direction) == true)
+                return true;
+        }
+
+        direction = default;
+        return false;
     }
 
     private bool CanInteract()
@@ -660,7 +707,7 @@ public sealed class PlayerCharacter : Pawn
 
     public bool CanRegnerateHealth()
     {
-        return false;
+        return IsDead == false && _timeSinceLastDamage > Mathf.Infinity;
     }
 
     public bool CanEquipWeapon()
@@ -684,22 +731,8 @@ public sealed class PlayerCharacter : Pawn
         public float MouseY;
         public FlatVector Direction;
         public bool WantsJump;
-        public int InteractionIndex;
         public bool WantsCrouch;
         public bool WantsAim;
-
-        public bool WantsInteract => InteractionIndex != -1;
-
-        public void Clear()
-        {
-            MouseX = 0;
-            MouseY = 0;
-            Direction = FlatVector.zero;
-            WantsJump = false;
-            InteractionIndex = -1;
-            WantsCrouch = false;
-            WantsAim = false;
-        }
 
     }
 
@@ -711,12 +744,6 @@ public sealed class PlayerCharacter : Pawn
         Unequipping
     }
 
-}
-
-public enum DeathType
-{
-    Physical,
-    Psionic
 }
 
 public abstract class CharacterModifier
@@ -738,6 +765,11 @@ public abstract class CharacterModifier
     public virtual bool CanCrouch() => true;
     public virtual bool CanRotateCamera() => true;
     public virtual void Tick() { }
+    public virtual bool OverrideLookDirection(out Vector3 direction)
+    {
+        direction = default;
+        return false;
+    }
 
 }
 

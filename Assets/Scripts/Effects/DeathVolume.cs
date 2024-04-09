@@ -19,19 +19,16 @@ public sealed class DeathVolume : MonoBehaviour
     private void OnEnable()
     {
         _character.Died += OnCharacterDied;
-        _character.Respawned += OnCharacterRespawned;
     }
 
     private void OnDisable()
     {
         _character.Died -= OnCharacterDied;
-        _character.Respawned -= OnCharacterRespawned;
     }
 
-    private void OnCharacterDied(DeathType deathType)
+    private void OnCharacterDied()
     {
-        if (deathType == DeathType.Physical)
-            Delayed.Do(() => _volume.weight = 1f, 0.1f);
+        Delayed.Do(() => _volume.weight = 1f, 0.1f);
     }
 
     private void OnCharacterRespawned()

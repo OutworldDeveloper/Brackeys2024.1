@@ -91,7 +91,7 @@ public sealed class Ghost : MonoBehaviour
 
             if (targetDistance < 0.4f)
             {
-                _target.Kill(DeathType.Psionic);
+                _target.Kill();
             }
         }
         else
@@ -105,7 +105,7 @@ public sealed class Ghost : MonoBehaviour
         }
     }
 
-    private void OnTargetDied(DeathType deathType)
+    private void OnTargetDied()
     {
         StartRespawning();
     }

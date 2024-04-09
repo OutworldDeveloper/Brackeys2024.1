@@ -31,14 +31,12 @@ public sealed class Player : MonoBehaviour
     {
         _character.Damaged += OnCharacterDamaged;
         _character.Died += OnCharacterDied;
-        _character.Respawned += OnCharacterRespawned;
     }
 
     private void OnDisable()
     {
         _character.Damaged -= OnCharacterDamaged;
         _character.Died -= OnCharacterDied;
-        _character.Respawned -= OnCharacterRespawned;
     }
 
     private void Start()
@@ -168,14 +166,9 @@ public sealed class Player : MonoBehaviour
         Possess(_character);
     }
 
-    private void OnCharacterDied(DeathType deathType)
+    private void OnCharacterDied()
     {
         Delayed.Do(() => _panels.InstantiateAndOpenFrom(_deathScreen), 2.75f);
-    }
-
-    private void OnCharacterRespawned()
-    {
-        UpdateState();
     }
 
     public void OpenPauseMenu()
