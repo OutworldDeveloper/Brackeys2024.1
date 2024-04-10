@@ -45,4 +45,9 @@ public static class Randomize
         return original * Sign();
     }
 
+    public static bool Chance(int chance)
+    {
+        return Int(1, chance) == chance;
+    }
+
 }

@@ -2,7 +2,7 @@
 
 public static class DictionaryExtensions
 {
-    public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+    public static void Update<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
     {
         if (dictionary.ContainsKey(key) == true)
         {

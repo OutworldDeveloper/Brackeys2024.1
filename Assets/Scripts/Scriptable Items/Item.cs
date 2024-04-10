@@ -66,7 +66,7 @@ public sealed class ItemAttributes
 
     public void Set<T>(ItemAttribute<T> attribute, T value) where T : struct
     {
-        _attributes.AddOrUpdate(attribute.Id, value);
+        _attributes.Update(attribute.Id, value);
     }
 
     public bool Has<T>(ItemAttribute<T> attribute) where T : struct

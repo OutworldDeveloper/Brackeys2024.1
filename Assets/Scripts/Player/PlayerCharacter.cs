@@ -73,7 +73,7 @@ public sealed class PlayerCharacter : Pawn
     private float _cameraTargetRotX;
     private float _cameraTargetRotY;
 
-    private EnumState<WeaponState> _weaponState;
+    private EnumState<WeaponState> _weaponState = new EnumState<WeaponState>();
     private TimeSince _timeSinceLastWeaponStateChange = TimeSince.Never;
 
     public PlayerInteraction Interactor => _interactor;
@@ -119,7 +119,7 @@ public sealed class PlayerCharacter : Pawn
     {
         _controller = GetComponent<CharacterController>();
 
-        _weaponState = new EnumState<WeaponState>(OnWeaponStateChanged);
+        _weaponState.StateChanged += OnWeaponStateChanged;
 
         _equipment.Initialize();
 
@@ -143,6 +143,12 @@ public sealed class PlayerCharacter : Pawn
     public override void InputTick()
     {
         _currentInput = GatherInput();
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            _useMouseSmoothing = !_useMouseSmoothing;
+            Notification.ShowDebug($"_useMouseSmoothing: {_useMouseSmoothing}");
+        }
 
         for (int i = 0; i < _interactionKeys.Length; i++)
         {
@@ -380,12 +386,49 @@ public sealed class PlayerCharacter : Pawn
         }
     }
 
+    private const int _mouseFramesCount = 4;
+    private readonly Vector2[] _mouseFrameHistory = new Vector2[_mouseFramesCount];
+    private bool _useMouseSmoothing = false;
+
+    private Vector2 _mouseAccumulator;
+
     private PlayerInput GatherInput()
     {
         var playerInput = new PlayerInput();
 
-        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+        Vector2 currentRawMouseInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+
+        for (int i = 0; i < _mouseFramesCount - 1; i++)
+        {
+            _mouseFrameHistory[i] = _mouseFrameHistory[i + 1];
+        }
+
+        _mouseFrameHistory[_mouseFramesCount - 1] = currentRawMouseInput;
+
+        Vector2 average = Vector2.zero;
+
+        foreach (var frameData in _mouseFrameHistory)
+        {
+            average += frameData;
+        }
+
+        average /= _mouseFramesCount;
+
+        if (_useMouseSmoothing == true)
+        {
+            //playerInput.MouseX = average.x * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+            //playerInput.MouseY = average.y * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+
+            _mouseAccumulator = Vector2.Lerp(_mouseAccumulator, currentRawMouseInput, 0.5f);
+
+            playerInput.MouseX = _mouseAccumulator.x * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+            playerInput.MouseY = _mouseAccumulator.y * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+        }
+        else
+        {
+            playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+            playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+        }
 
         playerInput.Direction = new FlatVector()
         {
@@ -794,26 +837,6 @@ public sealed class SpawnBlockModifier : CharacterModifier
     public override float GetSpeedMultiplier()
     {
         return 0f;
-    }
-
-}
-
-public sealed class EnumState<T> where T : Enum
-{
-
-    private readonly Action<T> _stateChangedAction;
-
-    public EnumState(Action<T> stateChangeEvent)
-    {
-        _stateChangedAction = stateChangeEvent;
-    }
-
-    public T Current { get; private set; }
-
-    public void Set(T newState)
-    {
-        Current = newState;
-        _stateChangedAction.Invoke(Current);
     }
 
 }

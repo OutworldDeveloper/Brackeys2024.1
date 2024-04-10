@@ -200,7 +200,7 @@ public class LevelData
 
     public void SetStaticData(string guid, StaticSaveableData data)
     {
-        StaticSaveableDatas.AddOrUpdate(guid, data);
+        StaticSaveableDatas.Update(guid, data);
     }
 
     public void AddPlayTime(float time)

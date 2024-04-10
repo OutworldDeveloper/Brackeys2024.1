@@ -30,7 +30,7 @@ public class WeaponItem : Item
 
         if (hit.transform.TryGetComponent(out Zombie zombie) == true)
         {
-            zombie.Kill();
+            zombie.Damage();
         }
     }
 
