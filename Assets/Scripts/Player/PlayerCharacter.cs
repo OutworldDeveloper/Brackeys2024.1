@@ -74,7 +74,8 @@ public sealed class PlayerCharacter : Pawn
     private float _cameraTargetRotY;
 
     private EnumState<WeaponState> _weaponState = new EnumState<WeaponState>();
-    private TimeSince _timeSinceLastWeaponStateChange = TimeSince.Never;
+
+    private bool _isReloadPointReached; // TODO: CurrentReload (We need to recalculate anyway if something changes)
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -193,12 +194,57 @@ public sealed class PlayerCharacter : Pawn
 
                 _armsAnimator.CrossFadeInFixedTime($"shoot{_weaponHolder.ActiveWeapon.AnimationSet}", 0.02f, 0);
                 _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
+
+                _shakeStrenght = weapon.CameraShake;
             }
         }
     }
 
+    [SerializeField] private float _expMultiplier = 0.2f;
+    [SerializeField] private float _expMultiplierMovement = 1f;
+
+    [SerializeField] private float _expMultiplierPositionX = 0.01f;
+    [SerializeField] private float _expMultiplierPositionY = 0.0025f;
+    [SerializeField] private float _expMultiplierPositionZ = 0.0025f;
+    [SerializeField] private float _expMultiplierRotationX = 0.5f;
+    [SerializeField] private float _expMultiplierRotationY = 0.5f;
+    [SerializeField] private float _expMultiplierRotationZ = 0.2f;
+
+    private float _t;
+    private Vector3 _delayedVelocity;
+
+    // Camera shake
+    public float _shakeStrenght;
+
     private void Update()
     {
+        // Camera shake
+        _shakeStrenght = Mathf.Lerp(_shakeStrenght, 0f, Time.deltaTime * 15f);
+        //_shakeStrenght = Mathf.MoveTowards(_shakeStrenght, 0f, Time.deltaTime * 16f);
+
+        // Weapon animation
+        _delayedVelocity = Vector3.MoveTowards(_delayedVelocity, _velocityXZ, Time.deltaTime * 5f);
+
+        _t += Mathf.Lerp(4f, 8f, _delayedVelocity.magnitude / 2f) * Time.deltaTime;
+
+        float multiplier = Mathf.Lerp(_expMultiplier, _expMultiplierMovement, _delayedVelocity.magnitude / 2f);
+
+        Vector3 armsOriginalPos = new Vector3(0, -0.263f, 0);
+
+        _armsAnimator.transform.localPosition = armsOriginalPos + new Vector3()
+        {
+            x = Mathf.Sin(_t) * _expMultiplierPositionX * multiplier,
+            y = Mathf.Sin(_t + 3.14f) * _expMultiplierPositionY * multiplier,
+            z = Mathf.Sin(_t + 3.14f) * _expMultiplierPositionZ * multiplier,
+        };
+
+        _armsAnimator.transform.localRotation = Quaternion.Euler(new Vector3()
+        {
+            x = Mathf.Sin(_t) * _expMultiplierRotationX * multiplier,
+            y = Mathf.Sin(_t + 3.14f) * _expMultiplierRotationY * multiplier,
+            z = Mathf.Sin(_t + 3.14f) * _expMultiplierRotationZ * multiplier,
+        });
+
         // Weapon Equipment
         switch (_weaponState.Current)
         {
@@ -212,7 +258,7 @@ public sealed class PlayerCharacter : Pawn
 
             case WeaponState.Equipping:
                 {
-                    if (_timeSinceLastWeaponStateChange > 0.8f)
+                    if (_weaponState.TimeSinceLastChange > 0.8f)
                         _weaponState.Set(WeaponState.Ready);
                 }
                 break;
@@ -228,8 +274,39 @@ public sealed class PlayerCharacter : Pawn
 
             case WeaponState.Unequipping:
                 {
-                    if (_timeSinceLastWeaponStateChange > 0.8f)
+                    if (_weaponState.TimeSinceLastChange > 0.8f)
                         _weaponState.Set(WeaponState.NoWeapon);
+                }
+                break;
+            case WeaponState.Reloading:
+                {
+                    // Temp fix
+                    bool shouldUnequip = _equipment.WeaponSlot.IsEmpty;
+
+                    if (shouldUnequip == true)
+                        _weaponState.Set(WeaponState.Unequipping);
+                    //
+
+                    if (_isReloadPointReached == false && _weaponState.TimeSinceLastChange > 0.7f)
+                    {
+                        _isReloadPointReached = true;
+
+                        ItemStack stack = _equipment.WeaponSlot.GetStack();
+                        WeaponItem weapon = stack.Item as WeaponItem;
+
+                        int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
+                        int missingAmmo = weapon.MaxAmmo - currentCount;
+                        int toReload = Mathf.Min(missingAmmo, _inventory.GetAmountOf(weapon.AmmoItem));
+
+                        if (missingAmmo <= 0)
+                            throw new Exception("Reloading state but no missing ammo.");
+
+                        InventoryManager.TryDestroy(_inventory, weapon.AmmoItem, missingAmmo);
+                        stack.SetAttribute(WeaponItem.LOADED_AMMO, stack.GetAttribute(WeaponItem.LOADED_AMMO) + toReload);
+                    }
+
+                    if (_weaponState.TimeSinceLastChange > 1.4f)
+                        _weaponState.Set(WeaponState.Ready);
                 }
                 break;
         }
@@ -302,9 +379,11 @@ public sealed class PlayerCharacter : Pawn
             case WeaponState.Unequipping:
                 _armsAnimator.SetInteger("current_weapon", 0);
                 break;
+            case WeaponState.Reloading:
+                _armsAnimator.SetInteger("current_weapon", 0);
+                _isReloadPointReached = false;
+                break;
         }
-
-        _timeSinceLastWeaponStateChange = TimeSince.Now();
     }
 
     private void TryReload()
@@ -313,17 +392,20 @@ public sealed class PlayerCharacter : Pawn
             return;
 
         ItemStack stack = _equipment.WeaponSlot.GetStack();
-        WeaponItem weapon = _equipment.WeaponSlot.Stack.Item as WeaponItem;
+        WeaponItem weapon = stack.Item as WeaponItem;
 
         int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
         int missingAmmo = weapon.MaxAmmo - currentCount;
-        int toReload = Mathf.Min(missingAmmo, _inventory.GetAmountOf(weapon.AmmoItem));
 
         if (missingAmmo <= 0)
             return;
 
-        InventoryManager.TryDestroy(_inventory, weapon.AmmoItem, missingAmmo);
-        stack.SetAttribute(WeaponItem.LOADED_AMMO, stack.GetAttribute(WeaponItem.LOADED_AMMO) + toReload);
+        int toReload = Mathf.Min(missingAmmo, _inventory.GetAmountOf(weapon.AmmoItem));
+
+        if (toReload <= 0)
+            return;
+
+        _weaponState.Set(WeaponState.Reloading);
     }
 
     public override void OnUnpossessed()
@@ -371,7 +453,7 @@ public sealed class PlayerCharacter : Pawn
         _modifiers.Remove(modifier);
     }
 
-    public void ApplyDamage(float damage)
+    public void ApplyDamage(float damage, Vector3 direction)
     {
         if (IsDead == true)
             return;
@@ -383,6 +465,14 @@ public sealed class PlayerCharacter : Pawn
         if (Health <= 0f)
         {
             Kill();
+        }
+        else
+        {
+            GetComponent<Animator>().SetFloat("damage_direction_x", transform.InverseTransformDirection(direction).x);
+            GetComponent<Animator>().SetFloat("damage_direction_z", transform.InverseTransformDirection(direction).z);
+            GetComponent<Animator>().Play("damaged");
+
+            _isAiming = false; // test
         }
     }
 
@@ -763,10 +853,25 @@ public sealed class PlayerCharacter : Pawn
         return IsDead == false && _isAiming == false && _controller.isGrounded == true;
     }
 
-    public override Vector3 GetCameraPosition() => new Vector3(_head.transform.position.x, _currentCameraHeight, _head.transform.position.z);
-    public override Quaternion GetCameraRotation() => _head.rotation;
+    public override Vector3 GetCameraPosition() => 
+        new Vector3(
+            _head.transform.position.x, 
+            _currentCameraHeight + Mathf.Sin(Time.time * 18f) * 0.00f * _delayedVelocity.magnitude,
+            _head.transform.position.z);
+
+    public override Quaternion GetCameraRotation() => 
+        Quaternion.Euler(
+            _head.eulerAngles.x + (GetRemappedPerlinNoise1D(10f, 1000f) * 2f - 1f) * _shakeStrenght,
+            _head.eulerAngles.y + (GetRemappedPerlinNoise1D(10f, 2000f) * 2f - 1f) * _shakeStrenght,
+            _head.eulerAngles.z + (GetRemappedPerlinNoise1D(10f, 3000f) * 2f - 1f) * _shakeStrenght);
+
     public override bool OverrideCameraFOV => true;
     public override float GetCameraFOV() => _currentFOV;
+
+    public float GetRemappedPerlinNoise1D(float timeMultiplier, float offset)
+    {
+        return Mathf.PerlinNoise1D(Time.time * timeMultiplier + offset);
+    }
 
     private struct PlayerInput
     {
@@ -784,7 +889,8 @@ public sealed class PlayerCharacter : Pawn
         NoWeapon,
         Equipping,
         Ready,
-        Unequipping
+        Unequipping,
+        Reloading,
     }
 
 }

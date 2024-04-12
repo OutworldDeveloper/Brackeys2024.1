@@ -86,7 +86,7 @@ public sealed class Ghost : MonoBehaviour
 
         if (targetDistance < 2.75f && isPlayerVisible == true)
         {
-            _target.ApplyDamage(1.1f * Time.deltaTime);
+            _target.ApplyDamage(1.1f * Time.deltaTime, transform.forward);
             _damageAudioSource.volume = Mathf.Min(1f, _damageAudioSource.volume + Time.deltaTime * 1f);
 
             if (targetDistance < 0.4f)

@@ -16,6 +16,7 @@ public class WeaponItem : Item
     [field: SerializeField] public float RecoilVerticalMax { get; private set; }
     [field: SerializeField] public float RecoilHorizontalMin { get; private set; }
     [field: SerializeField] public float RecoilHorizontalMax { get; private set; }
+    [field: SerializeField] public float CameraShake { get; private set; } = 5f;
 
     public override void CreateAttributes(ItemAttributes attributes)
     {

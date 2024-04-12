@@ -6,16 +6,19 @@ public sealed class EnumState<TEnum> where TEnum : Enum
 
     public event Action<TEnum> StateChanged;
 
-    private readonly EnumCall<TEnum> _stateChangedCall;
+    private readonly EnumCall<TEnum> _stateEndCall;
+    private readonly EnumCall<TEnum> _stateStartCall;
     private readonly Dictionary<TEnum, TimeSince> _timeSinceLastEnter = new Dictionary<TEnum, TimeSince>();
 
     public TEnum Current { get; private set; }
-    public IEnumCall<TEnum> StateStarted => _stateChangedCall;
+    public IEnumCall<TEnum> StateEnded => _stateEndCall;
+    public IEnumCall<TEnum> StateStarted => _stateStartCall;
     public TimeSince TimeSinceLastChange { get; private set; }
 
     public EnumState()
     {
-        _stateChangedCall = new EnumCall<TEnum>(this);
+        _stateEndCall = new EnumCall<TEnum>(this);
+        _stateStartCall = new EnumCall<TEnum>(this);
     }
 
     public void Set(TEnum newState)
@@ -23,13 +26,15 @@ public sealed class EnumState<TEnum> where TEnum : Enum
         if (Equals(Current, newState) == true)
             return;
 
+        _stateEndCall.Execute();
+
         Current = newState;
 
         TimeSinceLastChange = TimeSince.Now();
         _timeSinceLastEnter.Update(newState, TimeSinceLastChange);
 
         StateChanged?.Invoke(Current);
-        _stateChangedCall.Execute();
+        _stateStartCall.Execute();
     }
 
     public EnumCall<TEnum> AddCall()
@@ -43,6 +48,28 @@ public sealed class EnumState<TEnum> where TEnum : Enum
             return timeSince;
 
         return TimeSince.Never;
+    }
+
+    // Epx
+
+    public override int GetHashCode()
+    {
+        return Current.GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Current.Equals(obj);
+    }
+
+    public static bool operator ==(EnumState<TEnum> a, TEnum b)
+    {
+        return a.Current.Equals(b) == true;
+    }
+
+    public static bool operator !=(EnumState<TEnum> a, TEnum b)
+    {
+        return a.Current.Equals(b) == false;
     }
 
 }

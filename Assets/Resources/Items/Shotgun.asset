@@ -32,3 +32,4 @@ MonoBehaviour:
   <RecoilVerticalMax>k__BackingField: 20
   <RecoilHorizontalMin>k__BackingField: 5
   <RecoilHorizontalMax>k__BackingField: 7
+  <CameraShake>k__BackingField: 10
