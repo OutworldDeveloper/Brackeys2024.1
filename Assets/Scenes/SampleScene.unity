@@ -11858,14 +11858,9 @@ MonoBehaviour:
   _armsAnimator: {fileID: 1455822952}
   _equipment: {fileID: 668565595}
   _interactionKeys: 660000006500000062000000
-  _expMultiplier: 0.2
-  _expMultiplierMovement: 2
-  _expMultiplierPositionX: 0.01
-  _expMultiplierPositionY: 0.005
-  _expMultiplierPositionZ: 0
-  _expMultiplierRotationX: 0.35
-  _expMultiplierRotationY: 0
-  _expMultiplierRotationZ: 0.35
+  _weaponSwayFrequency: 5
+  _weaponSwayAmplitudeX: 0.015
+  _weaponSwayAmplitudeY: 0.02
   _shakeStrenght: 0
 --- !u!95 &668565588
 Animator:

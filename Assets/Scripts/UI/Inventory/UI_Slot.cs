@@ -6,7 +6,7 @@ using System;
 using DG.Tweening;
 
 [DefaultExecutionOrder(Order.UI)]
-public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler
 {
 
     public event Action<UI_Slot> Selected;
@@ -99,6 +99,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        return;
         switch (eventData.button)
         {
             case PointerEventData.InputButton.Left:
@@ -125,6 +126,19 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         //_border.rectTransform.DOScale(1f, 0.1f).From(1.15f).SetUpdate(true);
         //_borderImage.DOColor(_borderColor, 0.1f).From(_borderColorHighlighted).SetUpdate(true);
         _borderImage.color = _borderColor;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        switch (eventData.button)
+        {
+            case PointerEventData.InputButton.Left:
+                Selected?.Invoke(this);
+                break;
+            case PointerEventData.InputButton.Right:
+                SelectedAlt?.Invoke(this);
+                break;
+        }
     }
 
 }

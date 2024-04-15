@@ -155,10 +155,6 @@ public class Zombie : MonoBehaviour
 
     private void Think()
     {
-        _thinkCall.Execute();
-
-        return;
-
         if (HasTarget == false)
             return;
 
@@ -205,21 +201,13 @@ public class Zombie : MonoBehaviour
         }
     }
 
-    private void OnNoTargetThink()
-    {
-        Debug.Log("No target. Nothing to think about really.");
-    }
+    private void OnNoTargetThink() { }
 
     private void OnHasTargetThink()
     {
         if (Randomize.Chance(10) == true)
         {
-            Debug.Log("Starting stupid appraoch");
             _thinkState.Set(ThinkState.StupidApproach);
-        }
-        else
-        {
-            Debug.Log("We have target but do nothing");
         }
     }
 
@@ -232,13 +220,13 @@ public class Zombie : MonoBehaviour
     {
         TryAttackIfMakesSense();
 
-        if (Randomize.Chance(30) == true)
+        if (Randomize.Chance(30) == true && ZombieManager.Instance.TryTakeChaseCoin() == true)
         {
             _thinkState.Set(ThinkState.Attack);
             return;
         }
 
-        if (TargetDistance < 3.5f && _thinkState.TimeSinceLastChange > 0.4f)
+        if (TargetDistance < 3.5f && _thinkState.TimeSinceLastChange > 0.4f && ZombieManager.Instance.TryTakeChaseCoin() == true)
         {
             _thinkState.Set(ThinkState.Attack); // if enough attackers then keep walking slowly
             return;
@@ -309,6 +297,7 @@ public class Zombie : MonoBehaviour
     {
         Notification.ShowDebug("OnAttackThinkExit");
         _isSprinting = false;
+        ZombieManager.Instance.ReturnChaseCoin();
     }
 
     private void TryAttackIfMakesSense()
@@ -336,9 +325,12 @@ public class Zombie : MonoBehaviour
 
     private void OnNoneActionUpdate()
     {
-        RotateTo(_agent.velocity, 4f);
+        RotateTo(_agent.velocity, 2.5f);
 
         _animator.SetFloat("velocity", _agent.velocity.magnitude);
+
+        if (Vector3.Angle(transform.forward, _agent.velocity) > 40f)
+            _agent.speed = 0f;
     }
 
     private void OnAttackActionStart()
@@ -352,7 +344,7 @@ public class Zombie : MonoBehaviour
 
     private void OnAttackActionUpdate()
     {
-        RotateTo((_target.transform.position - transform.position).normalized, 2f);
+        RotateTo((_target.transform.position - transform.position).normalized, 1.6f);
 
         if (_isAttackPointReached == false && _currentAction.TimeSinceLastChange > 1.1f / 1.5f)
         {
@@ -506,6 +498,22 @@ public sealed class ZombieManager : MonoBehaviour
             _timeUntilReady = new TimeUntil(Time.time + duration);
         }
 
+    }
+
+    private int _chaseCoins = 1;
+
+    public bool TryTakeChaseCoin()
+    {
+        if (_chaseCoins == 0)
+            return false;
+
+        _chaseCoins--;
+        return true;
+    }
+
+    public void ReturnChaseCoin()
+    {
+        _chaseCoins++;
     }
 
 }

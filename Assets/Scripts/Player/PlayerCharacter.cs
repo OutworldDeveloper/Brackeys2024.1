@@ -200,15 +200,9 @@ public sealed class PlayerCharacter : Pawn
         }
     }
 
-    [SerializeField] private float _expMultiplier = 0.2f;
-    [SerializeField] private float _expMultiplierMovement = 1f;
-
-    [SerializeField] private float _expMultiplierPositionX = 0.01f;
-    [SerializeField] private float _expMultiplierPositionY = 0.0025f;
-    [SerializeField] private float _expMultiplierPositionZ = 0.0025f;
-    [SerializeField] private float _expMultiplierRotationX = 0.5f;
-    [SerializeField] private float _expMultiplierRotationY = 0.5f;
-    [SerializeField] private float _expMultiplierRotationZ = 0.2f;
+    [SerializeField] private float _weaponSwayFrequency = 5f;
+    [SerializeField] private float _weaponSwayAmplitudeX = 0.015f;
+    [SerializeField] private float _weaponSwayAmplitudeY = 0.002f;
 
     private float _t;
     private Vector3 _delayedVelocity;
@@ -223,26 +217,20 @@ public sealed class PlayerCharacter : Pawn
         //_shakeStrenght = Mathf.MoveTowards(_shakeStrenght, 0f, Time.deltaTime * 16f);
 
         // Weapon animation
-        _delayedVelocity = Vector3.MoveTowards(_delayedVelocity, _velocityXZ, Time.deltaTime * 5f);
-
-        _t += Mathf.Lerp(4f, 8f, _delayedVelocity.magnitude / 2f) * Time.deltaTime;
-
-        float multiplier = Mathf.Lerp(_expMultiplier, _expMultiplierMovement, _delayedVelocity.magnitude / 2f);
+        _delayedVelocity = Vector3.Lerp(_delayedVelocity, _velocityXZ, Time.deltaTime * 5f);
+        _t += Mathf.Lerp(0.2f, 1f, _delayedVelocity.magnitude / 2f) * Time.deltaTime;
 
         Vector3 armsOriginalPos = new Vector3(0, -0.263f, 0);
 
         _armsAnimator.transform.localPosition = armsOriginalPos + new Vector3()
         {
-            x = Mathf.Sin(_t) * _expMultiplierPositionX * multiplier,
-            y = Mathf.Sin(_t + 3.14f) * _expMultiplierPositionY * multiplier,
-            z = Mathf.Sin(_t + 3.14f) * _expMultiplierPositionZ * multiplier,
+            x = Mathf.Sin(_t * _weaponSwayFrequency) * _weaponSwayAmplitudeX,
+            y = Mathf.Cos(_t * 2 * _weaponSwayFrequency + Mathf.PI) * _weaponSwayAmplitudeY,
         };
 
         _armsAnimator.transform.localRotation = Quaternion.Euler(new Vector3()
         {
-            x = Mathf.Sin(_t) * _expMultiplierRotationX * multiplier,
-            y = Mathf.Sin(_t + 3.14f) * _expMultiplierRotationY * multiplier,
-            z = Mathf.Sin(_t + 3.14f) * _expMultiplierRotationZ * multiplier,
+
         });
 
         // Weapon Equipment
@@ -855,8 +843,8 @@ public sealed class PlayerCharacter : Pawn
 
     public override Vector3 GetCameraPosition() => 
         new Vector3(
-            _head.transform.position.x, 
-            _currentCameraHeight + Mathf.Sin(Time.time * 18f) * 0.00f * _delayedVelocity.magnitude,
+            _head.transform.position.x + Mathf.Sin(_t * _weaponSwayFrequency) * _weaponSwayAmplitudeX * 0f,
+            _currentCameraHeight + Mathf.Cos(_t * 2 * _weaponSwayFrequency + Mathf.PI) * _weaponSwayAmplitudeY * 0f,
             _head.transform.position.z);
 
     public override Quaternion GetCameraRotation() => 
