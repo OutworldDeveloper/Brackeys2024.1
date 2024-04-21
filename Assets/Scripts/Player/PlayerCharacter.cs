@@ -214,11 +214,12 @@ public sealed class PlayerCharacter : Pawn
     {
         // Camera shake
         _shakeStrenght = Mathf.Lerp(_shakeStrenght, 0f, Time.deltaTime * 15f);
-        //_shakeStrenght = Mathf.MoveTowards(_shakeStrenght, 0f, Time.deltaTime * 16f);
 
         // Weapon animation
-        _delayedVelocity = Vector3.Lerp(_delayedVelocity, _velocityXZ, Time.deltaTime * 5f);
-        _t += Mathf.Lerp(0.2f, 1f, _delayedVelocity.magnitude / 2f) * Time.deltaTime;
+        _delayedVelocity = Vector3.Lerp(_delayedVelocity, _velocityXZ, Time.deltaTime * 10f); // 5f
+
+        float minSway = _isAiming ? 0.01f : 0.2f;
+        _t += Mathf.Lerp(minSway, 1f, _delayedVelocity.magnitude / 2f) * Time.deltaTime;
 
         Vector3 armsOriginalPos = new Vector3(0, -0.263f, 0);
 
@@ -228,9 +229,14 @@ public sealed class PlayerCharacter : Pawn
             y = Mathf.Cos(_t * 2 * _weaponSwayFrequency + Mathf.PI) * _weaponSwayAmplitudeY,
         };
 
+        Vector3 localDelayedVelocity = transform.InverseTransformDirection(_delayedVelocity);
+
+        const float moveRotationX = 6f;
+
         _armsAnimator.transform.localRotation = Quaternion.Euler(new Vector3()
         {
-
+            x = Mathf.Lerp(-3f, 3f, (localDelayedVelocity.z + 2f) / 4f),
+            z = Mathf.Lerp(-moveRotationX, moveRotationX, (localDelayedVelocity.x + 2f) / 4f),
         });
 
         // Weapon Equipment
@@ -856,7 +862,7 @@ public sealed class PlayerCharacter : Pawn
     public override bool OverrideCameraFOV => true;
     public override float GetCameraFOV() => _currentFOV;
 
-    public float GetRemappedPerlinNoise1D(float timeMultiplier, float offset)
+    private float GetRemappedPerlinNoise1D(float timeMultiplier, float offset)
     {
         return Mathf.PerlinNoise1D(Time.time * timeMultiplier + offset);
     }
