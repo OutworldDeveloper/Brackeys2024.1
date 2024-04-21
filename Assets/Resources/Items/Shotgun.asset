@@ -24,7 +24,7 @@ MonoBehaviour:
   <Cooldown>k__BackingField: 0.5
   <ShootMask>k__BackingField:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 4097
   <AmmoItem>k__BackingField: {fileID: 11400000, guid: ed6014256d9de8c4882aa2c75e2e7bb9,
     type: 2}
   <MaxAmmo>k__BackingField: 2
@@ -33,3 +33,9 @@ MonoBehaviour:
   <RecoilHorizontalMin>k__BackingField: 5
   <RecoilHorizontalMax>k__BackingField: 7
   <CameraShake>k__BackingField: 10
+  <BulletsPerShotCount>k__BackingField: 35
+  <BulletDamage>k__BackingField:
+    <Min>k__BackingField: 5
+    <Max>k__BackingField: 7
+  <VerticalBulletSpread>k__BackingField: 5
+  <HorizontalBulletSpread>k__BackingField: 11

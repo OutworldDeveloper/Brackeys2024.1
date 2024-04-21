@@ -75,6 +75,11 @@ public class Zombie : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _agent.updateRotation = false;
 
+        foreach (var hitbox in GetComponentsInChildren<Hitbox>())
+        {
+            hitbox.Damaged += OnHitboxDamaged;
+        }
+
         _currentAction.StateStarted.
             AddCallback(Action.None, OnNoneActionStart).
             AddCallback(Action.Attack, OnAttackActionStart).
@@ -112,12 +117,22 @@ public class Zombie : MonoBehaviour
         _thinkState.Set(ThinkState.HasTarget);
     }
 
-    public void Damage()
+    private void OnHitboxDamaged(Hitbox hitbox, float damage)
+    {
+        Notification.ShowDebug($"Hit {hitbox.HitboxType}");
+
+        float damageMultiplier = 
+            hitbox.HitboxType == HitboxType.Head ? 2f : hitbox.HitboxType == HitboxType.Body ? 1f : 0.5f;
+
+        ApplyDamage(damage * damageMultiplier);
+    }
+
+    public void ApplyDamage(float damage)
     {
         if (IsDead == true)
             return;
 
-        _health -= 15f;
+        _health -= damage;
 
         if (IsDead == false)
         {
@@ -295,7 +310,6 @@ public class Zombie : MonoBehaviour
 
     private void OnAttackThinkExit()
     {
-        Notification.ShowDebug("OnAttackThinkExit");
         _isSprinting = false;
         ZombieManager.Instance.ReturnChaseCoin();
     }

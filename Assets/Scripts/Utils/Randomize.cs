@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class Randomize
@@ -20,9 +18,19 @@ public static class Randomize
         return Random.Range(minInclusive, maxInclusive + 1);
     }
 
+    public static int Int(MinMax<int> minMax)
+    {
+        return Int(minMax.Min, minMax.Max);
+    }
+
     public static float Float(float minInclusive, float maxInclusive)
     {
         return Random.Range(minInclusive, maxInclusive);
+    }
+
+    public static float Float(MinMax<float> minMax)
+    {
+        return Float(minMax.Min, minMax.Max);
     }
 
     public static bool Bool()

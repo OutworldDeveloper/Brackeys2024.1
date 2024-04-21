@@ -184,7 +184,7 @@ public sealed class PlayerCharacter : Pawn
             {
                 _timeSinceLastShoot = TimeSince.Now();
 
-                weapon.Shoot(_equipment.WeaponSlot.GetStack(), _head.transform.position, _head.transform.forward);
+                weapon.Shoot(_equipment.WeaponSlot.GetStack(), _head.transform);
                
                 _targetRecoilY += Randomize.Float(weapon.RecoilVerticalMin, weapon.RecoilVerticalMax);
                 _targetRecoilX += Randomize.Float(weapon.RecoilHorizontalMin, weapon.RecoilHorizontalMax) * Randomize.Sign();
