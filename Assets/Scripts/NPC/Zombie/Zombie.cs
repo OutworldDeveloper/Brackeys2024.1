@@ -49,6 +49,11 @@ public class Zombie : MonoBehaviour
 
     [SerializeField] private Collider _playerBlocker;
 
+    [SerializeField] private Sensor _sensor;
+
+    [SerializeField] private float _toPlayerMltp = 0.3f;
+    [SerializeField] private float _forwardMltp = 0.5f;
+
     private NavMeshAgent _agent;
     private PlayerCharacter _target;
 
@@ -65,6 +70,8 @@ public class Zombie : MonoBehaviour
 
     private TimeSince _timeSinceLastSprint = TimeSince.Never;
     private bool _isSprinting;
+
+    private TimeSince _timeSinceLastDirectionChange = TimeSince.Never;
 
     private EnumState<ThinkState> _thinkState = new EnumState<ThinkState>();
     private EnumCall<ThinkState> _thinkCall;
@@ -114,7 +121,7 @@ public class Zombie : MonoBehaviour
         }
     }
 
-    public void StartChase(PlayerCharacter target)
+    public void SetTarget(PlayerCharacter target)
     {
         _target = target;
         _thinkState.Set(ThinkState.StupidApproach);
@@ -142,7 +149,7 @@ public class Zombie : MonoBehaviour
             if (Randomize.Chance(1) == true && _currentAction.GetTimeSinceLast(Action.Hurt) > 0.4f)
             {
                 _currentAction.Set(Action.Hurt);
-                _thinkState.Set(ThinkState.StupidApproach);
+                //_thinkState.Set(ThinkState.StupidApproach);
             }
         }
         else
@@ -176,15 +183,28 @@ public class Zombie : MonoBehaviour
             return;
 
         _timeSinceLastThink = TimeSince.Now();
+        OnThinkAny();
         _thinkCall.Execute();
     }
 
-    private void OnNoTargetThink() { }
+    private void OnThinkAny()
+    {
+        if (_thinkState == ThinkState.NoTarget)
+            return;
+    }
 
-    private TimeSince _timeSinceLastDirectionChange = TimeSince.Never;
+    private void OnNoTargetThink()
+    {
+        if (_sensor.HasTargets == false)
+            return;
 
-    [SerializeField] private float _toPlayerMltp = 0.3f;
-    [SerializeField] private float _forwardMltp = 0.5f;
+        PlayerCharacter target = _sensor.GetFirstTarget<PlayerCharacter>();
+
+        if (target == null)
+            return;
+
+        SetTarget(target);
+    }
 
     private void OnStupidApproachThink()
     {
