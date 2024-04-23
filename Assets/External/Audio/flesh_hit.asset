@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2d03bfe80cc0be478f0935d421b26f1, type: 3}
-  m_Name: Pistol Shoot
+  m_Name: flesh_hit
   m_EditorClassIdentifier: 
   _clips:
-  - {fileID: 8300000, guid: d825a431e75afb1459e43edd050b576a, type: 3}
-  _pitchMin: 2
-  _pitchMax: 2.2
-  _volumeMin: 0.1
-  _volumeMax: 0.2
+  - {fileID: 8300000, guid: 4816d2620e4806542953cb0a35ff4914, type: 3}
+  _pitchMin: 0.9
+  _pitchMax: 1.1
+  _volumeMin: 0.5
+  _volumeMax: 0.6
   _group: {fileID: 8961078316356824809, guid: 928a5f6a3b3c4444aa1181218bc2b74b, type: 2}
-  _is3d: 1
+  _is3d: 0

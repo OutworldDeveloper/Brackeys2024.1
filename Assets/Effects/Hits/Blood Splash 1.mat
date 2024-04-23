@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Blood Splash
+  m_Name: Blood Splash 1
   m_Shader: {fileID: -6465566751694194690, guid: a601957f5186fd64d929c327f6cb7487,
     type: 3}
   m_Parent: {fileID: 0}
@@ -38,7 +38,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bc01b71186302ab4ba093cf7bbea18b2, type: 3}
+        m_Texture: {fileID: 2800000, guid: e51cec7170c601e4c9270abbbab1e56c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:

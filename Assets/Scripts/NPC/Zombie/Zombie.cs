@@ -47,6 +47,8 @@ public class Zombie : MonoBehaviour
 
     [SerializeField] private Transform _lookTarget;
 
+    [SerializeField] private Collider _playerBlocker;
+
     private NavMeshAgent _agent;
     private PlayerCharacter _target;
 
@@ -108,7 +110,7 @@ public class Zombie : MonoBehaviour
         if (IsDead == true)
         {
             _animator.Play("dead");
-            DisableColliders();
+            SetDead();
         }
     }
 
@@ -145,7 +147,7 @@ public class Zombie : MonoBehaviour
         }
         else
         {
-            DisableColliders();
+            SetDead();
             _animator.CrossFade("dying", 0.2f);
         }
     }
@@ -414,13 +416,10 @@ public class Zombie : MonoBehaviour
         return _isSprinting ? 5f : _speed;
     }
 
-    private void DisableColliders()
+    private void SetDead()
     {
-        foreach (var collider in GetComponentsInChildren<Collider>())
-        {
-            collider.enabled = false;
-            _agent.enabled = false;
-        }
+        _agent.enabled = false;
+        _playerBlocker.enabled = false;
     }
 
 }

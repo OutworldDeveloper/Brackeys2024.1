@@ -218,6 +218,7 @@ MonoBehaviour:
   _hitSound: {fileID: 11400000, guid: b7f46f58a2e2da54381e4323ae51eaeb, type: 2}
   _roarSound: {fileID: 11400000, guid: 790e64d231cf1954ca5d7515bdcb3996, type: 2}
   _lookTarget: {fileID: 1391270178733438950}
+  _playerBlocker: {fileID: 1159391136460280431}
   _toPlayerMltp: 0.6
   _forwardMltp: 0.5
 --- !u!114 &6613687951211125801
@@ -854,6 +855,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -173.69566
+      objectReference: {fileID: 0}
+    - target: {fileID: -3962647829050528788, guid: 757a84fd58f02ae4bbd06c3c40dece5a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -3738305868513624005, guid: 757a84fd58f02ae4bbd06c3c40dece5a,
         type: 3}

@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Flesh
   m_EditorClassIdentifier: 
   <BulletHitParticle>k__BackingField:
-    _asset: {fileID: 1734704820449184886, guid: 40c2ca4f83960ac4db03af80a4c10f9a,
+    _asset: {fileID: 8307705410877626090, guid: 31bedded0691e3b4b89375246afdacfb,
       type: 3}
+  <BulletHitSound>k__BackingField: {fileID: 11400000, guid: 9913250ce87850c4893247c648883d2c,
+    type: 2}

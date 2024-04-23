@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [CreateAssetMenu]
 public class WeaponItem : Item
@@ -23,6 +24,8 @@ public class WeaponItem : Item
     [field: SerializeField] public float VerticalBulletSpread { get; private set; } = 1f;
     [field: SerializeField] public float HorizontalBulletSpread { get; private set; } = 1f;
 
+    [field: SerializeField] public Prefab<Transform> HitEffect { get; private set; }
+
     public override void CreateAttributes(ItemAttributes attributes)
     {
         base.CreateAttributes(attributes);
@@ -31,6 +34,8 @@ public class WeaponItem : Item
 
     public virtual void Shoot(ItemStack stack, Transform from)
     {
+        var bulletHits = new List<BulletHit>(BulletsPerShotCount);
+
         for (int i = 0; i < BulletsPerShotCount; i++)
         {
             Vector2 circlePoint = Random.insideUnitCircle;
@@ -46,18 +51,25 @@ public class WeaponItem : Item
             if (Physics.Raycast(from.position, bulletDirection, out RaycastHit hit, 25f, ShootMask) == false)
                 continue;
 
-            ProcessHit(bulletDirection, hit);
+            BulletHit bulletHit = ProcessHit(bulletDirection, hit);
+            bulletHits.Add(bulletHit);
+
+            //ProcessHit(bulletDirection, hit);
             VisualizeHit(bulletDirection, hit);
         }
+
+        //VisualizeHits(bulletHits);
     }
 
-    private void ProcessHit(Vector3 direction, RaycastHit hit)
+    private BulletHit ProcessHit(Vector3 direction, RaycastHit hit)
     {
-        if (hit.transform.TryGetComponent(out Hitbox hitbox) == false)
-            return;
+        if (hit.transform.TryGetComponent(out Hitbox hitbox) == true)
+        {
+            float damage = Randomize.Float(BulletDamage);
+            hitbox.ApplyDamage(damage);
+        }
 
-        float damage = Randomize.Float(BulletDamage);
-        hitbox.ApplyDamage(damage);
+        return new BulletHit(direction, hit.transform, hit.point, hit.normal, hitbox);
     }
 
     private void VisualizeHit(Vector3 direction, RaycastHit hit)
@@ -70,6 +82,68 @@ public class WeaponItem : Item
         Vector3 particleDirection = Vector3.Lerp(hit.normal, -direction, 0.5f);
         var hitEffect = surface.SurfaceType.BulletHitParticle.Instantiate(hit.point, particleDirection); // -direction
         Destroy(hitEffect.gameObject, 4f);
+
+        var audioSource = new GameObject().AddComponent<AudioSource>();
+        audioSource.transform.position = hit.point;
+        audioSource.name = "Temp Audio Source";
+        surface.SurfaceType.BulletHitSound.Play(audioSource);
+        Destroy(audioSource.gameObject, 4f);
     }
+
+    private void VisualizeHits(List<BulletHit> hits)
+    {
+        for (int i = 0; i < hits.Count; i++)
+        {
+            var hit = hits[i];
+
+            if (hit.IsHitboxHit == false)
+                continue;
+
+            Vector3 combinedPosition = Vector3.zero;
+            Vector3 combinedDirection = Vector3.zero;
+            int positionsCount = 0;
+
+            for (int f = 0; f < hits.Count; f++)
+            {
+                var fHit = hits[f];
+
+                if (fHit.IsHitboxHit == false)
+                    continue;
+
+                if (fHit.Transform.root != hit.Transform.root)
+                    continue;
+
+                combinedPosition += fHit.Point;
+                combinedDirection += fHit.Direction;
+                positionsCount++;
+            }
+
+            Vector3 averagePosition = combinedPosition / positionsCount;
+            Vector3 averageDirection = combinedDirection / positionsCount;
+            HitEffect.Instantiate(averagePosition, -averageDirection);
+        }
+    }
+
+}
+
+public readonly struct BulletHit
+{
+
+    public readonly Vector3 Direction;
+    public readonly Transform Transform;
+    public readonly Vector3 Point;
+    public readonly Vector3 Normal;
+    public readonly Hitbox Hitbox;
+
+    public BulletHit(Vector3 direction, Transform transform, Vector3 point, Vector3 normal, Hitbox hitbox)
+    {
+        Direction = direction;
+        Transform = transform;
+        Point = point;
+        Normal = normal;
+        Hitbox = hitbox;
+    }
+
+    public bool IsHitboxHit => Hitbox != null;
 
 }

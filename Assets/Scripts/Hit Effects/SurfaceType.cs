@@ -6,6 +6,6 @@ using UnityEngine;
 public class SurfaceType : ScriptableObject
 {
     [field: SerializeField] public Prefab<ParticleSystem> BulletHitParticle { get; private set; }
-
+    [field: SerializeField] public Sound BulletHitSound { get; private set; }
 
 }

@@ -33,9 +33,12 @@ MonoBehaviour:
   <RecoilHorizontalMin>k__BackingField: 5
   <RecoilHorizontalMax>k__BackingField: 7
   <CameraShake>k__BackingField: 10
-  <BulletsPerShotCount>k__BackingField: 35
+  <BulletsPerShotCount>k__BackingField: 15
   <BulletDamage>k__BackingField:
-    <Min>k__BackingField: 5
-    <Max>k__BackingField: 7
+    <Min>k__BackingField: 10
+    <Max>k__BackingField: 12
   <VerticalBulletSpread>k__BackingField: 5
   <HorizontalBulletSpread>k__BackingField: 11
+  <HitEffect>k__BackingField:
+    _asset: {fileID: 3183952692003240370, guid: 40c2ca4f83960ac4db03af80a4c10f9a,
+      type: 3}
