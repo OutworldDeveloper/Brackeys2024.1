@@ -527,6 +527,9 @@ public sealed class PlayerCharacter : Pawn
         return playerInput;
     }
 
+    private TimeSince _timeSinceStartAiming = TimeSince.Never;
+    private TimeSince _timeSinceStopAiming = TimeSince.Never;
+
     private void UpdateAiming()
     {
         if (_isAiming == false)
@@ -534,14 +537,16 @@ public sealed class PlayerCharacter : Pawn
             if (_currentInput.WantsAim == true && CanAim() == true)
             {
                 _isAiming = true;
+                _timeSinceStartAiming = TimeSince.Now();
                 _armsAnimator.SetBool("is_aiming", true);
             }
         }
         else
         {
-            if (_currentInput.WantsAim == false || CanAim() == false)
+            if ((_currentInput.WantsAim == false || CanAim() == false) && _timeSinceStartAiming > 0.35f)
             {
                 _isAiming = false;
+                _timeSinceStopAiming = TimeSince.Now();
                 _armsAnimator.SetBool("is_aiming", false);
 
                 // Stop remaining recoil
@@ -819,7 +824,8 @@ public sealed class PlayerCharacter : Pawn
             IsDead == false &&
             _controller.isGrounded == true &&
             _equipment.WeaponSlot.IsEmpty == false &&
-            _weaponState.Current == WeaponState.Ready;
+            _weaponState.Current == WeaponState.Ready &&
+            _timeSinceStopAiming > 0.35f;
     }
 
     public float GetMouseSensetivityMultiplier()
@@ -829,7 +835,7 @@ public sealed class PlayerCharacter : Pawn
 
     public bool CanShoot()
     {
-        return IsDead == false && _isAiming == true && _controller.isGrounded == true;
+        return IsDead == false && _isAiming == true && _controller.isGrounded == true && _timeSinceStartAiming > 0.2f;
     }
 
     public bool CanRegnerateHealth()
