@@ -46,15 +46,30 @@ public class WeaponItem : Item
             if (Physics.Raycast(from.position, bulletDirection, out RaycastHit hit, 25f, ShootMask) == false)
                 continue;
 
-            Debug.DrawRay(hit.point, -bulletDirection * 0.05f, Color.magenta, 10f);
-
-            if (hit.transform.TryGetComponent(out Hitbox hitbox) == false)
-                continue;
-
-            float damage = Randomize.Float(BulletDamage);
-
-            hitbox.ApplyDamage(damage);
+            ProcessHit(bulletDirection, hit);
+            VisualizeHit(bulletDirection, hit);
         }
+    }
+
+    private void ProcessHit(Vector3 direction, RaycastHit hit)
+    {
+        if (hit.transform.TryGetComponent(out Hitbox hitbox) == false)
+            return;
+
+        float damage = Randomize.Float(BulletDamage);
+        hitbox.ApplyDamage(damage);
+    }
+
+    private void VisualizeHit(Vector3 direction, RaycastHit hit)
+    {
+        Debug.DrawRay(hit.point, -direction * 0.05f, Color.magenta, 10f);
+
+        if (hit.transform.TryGetComponent(out Surface surface) == false)
+            return;
+
+        Vector3 particleDirection = Vector3.Lerp(hit.normal, -direction, 0.5f);
+        var hitEffect = surface.SurfaceType.BulletHitParticle.Instantiate(hit.point, particleDirection); // -direction
+        Destroy(hitEffect.gameObject, 4f);
     }
 
 }

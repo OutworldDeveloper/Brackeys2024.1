@@ -296,7 +296,7 @@ public sealed class PlayerCharacter : Pawn
                             throw new Exception("Reloading state but no missing ammo.");
 
                         InventoryManager.TryDestroy(_inventory, weapon.AmmoItem, missingAmmo);
-                        stack.SetAttribute(WeaponItem.LOADED_AMMO, stack.GetAttribute(WeaponItem.LOADED_AMMO) + toReload);
+                        stack.SetAttribute(WeaponItem.LOADED_AMMO, currentCount + toReload);
                     }
 
                     if (_weaponState.TimeSinceLastChange > 1.4f)

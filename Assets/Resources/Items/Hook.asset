@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MaskItemTag
   m_EditorClassIdentifier: 
   MaskPrefab:
-    _asset: {fileID: 9214711411711377779, guid: da6574c8eff4804479cd6c331e26dd1c,
+    _asset: {fileID: 7073809298559672426, guid: da6574c8eff4804479cd6c331e26dd1c,
       type: 3}
 --- !u!114 &11400000
 MonoBehaviour:

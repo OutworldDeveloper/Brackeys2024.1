@@ -29,9 +29,9 @@ public class Zombie : MonoBehaviour
     public enum ThinkState
     {
         NoTarget,
-        HasTarget,
-        StupidApproach,
+        StupidApproach, // Only when near
         Attack,
+        CatchingUp // If no vision on target or target is far away we either run or walk to target
     }
 
     [SerializeField] private float _speed = 2f;
@@ -44,6 +44,8 @@ public class Zombie : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _hitSound;
     [SerializeField] private Sound _roarSound;
+
+    [SerializeField] private Transform _lookTarget;
 
     private NavMeshAgent _agent;
     private PlayerCharacter _target;
@@ -94,7 +96,6 @@ public class Zombie : MonoBehaviour
 
         _thinkCall = _thinkState.AddCall().
             AddCallback(ThinkState.NoTarget, OnNoTargetThink).
-            AddCallback(ThinkState.HasTarget, OnHasTargetThink).
             AddCallback(ThinkState.StupidApproach, OnStupidApproachThink).
             AddCallback(ThinkState.Attack, OnAttackThink);
 
@@ -114,7 +115,7 @@ public class Zombie : MonoBehaviour
     public void StartChase(PlayerCharacter target)
     {
         _target = target;
-        _thinkState.Set(ThinkState.HasTarget);
+        _thinkState.Set(ThinkState.StupidApproach);
     }
 
     private void OnHitboxDamaged(Hitbox hitbox, float damage)
@@ -154,6 +155,14 @@ public class Zombie : MonoBehaviour
         if (IsDead == true)
             return;
 
+        //
+        Vector3 targetLookPosition = _target != null ? 
+            _target.transform.position + Vector3.up * 1.75f : 
+            transform.position + Vector3.up * 1.75f + Vector3.forward;
+
+        _lookTarget.transform.position = Vector3.Lerp(_lookTarget.transform.position, targetLookPosition, 3f * Time.deltaTime);
+        //
+
         _updateCall.Execute();
 
         _agent.speed = CanMove() ? GetSpeed() : 0f;
@@ -168,63 +177,7 @@ public class Zombie : MonoBehaviour
         _thinkCall.Execute();
     }
 
-    private void Think()
-    {
-        if (HasTarget == false)
-            return;
-
-        float targetDistance = Vector3.Distance(transform.position, _target.transform.position);
-
-        float targetAngle = FlatVector.Angle(
-            transform.forward.Flat(),
-            (_target.transform.position - transform.position).normalized.Flat());
-
-        if (targetDistance < _attackDistance && _currentAction.GetTimeSinceLast(Action.Attack) > _attackCooldown)
-        {
-            if (ZombieManager.Instance.TryTakeAttackCoin(this, 1.5f))
-                _currentAction.Set(Action.Attack);
-            return;
-        }
-
-        if (targetDistance < 3.5f && Randomize.Chance(35) && _currentAction.GetTimeSinceLast(Action.Attack) > 4f)
-        {
-            if (ZombieManager.Instance.TryTakeAttackCoin(this, 1.5f))
-                _currentAction.Set(Action.Attack);
-            return;
-        }
-
-        if (targetDistance > 3.0f && 
-            Randomize.Chance(35) && 
-            ZombieManager.Instance.IsRoarAvaliable && 
-            _currentAction.GetTimeSinceLast(Action.Roar) > 6f)
-        {
-            _currentAction.Set(Action.Roar);
-            return;
-        }
-
-        if (_isSprinting == false && _timeSinceLastSprint > 14f && targetDistance > 5f && Randomize.Chance(40))
-        {
-            _timeSinceLastSprint = TimeSince.Now();
-            _isSprinting = true;
-            return;
-        }
-
-        if (_isSprinting == true)
-        {
-            if (_timeSinceLastSprint > 2f || targetDistance < 3.5f)
-                _isSprinting = false;
-        }
-    }
-
     private void OnNoTargetThink() { }
-
-    private void OnHasTargetThink()
-    {
-        if (Randomize.Chance(10) == true)
-        {
-            _thinkState.Set(ThinkState.StupidApproach);
-        }
-    }
 
     private TimeSince _timeSinceLastDirectionChange = TimeSince.Never;
 
@@ -235,13 +188,15 @@ public class Zombie : MonoBehaviour
     {
         TryAttackIfMakesSense();
 
-        if (Randomize.Chance(30) == true && ZombieManager.Instance.TryTakeChaseCoin() == true)
+        if (Randomize.Chance(25) == true && ZombieManager.Instance.TryTakeChaseCoin() == true)
         {
             _thinkState.Set(ThinkState.Attack);
             return;
         }
 
-        if (TargetDistance < 3.5f && _thinkState.TimeSinceLastChange > 0.4f && ZombieManager.Instance.TryTakeChaseCoin() == true)
+        if (TargetDistance < 3.5f && 
+            _thinkState.TimeSinceLastChange > 0.4f && 
+            ZombieManager.Instance.TryTakeChaseCoin() == true)
         {
             _thinkState.Set(ThinkState.Attack); // if enough attackers then keep walking slowly
             return;
@@ -299,6 +254,15 @@ public class Zombie : MonoBehaviour
             return;
         }
 
+        // Костыль
+        if (_isSprinting == false && TargetDistance > 8.5f && Randomize.Chance(15))
+        {
+            _timeSinceLastSprint = TimeSince.Now();
+            _isSprinting = true;
+            return;
+        }
+        //
+
         if (_isSprinting == true)
         {
             if (_timeSinceLastSprint > 2f || TargetDistance < 3.5f)
@@ -306,6 +270,12 @@ public class Zombie : MonoBehaviour
         }
 
         TryAttackIfMakesSense();
+
+        // Should it stay?
+        if (_thinkState.TimeSinceLastChange > 4f)
+        {
+            _thinkState.Set(ThinkState.StupidApproach);
+        }
     }
 
     private void OnAttackThinkExit()
