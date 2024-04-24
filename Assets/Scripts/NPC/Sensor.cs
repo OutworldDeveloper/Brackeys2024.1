@@ -6,7 +6,8 @@ using UnityEngine;
 public class Sensor : MonoBehaviour
 {
 
-    [SerializeField] private float _radius = 10f;
+    [SerializeField] private float _radius = 13f;
+    [SerializeField] private float _detectRadius = 4f;
     [SerializeField] private float _angle = 80f;
     [SerializeField] private float _height = 1f;
     [SerializeField] private LayerMask _checkLayers;
@@ -88,6 +89,8 @@ public class Sensor : MonoBehaviour
         Vector3 destination = target.transform.position;
         Vector3 direction = destination - origin;
 
+        float distance = Vector3.Distance(origin, destination);
+
         if (direction.y < 0f && direction.y > _height)
             return false;
 
@@ -95,7 +98,7 @@ public class Sensor : MonoBehaviour
         direction.Normalize();
 
         float deltaAngle = Vector3.Angle(direction, transform.forward);
-        if (deltaAngle > _angle)
+        if (deltaAngle > _angle && distance > _detectRadius)
             return false;
 
         origin.y += _height / 2;
@@ -110,6 +113,7 @@ public class Sensor : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.DrawWireSphere(transform.position, _radius);
+        Gizmos.DrawWireSphere(transform.position, _detectRadius);
         Gizmos.DrawRay(transform.position, Quaternion.AngleAxis(_angle / 2f, Vector3.up) * transform.forward * _radius);
         Gizmos.DrawRay(transform.position, Quaternion.AngleAxis(-_angle / 2f, Vector3.up) * transform.forward * _radius);
 

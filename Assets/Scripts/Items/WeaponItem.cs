@@ -51,7 +51,7 @@ public class WeaponItem : Item
             if (Physics.Raycast(from.position, bulletDirection, out RaycastHit hit, 25f, ShootMask) == false)
                 continue;
 
-            BulletHit bulletHit = ProcessHit(bulletDirection, hit);
+            BulletHit bulletHit = ProcessHit(from.position, bulletDirection, hit);
             bulletHits.Add(bulletHit);
 
             //ProcessHit(bulletDirection, hit);
@@ -61,13 +61,15 @@ public class WeaponItem : Item
         //VisualizeHits(bulletHits);
     }
 
-    private BulletHit ProcessHit(Vector3 direction, RaycastHit hit)
+    private BulletHit ProcessHit(Vector3 origin, Vector3 direction, RaycastHit hit)
     {
         if (hit.transform.TryGetComponent(out Hitbox hitbox) == true)
         {
             float damage = Randomize.Float(BulletDamage);
             hitbox.ApplyDamage(damage);
         }
+
+        AISoundEvents.Create(null, origin, 10f);
 
         return new BulletHit(direction, hit.transform, hit.point, hit.normal, hitbox);
     }

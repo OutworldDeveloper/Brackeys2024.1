@@ -29,6 +29,7 @@ public class Zombie : MonoBehaviour
     public enum ThinkState
     {
         NoTarget,
+        InvestigateSound,
         StupidApproach, // Only when near
         Attack,
         CatchingUp // If no vision on target or target is far away we either run or walk to target
@@ -50,6 +51,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private Collider _playerBlocker;
 
     [SerializeField] private Sensor _sensor;
+    [SerializeField] private SoundsSensor _soundsSensor;
 
     [SerializeField] private float _toPlayerMltp = 0.3f;
     [SerializeField] private float _forwardMltp = 0.5f;
@@ -105,11 +107,14 @@ public class Zombie : MonoBehaviour
 
         _thinkCall = _thinkState.AddCall().
             AddCallback(ThinkState.NoTarget, OnNoTargetThink).
+            AddCallback(ThinkState.InvestigateSound, OnInvestigateSoundThink).
             AddCallback(ThinkState.StupidApproach, OnStupidApproachThink).
             AddCallback(ThinkState.Attack, OnAttackThink);
 
         _thinkState.StateEnded.
             AddCallback(ThinkState.Attack, OnAttackThinkExit);
+
+        _soundsSensor.Perceived += OnSoundPerceived;
     }
 
     private void Start()
@@ -159,6 +164,14 @@ public class Zombie : MonoBehaviour
         }
     }
 
+    private void OnSoundPerceived(SoundEvent soundEvent)
+    {
+        if (_thinkState != ThinkState.NoTarget)
+            return;
+
+        _thinkState.Set(ThinkState.InvestigateSound);
+    }
+
     private void Update()
     {
         if (IsDead == true)
@@ -195,15 +208,23 @@ public class Zombie : MonoBehaviour
 
     private void OnNoTargetThink()
     {
-        if (_sensor.HasTargets == false)
+        TryFindTargetAndStartChase();
+    }
+
+    private void OnInvestigateSoundThink()
+    {
+        if (TryFindTargetAndStartChase() == true)
             return;
 
-        PlayerCharacter target = _sensor.GetFirstTarget<PlayerCharacter>();
-
-        if (target == null)
-            return;
-
-        SetTarget(target);
+        if (Vector3.Distance(transform.position, _soundsSensor.LastEvent.Position) > 1f)
+        {
+            _agent.stoppingDistance = 0f;
+            _agent.SetDestination(_soundsSensor.LastEvent.Position);
+        }
+        else
+        {
+            _thinkState.Set(ThinkState.NoTarget);
+        }
     }
 
     private void OnStupidApproachThink()
@@ -236,7 +257,7 @@ public class Zombie : MonoBehaviour
 
         for (int i = 0; i < rays; i++)
         {
-            Vector3 rayDirection = Quaternion.AngleAxis(i *(360 / 16), Vector3.up) * transform.forward;
+            Vector3 rayDirection = Quaternion.AngleAxis(i * (360 / 16), Vector3.up) * transform.forward;
 
             NavMesh.Raycast(transform.position, transform.position + rayDirection * 3f, out NavMeshHit hit, _agent.areaMask);
 
@@ -294,7 +315,7 @@ public class Zombie : MonoBehaviour
         TryAttackIfMakesSense();
 
         // Should it stay?
-        if (_thinkState.TimeSinceLastChange > 4f)
+        if (_thinkState.TimeSinceLastChange > 8f)
         {
             _thinkState.Set(ThinkState.StupidApproach);
         }
@@ -321,6 +342,20 @@ public class Zombie : MonoBehaviour
                 _currentAction.Set(Action.Attack);
             return;
         }
+    }
+
+    private bool TryFindTargetAndStartChase()
+    {
+        if (_sensor.HasTargets == false)
+            return false;
+
+        PlayerCharacter target = _sensor.GetFirstTarget<PlayerCharacter>();
+
+        if (target == null)
+            return false;
+
+        SetTarget(target);
+        return true;
     }
 
     private void OnNoneActionStart()
@@ -430,7 +465,7 @@ public class Zombie : MonoBehaviour
 
     private float GetSpeed()
     {
-        if (_thinkState == ThinkState.StupidApproach)
+        if (_thinkState == ThinkState.StupidApproach || _thinkState == ThinkState.InvestigateSound)
             return 0.75f; // костыль
 
         return _isSprinting ? 5f : _speed;
