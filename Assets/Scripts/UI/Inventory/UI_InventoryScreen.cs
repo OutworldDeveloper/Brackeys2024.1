@@ -19,8 +19,6 @@ public class UI_InventoryScreen : UI_Panel
     [SerializeField] private TextMeshProUGUI _selectedNameLabel;
     [SerializeField] private TextMeshProUGUI _selectedDescriptionLabel;
 
-    [SerializeField] private Item[] _itemsTest;
-
     [SerializeField] private GameObject _contextMenuBackground;
     [SerializeField] private RectTransform _itemActionsMenu;
     [SerializeField] private Prefab<UI_ItemActionButton> _itemContextButtonPrefab;
@@ -63,28 +61,6 @@ public class UI_InventoryScreen : UI_Panel
     private void Update()
     {
         _itemMovePreviewGO.position = Input.mousePosition;
-
-        KeyCode[] keyCodes = new KeyCode[]
-        {
-            KeyCode.Alpha1,
-            KeyCode.Alpha2,
-            KeyCode.Alpha3,
-            KeyCode.Alpha4,
-            KeyCode.Alpha5,
-            KeyCode.Alpha6,
-            KeyCode.Alpha7,
-            KeyCode.Alpha8,
-            KeyCode.Alpha9,
-            KeyCode.Alpha0,
-        };
-
-        for (int i = 0; i < _itemsTest.Length; i++)
-        {
-            if (Input.GetKeyDown(keyCodes[i]) == true)
-            {
-                Character.GetComponent<Inventory>().TryAdd(new ItemStack(_itemsTest[i], _itemsTest[i].StackSize));
-            }
-        }
     }
 
     protected void RegisterSlot(UI_Slot slot)
@@ -112,7 +88,14 @@ public class UI_InventoryScreen : UI_Panel
         {
             if (slot.TargetSlot.IsEmpty == false)
             {
-                StartMove(slot, slot.TargetSlot.Stack.Count);
+                if (Input.GetKey(KeyCode.LeftShift) == true)
+                {
+                    HandleQuickAction(slot);
+                }
+                else
+                {
+                    StartMove(slot, slot.TargetSlot.Stack.Count);
+                }
             }
         }
         else
@@ -193,6 +176,19 @@ public class UI_InventoryScreen : UI_Panel
 
                 RefreshMoveVisuals();
             }
+        }
+    }
+
+    protected virtual void HandleQuickAction(UI_Slot slot) 
+    {
+        if (slot.TargetSlot == Character.GetComponent<Equipment>().WeaponSlot)
+        {
+            InventoryManager.TryTransfer(slot.TargetSlot, Character.Inventory, slot.TargetSlot.Stack.Count);
+        }
+
+        if (slot.TargetSlot.Owner == Character.Inventory && slot.TargetSlot.Stack.Item is WeaponItem)
+        {
+            InventoryManager.TryTransfer(slot.TargetSlot, Character.GetComponent<Equipment>().WeaponSlot, 1);
         }
     }
 

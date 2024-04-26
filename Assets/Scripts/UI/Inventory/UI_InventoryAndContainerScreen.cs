@@ -23,6 +23,18 @@ public sealed class UI_InventoryAndContainerScreen : UI_InventoryScreen
         RegisterGrid(_containerGrid);
     }
 
+    protected override void HandleQuickAction(UI_Slot slot)
+    {
+        if (slot.TargetSlot.Owner != _targetContainer)
+        {
+            InventoryManager.TryTransfer(slot.TargetSlot, _targetContainer, slot.TargetSlot.Stack.Count);
+        }
+        else
+        {
+            InventoryManager.TryTransfer(slot.TargetSlot, Character.Inventory, slot.TargetSlot.Stack.Count);
+        }
+    }
+
     protected override void CreateActionsFor(UI_Slot slot, List<ItemAction> actions)
     {
         base.CreateActionsFor(slot, actions);
