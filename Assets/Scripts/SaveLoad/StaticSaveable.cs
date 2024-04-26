@@ -7,7 +7,6 @@ using UnityEngine;
 public class StaticSaveable : MonoBehaviour
 {
 
-    [SerializeField] private bool _hasSceneGuid;
     [SerializeField] private string _sceneGuid;
 
     public string SceneGuid => _sceneGuid;
@@ -19,20 +18,13 @@ public class StaticSaveable : MonoBehaviour
         if (gameObject.scene.IsValid() == false)
         {
             //Debug.Log("We're a prefab");
-            _hasSceneGuid = false;
             _sceneGuid = null;
             return;
         }
 
-        //Debug.Log("We're not a prefab");
-
-        if (_hasSceneGuid == true)
-            return;
-
-        //Debug.Log("String is empty");
-
-        _sceneGuid = Guid.NewGuid().ToString();
-        _hasSceneGuid = true;
+#if UNITY_EDITOR
+        _sceneGuid = UnityEditor.GlobalObjectId.GetGlobalObjectIdSlow(gameObject).ToString();
+#endif
     }
 
 }
