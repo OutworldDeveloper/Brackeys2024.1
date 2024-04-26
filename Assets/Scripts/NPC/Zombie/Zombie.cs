@@ -3,18 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Animations.Rigging;
 
 [SelectionBase]
 [RequireComponent(typeof(NavMeshAgent))]
 public class Zombie : MonoBehaviour
 {
-
-    // Когда заагрились доступные действия
-    // >Порычать грозно
-    // Если игрок близко, схватить игрока
-    // Если не приседает игрок, тогда никак
-    // Медленнол идёт, а потом как побежит резко и удар
-    // Create Zombie Manager when needed (MonoBehaviour)
 
     public enum Action
     {
@@ -24,15 +18,17 @@ public class Zombie : MonoBehaviour
         Hurt,
         HurtBadly,
         Afk,
+        Jump,
+        PostJumpDelay,
     }
 
     public enum ThinkState
     {
         NoTarget,
         InvestigateSound,
-        StupidApproach, // Only when near
-        Attack,
-        CatchingUp // If no vision on target or target is far away we either run or walk to target
+        Follow, // Slowly following player (if too far, sprint)
+        StupidApproach, // When close enough, start walking around randomly
+        Engage, // Rush for attack
     }
 
     [SerializeField] private float _speed = 2f;
@@ -55,6 +51,11 @@ public class Zombie : MonoBehaviour
 
     [SerializeField] private float _toPlayerMltp = 0.3f;
     [SerializeField] private float _forwardMltp = 0.5f;
+
+    [SerializeField] private MultiAimConstraint _headTargetingConstraint;
+    [SerializeField] private MultiAimConstraint _bodyTargetingConstraint;
+
+    [SerializeField] private AnimationCurve _jumpCurve;
 
     private NavMeshAgent _agent;
     private PlayerCharacter _target;
@@ -97,22 +98,26 @@ public class Zombie : MonoBehaviour
             AddCallback(Action.None, OnNoneActionStart).
             AddCallback(Action.Attack, OnAttackActionStart).
             AddCallback(Action.Hurt, OnHurtActionStart).
-            AddCallback(Action.Roar, OnRoarActionStart);
+            AddCallback(Action.Roar, OnRoarActionStart).
+            AddCallback(Action.Jump, OnJumpActionStart);
 
         _updateCall = _currentAction.AddCall().
             AddCallback(Action.None, OnNoneActionUpdate).
             AddCallback(Action.Attack, OnAttackActionUpdate).
             AddCallback(Action.Hurt, OnHurtActionUpdate).
-            AddCallback(Action.Roar, OnRoarActionUpdate);
+            AddCallback(Action.Roar, OnRoarActionUpdate).
+            AddCallback(Action.Jump, OnJumpActionUpdate).
+            AddCallback(Action.PostJumpDelay, OnPostJumpDelayActionUpdate);
 
         _thinkCall = _thinkState.AddCall().
             AddCallback(ThinkState.NoTarget, OnNoTargetThink).
             AddCallback(ThinkState.InvestigateSound, OnInvestigateSoundThink).
+            AddCallback(ThinkState.Follow, OnFollowThink).
             AddCallback(ThinkState.StupidApproach, OnStupidApproachThink).
-            AddCallback(ThinkState.Attack, OnAttackThink);
+            AddCallback(ThinkState.Engage, OnEngageThink);
 
         _thinkState.StateEnded.
-            AddCallback(ThinkState.Attack, OnAttackThinkExit);
+            AddCallback(ThinkState.Engage, OnEngageThinkExit);
 
         _soundsSensor.Perceived += OnSoundPerceived;
     }
@@ -129,7 +134,7 @@ public class Zombie : MonoBehaviour
     public void SetTarget(PlayerCharacter target)
     {
         _target = target;
-        _thinkState.Set(ThinkState.StupidApproach);
+        _thinkState.Set(ThinkState.Follow);
     }
 
     private void OnHitboxDamaged(Hitbox hitbox, float damage)
@@ -154,7 +159,6 @@ public class Zombie : MonoBehaviour
             if (Randomize.Chance(1) == true && _currentAction.GetTimeSinceLast(Action.Hurt) > 0.4f)
             {
                 _currentAction.Set(Action.Hurt);
-                //_thinkState.Set(ThinkState.StupidApproach);
             }
         }
         else
@@ -174,6 +178,10 @@ public class Zombie : MonoBehaviour
 
     private void Update()
     {
+        float targetWeight = _target == null ? 0f : IsDead == true ? 0f : _isSprinting == true ? 0f : 1f;
+        _headTargetingConstraint.weight = Mathf.Lerp(_headTargetingConstraint.weight, targetWeight, 4f * Time.deltaTime);
+        _bodyTargetingConstraint.weight = Mathf.Lerp(_bodyTargetingConstraint.weight, targetWeight * 0.45f, 4f * Time.deltaTime);
+
         if (IsDead == true)
             return;
 
@@ -196,14 +204,7 @@ public class Zombie : MonoBehaviour
             return;
 
         _timeSinceLastThink = TimeSince.Now();
-        OnThinkAny();
         _thinkCall.Execute();
-    }
-
-    private void OnThinkAny()
-    {
-        if (_thinkState == ThinkState.NoTarget)
-            return;
     }
 
     private void OnNoTargetThink()
@@ -227,21 +228,35 @@ public class Zombie : MonoBehaviour
         }
     }
 
-    private void OnStupidApproachThink()
+    private void OnFollowThink()
     {
-        TryAttackIfMakesSense();
+        if (TryAttackIfMakesSense() == true)
+            return;
 
-        if (Randomize.Chance(25) == true && ZombieManager.Instance.TryTakeChaseCoin() == true)
+        if (TryEngage() == true)
+            return;
+
+        if (TargetDistance < 4.0f)
         {
-            _thinkState.Set(ThinkState.Attack);
+            _thinkState.Set(ThinkState.StupidApproach);
             return;
         }
 
-        if (TargetDistance < 3.5f && 
-            _thinkState.TimeSinceLastChange > 0.4f && 
-            ZombieManager.Instance.TryTakeChaseCoin() == true)
+        _agent.stoppingDistance = 1f;
+        _agent.SetDestination(_target.transform.position);
+    }
+
+    private void OnStupidApproachThink()
+    {
+        if (TryAttackIfMakesSense() == true)
+            return;
+
+        if (TryEngage() == true)
+            return;
+
+        if (TargetDistance > 5.5f)
         {
-            _thinkState.Set(ThinkState.Attack); // if enough attackers then keep walking slowly
+            _thinkState.Set(ThinkState.Follow);
             return;
         }
 
@@ -285,7 +300,7 @@ public class Zombie : MonoBehaviour
         _agent.SetDestination(bestSpot);
     }
 
-    private void OnAttackThink()
+    private void OnEngageThink()
     {
         _agent.stoppingDistance = _agent.radius + 0.5f;
         _agent.SetDestination(_target.transform.position);
@@ -312,36 +327,115 @@ public class Zombie : MonoBehaviour
                 _isSprinting = false;
         }
 
-        TryAttackIfMakesSense();
-
         // Should it stay?
         if (_thinkState.TimeSinceLastChange > 8f)
         {
             _thinkState.Set(ThinkState.StupidApproach);
         }
+
+        Try.Any(TryAttackIfMakesSense, TryJump);
     }
 
-    private void OnAttackThinkExit()
+    private void OnEngageThinkExit()
     {
         _isSprinting = false;
-        ZombieManager.Instance.ReturnChaseCoin();
     }
 
-    private void TryAttackIfMakesSense()
+    private bool TryEngage()
+    {
+        if (Randomize.Chance(25) == true && ZombieManager.Instance.TryTakeEngageCoin(this, 5f) == true)
+        {
+            _thinkState.Set(ThinkState.Engage);
+            return true;
+        }
+
+        if (TargetDistance < 3.5f &&
+            _thinkState.TimeSinceLastChange > 0.4f &&
+            ZombieManager.Instance.TryTakeEngageCoin(this, 5f) == true)
+        {
+            _thinkState.Set(ThinkState.Engage);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryAttackIfMakesSense()
     {
         if (TargetDistance < _attackDistance)
         {
             if (ZombieManager.Instance.TryTakeAttackCoin(this, 1.5f))
+            {
                 _currentAction.Set(Action.Attack);
-            return;
+                return true;
+            }
+
+            return false;
         }
 
         if (TargetDistance < 3.5f && Randomize.Chance(35))
         {
             if (ZombieManager.Instance.TryTakeAttackCoin(this, 1.5f))
+            {
                 _currentAction.Set(Action.Attack);
-            return;
+                return true;
+            }
+
+            return false;
         }
+
+        return false;
+    }
+
+    private Vector3 _jumpPosition;
+
+    private bool TryJump()
+    {
+        if (Randomize.Chance(20) == false)
+            return false;
+
+        if (ZombieManager.Instance.TryTakeJumpCoin(this) == false)
+            return false;
+
+        int rays = 16;
+
+        Vector3 bestSpot = transform.position;
+        float bestScore = float.NegativeInfinity;
+        float distance = 0f;
+
+        for (int i = 0; i < rays; i++)
+        {
+            Vector3 rayDirection = Quaternion.AngleAxis(i * (360 / 16), Vector3.up) * transform.forward;
+
+            NavMesh.Raycast(transform.position, transform.position + rayDirection * 3f, out NavMeshHit hit, _agent.areaMask);
+
+            Debug.DrawRay(transform.position, rayDirection * hit.distance, hit.hit ? Color.red : Color.green, 1f);
+
+            float score = hit.distance / 3f;
+
+            score +=
+                (Vector3.Dot(rayDirection, (_target.transform.position - transform.position).normalized) + 1f) / 2
+                * _toPlayerMltp;
+
+            score += Randomize.Float(0.0f, 0.4f); // Not sure
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestSpot = transform.position + rayDirection * hit.distance;
+                distance = hit.distance;
+            }
+        }
+
+        if (bestScore < 0f)
+            return false;
+
+        if (distance < 2.5f)
+            return false;
+
+        _jumpPosition = bestSpot;
+        _currentAction.Set(Action.Jump);
+        return true;
     }
 
     private bool TryFindTargetAndStartChase()
@@ -366,7 +460,7 @@ public class Zombie : MonoBehaviour
 
     private void OnNoneActionUpdate()
     {
-        RotateTo(_agent.velocity, 2.5f);
+        RotateTo(_agent.velocity, 5f);
 
         _animator.SetFloat("velocity", _agent.velocity.magnitude);
 
@@ -442,12 +536,65 @@ public class Zombie : MonoBehaviour
         _animator.Play("roar");
         _roarSound.Play(_audioSource);
 
-        ZombieManager.Instance.NotifyRoar();
+        ZombieManager.Instance.NotifyRoar(this);
     }
 
     private void OnRoarActionUpdate()
     {
         if (_currentAction.TimeSinceLastChange < 2.6f)
+            return;
+
+        _currentAction.Set(Action.None);
+    }
+
+    private Vector3 _jumpStartPosition;
+    private bool _almostLanded;
+
+    private void OnJumpActionStart()
+    {
+        _agent.ResetPath();
+        _isSprinting = false;
+        _animator.CrossFade("jump_init", 0.1f, 0);
+
+        _jumpStartPosition = transform.position;
+
+        _almostLanded = false;
+    }
+
+    private void OnJumpActionUpdate()
+    {
+        RotateTo(_jumpPosition - transform.position, 5f);
+
+        const float prepDuration = 0.95f;
+        float jumpDuration = Vector3.Distance(_jumpStartPosition, _jumpPosition) * 0.175f;
+
+        if (_currentAction.TimeSinceLastChange > prepDuration + jumpDuration)
+        {
+            _currentAction.Set(Action.PostJumpDelay);
+            return;
+        }
+
+        if (_currentAction.TimeSinceLastChange < prepDuration)
+            return;
+
+        if (_almostLanded == false && _currentAction.TimeSinceLastChange > prepDuration + jumpDuration - 0.3f)
+        {
+            _almostLanded = true;
+            _animator.CrossFade("jump_land", 0.1f, 0);
+        }
+
+        float t = (_currentAction.TimeSinceLastChange - prepDuration) / jumpDuration;
+        t = Mathf.SmoothStep(0f, 1f, t);
+        //t = _jumpCurve.Evaluate(t);
+        Vector3 position = Vector3.Lerp(_jumpStartPosition, _jumpPosition, t);
+        _agent.Move(position - transform.position);
+    }
+
+    private void OnPostJumpDelayActionUpdate()
+    {
+        const float duration = 0.8f;
+
+        if (_currentAction.TimeSinceLastChange < duration)
             return;
 
         _currentAction.Set(Action.None);
@@ -465,7 +612,9 @@ public class Zombie : MonoBehaviour
 
     private float GetSpeed()
     {
-        if (_thinkState == ThinkState.StupidApproach || _thinkState == ThinkState.InvestigateSound)
+        if (_thinkState == ThinkState.StupidApproach || 
+            _thinkState == ThinkState.InvestigateSound || 
+            _thinkState == ThinkState.Follow)
             return 0.75f; // костыль
 
         return _isSprinting ? 5f : _speed;
@@ -477,50 +626,65 @@ public class Zombie : MonoBehaviour
         _playerBlocker.enabled = false;
     }
 
+    private void OnDrawGizmos()
+    {
+#if UNITY_EDITOR
+        UnityEditor.Handles.Label(transform.position + Vector3.up * 2f, $"{_thinkState.Current}");
+#endif
+    }
+
 }
 
-public sealed class ZombieManager : MonoBehaviour
+public abstract class LazySingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
 
-    private static ZombieManager _instance;
+    private static T _instance;
 
-    public static ZombieManager Instance
+    public static T Instance
     {
         get
         {
             if (_instance == null)
             {
-                _instance = new GameObject(nameof(ZombieManager)).AddComponent<ZombieManager>();
+                _instance = new GameObject(nameof(T)).AddComponent<T>();
             }
 
             return _instance;
         }
     }
 
-    private TimeSince _timeSinceLastGrab = TimeSince.Never;
-    private TimeSince _timeSinceLastRoar = TimeSince.Never;
+}
 
+public sealed class ZombieManager : LazySingleton<ZombieManager>
+{
+
+    private AttackCoin _engageCoin = new AttackCoin();
     private AttackCoin _attackCoin = new AttackCoin();
+    private AttackCoin _jumpCoin = new AttackCoin();
 
-    public bool IsGrabAvaliable => _timeSinceLastGrab > 5f;
-    public bool IsRoarAvaliable => _timeSinceLastRoar > 4f;
-
-    public void NotifyGrab()
-    {
-        _timeSinceLastGrab = TimeSince.Now();
-    }
-
-    public void NotifyRoar()
-    {
-        _timeSinceLastRoar = TimeSince.Now();
-    }
+    public void NotifyRoar(Zombie zombie) { }
 
     public bool TryTakeAttackCoin(Zombie zombie, float duration)
     {
-        if (_attackCoin.IsAvaliable == false)
+        return TryTakeCoin(_attackCoin, duration);
+    }
+
+    public bool TryTakeEngageCoin(Zombie zombie, float duration)
+    {
+        return TryTakeCoin(_engageCoin, duration);
+    }
+
+    public bool TryTakeJumpCoin(Zombie zombie)
+    {
+        return TryTakeCoin(_jumpCoin, 6f);
+    }
+
+    private bool TryTakeCoin(AttackCoin coin, float duration)
+    {
+        if (coin.IsAvaliable == false)
             return false;
 
-        _attackCoin.DisableFor(duration);
+        coin.DisableFor(duration);
         return true;
     }
 
@@ -536,22 +700,6 @@ public sealed class ZombieManager : MonoBehaviour
             _timeUntilReady = new TimeUntil(Time.time + duration);
         }
 
-    }
-
-    private int _chaseCoins = 1;
-
-    public bool TryTakeChaseCoin()
-    {
-        if (_chaseCoins == 0)
-            return false;
-
-        _chaseCoins--;
-        return true;
-    }
-
-    public void ReturnChaseCoin()
-    {
-        _chaseCoins++;
     }
 
 }
@@ -620,3 +768,50 @@ public sealed class GrabbedByZombieModifier : CharacterModifier
 }
 
 public sealed class ZombieGrabCooldownModifier : CharacterModifier { }
+
+public static class Try
+{
+    public static bool This(params Func<bool>[] stack)
+    {
+        for (int i = 0; i < stack.Length; i++)
+        {
+            if (stack[i].Invoke() == true)
+                return true;
+        }
+
+        return false;
+    }
+
+    public static bool Any(Func<bool> a, Func<bool> b)
+    {
+        if (a.Invoke() == true)
+            return true;
+
+        return b.Invoke();
+    }
+
+    public static bool Any(Func<bool> a, Func<bool> b, Func<bool> c)
+    {
+        if (Any(a, b) == true)
+            return true;
+
+        return c.Invoke();
+    }
+
+    public static bool Any(Func<bool> a, Func<bool> b, Func<bool> c, Func<bool> d)
+    {
+        if (Any(a, b, c) == true)
+            return true;
+
+        return d.Invoke();
+    }
+
+    public static bool Any(Func<bool> a, Func<bool> b, Func<bool> c, Func<bool> d, Func<bool> e)
+    {
+        if (Any(a, b, c, d) == true)
+            return true;
+
+        return e.Invoke();
+    }
+
+}

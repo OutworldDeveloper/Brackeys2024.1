@@ -82,7 +82,7 @@ public class UI_InventoryScreen : UI_Panel
         {
             if (Input.GetKeyDown(keyCodes[i]) == true)
             {
-                Character.GetComponent<Inventory>().TryAdd(new ItemStack(_itemsTest[i]));
+                Character.GetComponent<Inventory>().TryAdd(new ItemStack(_itemsTest[i], _itemsTest[i].StackSize));
             }
         }
     }

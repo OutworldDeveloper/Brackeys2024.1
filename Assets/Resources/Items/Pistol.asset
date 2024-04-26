@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Bits: 4097
   <AmmoItem>k__BackingField: {fileID: 11400000, guid: f39630d7849a12a4986df772780394e2,
     type: 2}
-  <MaxAmmo>k__BackingField: 9999
+  <MaxAmmo>k__BackingField: 14
   <RecoilVerticalMin>k__BackingField: 8
   <RecoilVerticalMax>k__BackingField: 10
   <RecoilHorizontalMin>k__BackingField: 2
