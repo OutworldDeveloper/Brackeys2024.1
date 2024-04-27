@@ -41,3 +41,6 @@ MonoBehaviour:
   <HorizontalBulletSpread>k__BackingField: 1
   <HitEffect>k__BackingField:
     _asset: {fileID: 0}
+  <HitDecal>k__BackingField:
+    _asset: {fileID: 4520381223755590580, guid: f87cc4be5dc8fe141854860f1bb2c317,
+      type: 3}

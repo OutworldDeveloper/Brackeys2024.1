@@ -42,3 +42,6 @@ MonoBehaviour:
   <HitEffect>k__BackingField:
     _asset: {fileID: 3183952692003240370, guid: 40c2ca4f83960ac4db03af80a4c10f9a,
       type: 3}
+  <HitDecal>k__BackingField:
+    _asset: {fileID: 4520381223755590580, guid: f87cc4be5dc8fe141854860f1bb2c317,
+      type: 3}

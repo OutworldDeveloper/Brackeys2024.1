@@ -25,6 +25,7 @@ public class WeaponItem : Item
     [field: SerializeField] public float HorizontalBulletSpread { get; private set; } = 1f;
 
     [field: SerializeField] public Prefab<Transform> HitEffect { get; private set; }
+    [field: SerializeField] public Prefab<Transform> HitDecal { get; private set; }
 
     public override void CreateAttributes(ItemAttributes attributes)
     {
@@ -54,11 +55,10 @@ public class WeaponItem : Item
             BulletHit bulletHit = ProcessHit(from.position, bulletDirection, hit);
             bulletHits.Add(bulletHit);
 
-            //ProcessHit(bulletDirection, hit);
             VisualizeHit(bulletDirection, hit);
         }
 
-        //VisualizeHits(bulletHits);
+        VisualizeHits(bulletHits);
     }
 
     private BulletHit ProcessHit(Vector3 origin, Vector3 direction, RaycastHit hit)
@@ -81,9 +81,9 @@ public class WeaponItem : Item
         if (hit.transform.TryGetComponent(out Surface surface) == false)
             return;
 
-        Vector3 particleDirection = Vector3.Lerp(hit.normal, -direction, 0.5f);
-        var hitEffect = surface.SurfaceType.BulletHitParticle.Instantiate(hit.point, particleDirection); // -direction
-        Destroy(hitEffect.gameObject, 4f);
+        //Vector3 particleDirection = Vector3.Lerp(hit.normal, -direction, 0.5f);
+        //var hitEffect = surface.SurfaceType.BulletHitParticle.Instantiate(hit.point, particleDirection); // -direction
+        //Destroy(hitEffect.gameObject, 4f);
 
         var audioSource = new GameObject().AddComponent<AudioSource>();
         audioSource.transform.position = hit.point;
@@ -94,36 +94,41 @@ public class WeaponItem : Item
 
     private void VisualizeHits(List<BulletHit> hits)
     {
-        for (int i = 0; i < hits.Count; i++)
+        foreach (var hit in hits)
         {
-            var hit = hits[i];
-
-            if (hit.IsHitboxHit == false)
+            if (hit.IsHitboxHit == true)
                 continue;
 
-            Vector3 combinedPosition = Vector3.zero;
-            Vector3 combinedDirection = Vector3.zero;
-            int positionsCount = 0;
+            HitDecal.Instantiate(hit.Point - hit.Direction * 0.1f, -hit.Normal).SetParent(hit.Transform, true);
+        }
 
-            for (int f = 0; f < hits.Count; f++)
+        List<BulletHit> spawned = new List<BulletHit>(hits.Count);
+
+        foreach (var hit in hits)
+        {
+            if (hit.Transform.TryGetComponent(out Surface surface) == false)
+                continue;
+
+            float minDistance = Mathf.Infinity;
+
+            foreach (var spawnedHit in spawned)
             {
-                var fHit = hits[f];
+                float distance = Vector3.Distance(spawnedHit.Point, hit.Point);
 
-                if (fHit.IsHitboxHit == false)
-                    continue;
-
-                if (fHit.Transform.root != hit.Transform.root)
-                    continue;
-
-                combinedPosition += fHit.Point;
-                combinedDirection += fHit.Direction;
-                positionsCount++;
+                if (distance < minDistance)
+                    minDistance = distance;
             }
 
-            Vector3 averagePosition = combinedPosition / positionsCount;
-            Vector3 averageDirection = combinedDirection / positionsCount;
-            HitEffect.Instantiate(averagePosition, -averageDirection);
+            if (minDistance > 0.2f)
+            {
+                spawned.Add(hit);
+                Vector3 particleDirection = Vector3.Lerp(hit.Normal, -hit.Direction, 0.5f);
+                var hitEffect = surface.SurfaceType.BulletHitParticle.Instantiate(hit.Point, particleDirection);
+                Destroy(hitEffect.gameObject, 4f);
+            }
         }
+
+        Debug.Log($"Hits: {hits.Count}, Spawned: {spawned.Count}");
     }
 
 }

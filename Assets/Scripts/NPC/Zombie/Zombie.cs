@@ -69,8 +69,6 @@ public class Zombie : MonoBehaviour
 
     [Persistent] private float _health = 100f;
 
-    private float _attackCooldown = 0f;
-
     private TimeSince _timeSinceLastSprint = TimeSince.Never;
     private bool _isSprinting;
 
@@ -471,10 +469,7 @@ public class Zombie : MonoBehaviour
     private void OnAttackActionStart()
     {
         _isAttackPointReached = false;
-
         _animator.CrossFade("attack", 0.1f);
-
-        _attackCooldown = Randomize.Float(0.0f, 1.5f);
     }
 
     private void OnAttackActionUpdate()
