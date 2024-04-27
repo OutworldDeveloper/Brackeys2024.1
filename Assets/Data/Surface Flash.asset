@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0fab5b3fc36103d49b14009542f7c684, type: 3}
-  m_Name: Flesh
+  m_Name: Surface Flash
   m_EditorClassIdentifier: 
   <BulletHitParticle>k__BackingField:
     _asset: {fileID: 8307705410877626090, guid: 31bedded0691e3b4b89375246afdacfb,

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9e4a88556e7fb04fbf892859d078779, type: 3}
+  m_Name: Pistol Hit Visuals
+  m_EditorClassIdentifier: 
+  _defaultEffect:
+    _asset: {fileID: 2584790317174825694, guid: ef63569b438b55140b25c646b2295377,
+      type: 3}
+  _defaultDecal:
+    _asset: {fileID: 4520381223755590580, guid: f87cc4be5dc8fe141854860f1bb2c317,
+      type: 3}
+  _defaultHitboxSound: {fileID: 11400000, guid: b7f46f58a2e2da54381e4323ae51eaeb,
+    type: 2}
+  __alchemySerializationData_HitVisualizer:
+    _effects:
+      isCreated: 1
+      data: "[\n    {\n        \"Key\": 0,\n        \"Value\": {\n            \"_asset\":
+        1\n        }\n    }\n]"
+    _decals:
+      isCreated: 1
+      data: '[]'
+    unityObjectReferences:
+    - {fileID: 11400000, guid: 94a08900cc7aa3241aa9fa7eb1638edf, type: 2}
+    - {fileID: 9175670989974428184, guid: 31bedded0691e3b4b89375246afdacfb, type: 3}

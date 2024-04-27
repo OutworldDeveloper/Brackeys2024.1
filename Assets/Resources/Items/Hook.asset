@@ -1,20 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1125856036899445163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22c96f42afe2ec94abac23df4c76521f, type: 3}
-  m_Name: MaskItemTag
-  m_EditorClassIdentifier: 
-  MaskPrefab:
-    _asset: {fileID: 7073809298559672426, guid: da6574c8eff4804479cd6c331e26dd1c,
-      type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,19 +17,8 @@ MonoBehaviour:
   <Sprite>k__BackingField: {fileID: 21300000, guid: 70fd261721ba89445a469179e0ec0a3b,
     type: 3}
   <StackSize>k__BackingField: 1
-  _tags:
-  - {fileID: -1125856036899445163}
-  - {fileID: 1952963352960128225}
---- !u!114 &1952963352960128225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df762e30b5d00e3498c70773a839c130, type: 3}
-  m_Name: PuzzleElement
-  m_EditorClassIdentifier: 
-  Index: Ddawda
+  _tags: []
+  _itemTags: []
+  references:
+    version: 2
+    RefIds: []

@@ -13,4 +13,15 @@ public static class DictionaryExtensions
         dictionary.Add(key, value);
     }
 
+    public static TValue Resolve<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue fallback)
+    {
+        if (key == null)
+            return fallback;
+
+        if (dictionary.ContainsKey(key) == false)
+            return fallback;
+
+        return dictionary[key];
+    }
+
 }

@@ -186,8 +186,8 @@ public sealed class PlayerCharacter : Pawn
 
                 weapon.Shoot(_equipment.WeaponSlot.GetStack(), _head.transform);
                
-                _targetRecoilY += Randomize.Float(weapon.RecoilVerticalMin, weapon.RecoilVerticalMax);
-                _targetRecoilX += Randomize.Float(weapon.RecoilHorizontalMin, weapon.RecoilHorizontalMax) * Randomize.Sign();
+                _targetRecoilY += Randomize.Float(weapon.VerticalRecoil);
+                _targetRecoilX += Randomize.Float(weapon.HorizontalRecoil) * Randomize.Sign();
 
                 _equipment.WeaponSlot.Stack.SetAttribute(WeaponItem.LOADED_AMMO, 
                     _equipment.WeaponSlot.Stack.GetAttribute(WeaponItem.LOADED_AMMO) - 1);

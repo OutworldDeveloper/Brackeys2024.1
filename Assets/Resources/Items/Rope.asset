@@ -18,3 +18,7 @@ MonoBehaviour:
     type: 3}
   <StackSize>k__BackingField: 1
   _tags: []
+  _itemTags: []
+  references:
+    version: 2
+    RefIds: []

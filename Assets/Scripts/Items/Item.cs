@@ -1,18 +1,16 @@
+using Alchemy.Inspector;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu]
 public class Item : ScriptableObject
 {
 
-    [field: Header("Item")]
-    [field: SerializeField] public string DisplayName { get; private set; }
-    [field: SerializeField] public string Description { get; private set; }
-    [field: SerializeField] public Sprite Sprite { get; private set; }
-    [field: SerializeField] public int StackSize { get; private set; } = 1;
+    [field: SerializeField, FoldoutGroup(nameof(Item))] public string DisplayName { get; private set; }
+    [field: SerializeField, FoldoutGroup(nameof(Item))] public string Description { get; private set; }
+    [field: SerializeField, FoldoutGroup(nameof(Item))] public Sprite Sprite { get; private set; }
+    [field: SerializeField, FoldoutGroup(nameof(Item))] public int StackSize { get; private set; } = 1;
 
     [SerializeField, HideInInspector] private List<ItemTag> _tags = new List<ItemTag>();
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(Item), true)]
+//[CustomEditor(typeof(Item), true)]
 public sealed class ItemEditor : Editor
 {
 

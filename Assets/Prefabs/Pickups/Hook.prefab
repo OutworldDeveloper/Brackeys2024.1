@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28f5f8013c7b9a4f8e736ca1fc28bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _item: {fileID: 11400000, guid: 33be8dc0e0c960849b30cc06b6597bb6, type: 2}
+  _item: {fileID: 11400000, guid: 33e26445ad6e985448e605130c630c1f, type: 2}
   _amount: 1
 --- !u!114 &2558872519696496932
 MonoBehaviour:
@@ -176,7 +176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 666a2a3582e3e4a4fb8268c9b9d3edeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hasSceneGuid: 0
   _sceneGuid: 
 --- !u!1001 &3556186016130736593
 PrefabInstance:
