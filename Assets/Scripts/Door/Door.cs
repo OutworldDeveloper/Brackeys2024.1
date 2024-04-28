@@ -39,7 +39,8 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     private TimeSince _timeSinceLastKnocked = new TimeSince(float.NegativeInfinity);
 
     public bool IsOpen => _isOpen;
-    public bool IsLocked => _isLockedByKey == true || _blockedTimes > 0;
+    public bool IsLocked => _isLockedByKey == true;
+    public bool IsBlocked => _blockedTimes > 0;
 
     public void OnFirstLoad()
     {
@@ -111,6 +112,13 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         {
             PlayLockedSound();
             Notification.Show($"Locked!");
+            return false;
+        }
+
+        if (IsBlocked == true)
+        {
+            PlayLockedSound();
+            Notification.Show($"Blocked!");
             return false;
         }
 
