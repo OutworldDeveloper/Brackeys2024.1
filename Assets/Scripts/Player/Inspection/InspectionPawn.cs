@@ -59,12 +59,12 @@ public sealed class InspectionPawn : Pawn
 
         _timeSinceLastPossess = TimeSince.Now();
 
-        Vector3 inspectPosition = transform.position + transform.forward * _target.Distance;
+        Vector3 inspectPosition = VirtualCamera.transform.position + VirtualCamera.transform.forward * _target.Distance;
         Quaternion inspectRotation =
-            Quaternion.AngleAxis(_target.FaceDirection.x, transform.right) *
-            Quaternion.AngleAxis(_target.FaceDirection.y, transform.up) *
-            Quaternion.AngleAxis(_target.FaceDirection.z, transform.forward) *
-            Quaternion.LookRotation(transform.forward, transform.up);
+            Quaternion.AngleAxis(_target.FaceDirection.x, VirtualCamera.transform.right) *
+            Quaternion.AngleAxis(_target.FaceDirection.y, VirtualCamera.transform.up) *
+            Quaternion.AngleAxis(_target.FaceDirection.z, VirtualCamera.transform.forward) *
+            Quaternion.LookRotation(VirtualCamera.transform.forward, VirtualCamera.transform.up);
 
         if (_noAnimation == true)
         {
@@ -109,7 +109,7 @@ public sealed class InspectionPawn : Pawn
 
         foreach (var action in _targetActions)
         {
-            float angleToAction = Vector3.Angle(-action.transform.forward, transform.forward);
+            float angleToAction = Vector3.Angle(-action.transform.forward, VirtualCamera.transform.forward);
 
             if (angleToAction < action.MaxAngle && angleToAction < bestAngle)
             {
@@ -144,9 +144,9 @@ public sealed class InspectionPawn : Pawn
         rotY *= _rotationSpeed;
 
         _target.transform.rotation =
-            Quaternion.AngleAxis(rotX, transform.up) *
-            Quaternion.AngleAxis(rotY, transform.right) *
-            Quaternion.AngleAxis(-1 * rotZ, transform.forward) *
+            Quaternion.AngleAxis(rotX, VirtualCamera.transform.up) *
+            Quaternion.AngleAxis(rotY, VirtualCamera.transform.right) *
+            Quaternion.AngleAxis(-1 * rotZ, VirtualCamera.transform.forward) *
             _target.transform.rotation;
 
         if (Input.GetKeyDown(KeyCode.F) == true)
