@@ -210,19 +210,20 @@ public sealed class PlayerCharacter : Pawn
     // Camera shake
     public float _shakeStrenght;
 
+    private Vector3 GetCurrentShake()
+    {
+        return new Vector3()
+        {
+            x = (GetRemappedPerlinNoise1D(10f, 1000f) * 2f - 1f) * _shakeStrenght,
+            y = (GetRemappedPerlinNoise1D(10f, 2000f) * 2f - 1f) * _shakeStrenght,
+            z = (GetRemappedPerlinNoise1D(10f, 3000f) * 2f - 1f) * _shakeStrenght
+        };
+    }
+
     private void Update()
     {
-        _head.localPosition += new Vector3(
-            Mathf.Sin(_t * _weaponSwayFrequency) * _weaponSwayAmplitudeX * 0f,
-            Mathf.Cos(_t * 2 * _weaponSwayFrequency + Mathf.PI) * _weaponSwayAmplitudeY * 0f);
-
-        _head.rotation = Quaternion.Euler(
-            _head.eulerAngles.x + (GetRemappedPerlinNoise1D(10f, 1000f) * 2f - 1f) * _shakeStrenght,
-            _head.eulerAngles.y + (GetRemappedPerlinNoise1D(10f, 2000f) * 2f - 1f) * _shakeStrenght,
-            _head.eulerAngles.z + (GetRemappedPerlinNoise1D(10f, 3000f) * 2f - 1f) * _shakeStrenght);
-
         // Camera shake
-        _shakeStrenght = Mathf.Lerp(_shakeStrenght, 0f, Time.deltaTime * 15f);
+        _shakeStrenght = Mathf.Lerp(_shakeStrenght, 0f, Time.deltaTime * 10f);
 
         // Weapon animation
         _delayedVelocity = Vector3.Lerp(_delayedVelocity, _velocityXZ, Time.deltaTime * 10f); // 5f
@@ -331,9 +332,10 @@ public sealed class PlayerCharacter : Pawn
         float targetFov = _isAiming ? _aimingFieldOfView : _fieldOfView;
         VirtualCamera.FieldOfView = Mathf.Lerp(VirtualCamera.FieldOfView, targetFov, Time.deltaTime * 5f);
 
-        // Update camera
+        // Get posture head height
         if (_timeSinceLastPostureChange < _crouchAnimationDuration)
         {
+            var previousHeight = _isCrouching ? _defaultCameraHeight : _crouchedCameraHeight;
             var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
             var t = _timeSinceLastPostureChange / _crouchAnimationDuration;
             var animationCurve = _isCrouching ? _crouchAnimation : _uncrouchAnimation;
@@ -341,7 +343,7 @@ public sealed class PlayerCharacter : Pawn
             _head.localPosition = new Vector3()
             {
                 x = _head.localPosition.x,
-                y = Mathf.Lerp(_head.localPosition.y, targetHeight, t),
+                y = Mathf.Lerp(previousHeight, targetHeight, t),
                 z = _head.localPosition.z
             };
         }
@@ -662,7 +664,7 @@ public sealed class PlayerCharacter : Pawn
         var finalAngle = Mathf.Clamp(_cameraTargetRotX - _currentRecoilY, -70f, 70f);
 
         transform.eulerAngles = new Vector3(0f, _cameraTargetRotY + _currentRecoilX, 0f);
-        _head.localEulerAngles = new Vector3(finalAngle, 0f, 0f);
+        _head.localEulerAngles = new Vector3(finalAngle, 0f, 0f) + GetCurrentShake();
     }
 
     private void UpdateMovement(PlayerInput input)
@@ -807,6 +809,9 @@ public sealed class PlayerCharacter : Pawn
     public bool CanCrouch()
     {
         if (_allowCrouching == false)
+            return false;
+
+        if (_controller.isGrounded == false)
             return false;
 
         foreach (var modifier in _modifiers)
