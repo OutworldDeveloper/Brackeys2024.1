@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Alchemy.Inspector;
 
 public sealed class Door : MonoBehaviour, IFirstLoadCallback
 {
@@ -15,7 +16,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
     [SerializeField] private Collider _collision;
     [SerializeField] private Transform _rotator;
-    [SerializeField] private DoorAnimatorAnimator[] _doorAnimators;
+    [SerializeField, InlineEditor] private DoorAnimatorAnimator[] _doorAnimators;
     [SerializeField] private float _animationDuration;
     [SerializeField] private AnimationCurve _openAnimationCurve;
     [SerializeField] private float _openAngle;

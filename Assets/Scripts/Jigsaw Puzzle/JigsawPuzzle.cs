@@ -246,16 +246,6 @@ public sealed class JigsawPuzzle : Pawn
         return cube.AddComponent<JigsawTile>().Init(index, new Vector2Int(x, y));
     }
 
-    public override Vector3 GetCameraPosition()
-    {
-        return transform.position - transform.forward * 0.55f;
-    }
-
-    public override Quaternion GetCameraRotation()
-    {
-        return transform.rotation;
-    }
-
 }
 
 [Serializable]

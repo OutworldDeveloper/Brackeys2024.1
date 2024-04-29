@@ -62,8 +62,6 @@ public sealed class PlayerCharacter : Pawn
 
     private bool _isAiming;
 
-    private float _currentFOV = 70f;
-
     private float _currentRecoilY;
     private float _targetRecoilY;
     private float _currentRecoilX;
@@ -75,7 +73,9 @@ public sealed class PlayerCharacter : Pawn
 
     private EnumState<WeaponState> _weaponState = new EnumState<WeaponState>();
 
-    private bool _isReloadPointReached; // TODO: CurrentReload (We need to recalculate anyway if something changes)
+    private bool _isReloadPointReached;
+
+    private Vector3 _headPosition;
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
@@ -86,7 +86,6 @@ public sealed class PlayerCharacter : Pawn
     public Vector3 HorizontalVelocity => _velocityXZ;
     public bool IsGrounded => _controller.isGrounded;
     public bool IsCrouching => _isCrouching;
-
     public Transform Head => _head;
 
     public void Inspect(Inspectable target, bool noAnimation = false)
@@ -135,6 +134,7 @@ public sealed class PlayerCharacter : Pawn
     private void Start()
     {
         _defaultCameraHeight = _head.localPosition.y;
+        _headPosition = _head.localPosition;
 
         Health = _maxHealth;
 
@@ -212,6 +212,15 @@ public sealed class PlayerCharacter : Pawn
 
     private void Update()
     {
+        _head.localPosition += new Vector3(
+            Mathf.Sin(_t * _weaponSwayFrequency) * _weaponSwayAmplitudeX * 0f,
+            Mathf.Cos(_t * 2 * _weaponSwayFrequency + Mathf.PI) * _weaponSwayAmplitudeY * 0f);
+
+        _head.rotation = Quaternion.Euler(
+            _head.eulerAngles.x + (GetRemappedPerlinNoise1D(10f, 1000f) * 2f - 1f) * _shakeStrenght,
+            _head.eulerAngles.y + (GetRemappedPerlinNoise1D(10f, 2000f) * 2f - 1f) * _shakeStrenght,
+            _head.eulerAngles.z + (GetRemappedPerlinNoise1D(10f, 3000f) * 2f - 1f) * _shakeStrenght);
+
         // Camera shake
         _shakeStrenght = Mathf.Lerp(_shakeStrenght, 0f, Time.deltaTime * 15f);
 
@@ -319,7 +328,8 @@ public sealed class PlayerCharacter : Pawn
         UpdateAiming();
 
         // Field of view
-        _currentFOV = Mathf.Lerp(_currentFOV, _isAiming ? _aimingFieldOfView : _fieldOfView, Time.deltaTime * 5f);
+        float targetFov = _isAiming ? _aimingFieldOfView : _fieldOfView;
+        VirtualCamera.FieldOfView = Mathf.Lerp(VirtualCamera.FieldOfView, targetFov, Time.deltaTime * 5f);
 
         // Update camera
         if (_timeSinceLastPostureChange < _crouchAnimationDuration)
@@ -852,21 +862,6 @@ public sealed class PlayerCharacter : Pawn
     {
         return IsDead == false && _isAiming == false && _controller.isGrounded == true;
     }
-
-    public override Vector3 GetCameraPosition() => 
-        new Vector3(
-            _head.transform.position.x + Mathf.Sin(_t * _weaponSwayFrequency) * _weaponSwayAmplitudeX * 0f,
-            _currentCameraHeight + Mathf.Cos(_t * 2 * _weaponSwayFrequency + Mathf.PI) * _weaponSwayAmplitudeY * 0f,
-            _head.transform.position.z);
-
-    public override Quaternion GetCameraRotation() => 
-        Quaternion.Euler(
-            _head.eulerAngles.x + (GetRemappedPerlinNoise1D(10f, 1000f) * 2f - 1f) * _shakeStrenght,
-            _head.eulerAngles.y + (GetRemappedPerlinNoise1D(10f, 2000f) * 2f - 1f) * _shakeStrenght,
-            _head.eulerAngles.z + (GetRemappedPerlinNoise1D(10f, 3000f) * 2f - 1f) * _shakeStrenght);
-
-    public override bool OverrideCameraFOV => true;
-    public override float GetCameraFOV() => _currentFOV;
 
     private float GetRemappedPerlinNoise1D(float timeMultiplier, float offset)
     {

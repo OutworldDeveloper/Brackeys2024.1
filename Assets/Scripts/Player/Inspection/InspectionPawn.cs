@@ -33,7 +33,6 @@ public sealed class InspectionPawn : Pawn
     private bool _noAnimation;
 
     public override bool ShowCursor => true;
-    public override bool OverrideCameraPositionAndRotation => true;
     public InspectAction SelectedAction => _selectedAction;
 
     private void Start()
@@ -157,16 +156,6 @@ public sealed class InspectionPawn : Pawn
                 SelectedAction.Perform(null);
             }
         }
-    }
-
-    public override Vector3 GetCameraPosition()
-    {
-        return transform.position;
-    }
-
-    public override Quaternion GetCameraRotation()
-    {
-        return transform.rotation;
     }
 
     public override bool GetBlurStatus(out float targetDistance)

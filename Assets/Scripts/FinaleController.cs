@@ -9,7 +9,6 @@ public sealed class FinaleController : Pawn
 {
 
     [SerializeField] private PlayerTrigger _finalTrigger;
-    [SerializeField] private Transform _cameraTransform;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Door _finalDoor;
     [SerializeField] private GameObject _finalLight;
@@ -61,13 +60,6 @@ public sealed class FinaleController : Pawn
             Delayed.Do(() => SceneManager.LoadScene(0), 4f);
         }, 0.75f);
     }
-
-    public override Vector3 GetCameraPosition()
-    {
-        return _cameraTransform.position;
-    }
-
-    public override Quaternion GetCameraRotation() => _cameraTransform.rotation;
 
 }
 

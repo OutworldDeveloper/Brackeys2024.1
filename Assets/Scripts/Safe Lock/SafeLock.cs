@@ -5,7 +5,6 @@ public sealed class SafeLock : Pawn
 {
 
     [SerializeField] private Door _targetDoor;
-    [SerializeField] private Transform _head;
     [SerializeField] private Code _code;
     [SerializeField] private LockButton[] _buttons;
     [SerializeField] private AudioSource _audioSource;
@@ -17,9 +16,6 @@ public sealed class SafeLock : Pawn
     private string _currentEnteredCode;
 
     public bool IsOpen { get; private set; }
-
-    public override Vector3 GetCameraPosition() => _head.position;
-    public override Quaternion GetCameraRotation() => _head.rotation;
 
     private void Start()
     {

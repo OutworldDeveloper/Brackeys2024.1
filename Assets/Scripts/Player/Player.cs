@@ -46,7 +46,7 @@ public sealed class Player : MonoBehaviour
 
     private void Update()
     {
-        UpdateState(); // Хы
+        UpdateState(); // TODO: Find a way to not update every frame
 
         if (Input.GetKeyDown(KeyCode.Escape) == true)
             HandleEscapeButton();
@@ -82,17 +82,7 @@ public sealed class Player : MonoBehaviour
         if (_smoothPawnCameraChange == true && _timeSincePawnChanged < 0.2f)
             return;
 
-        if (_currentPawn.OverrideCameraPositionAndRotation == true)
-        {
-            _mainCamera.transform.SetPositionAndRotation(
-                _currentPawn.GetCameraPosition(),
-                _currentPawn.GetCameraRotation());
-        }
-
-        if (_currentPawn.OverrideCameraFOV == true)
-        {
-            _mainCamera.fieldOfView = _currentPawn.GetCameraFOV();
-        }
+        ApplyCameraState(_currentPawn.GetCameraState());
 
         _blurVolume.enabled = _currentPawn.GetBlurStatus(out float targetBlurDistance);
 
@@ -126,14 +116,10 @@ public sealed class Player : MonoBehaviour
         if (_currentPawn == pawn)
             return;
 
-        // Not sure but this could fix jittering
-        if (_currentPawn != null && pawn.OverrideCameraPositionAndRotation == false)
-        {
-            _mainCamera.transform.SetPositionAndRotation(
-                _currentPawn.GetCameraPosition(),
-                _currentPawn.GetCameraRotation());
-        }
-        // end
+        //if (_currentPawn != null)
+        //{
+        //    ApplyCameraState(_currentPawn.GetCameraState());
+        //}
 
         _currentPawn?.OnUnpossessed();
         _currentPawn = pawn;
@@ -144,7 +130,6 @@ public sealed class Player : MonoBehaviour
             //Notification.Show("Press Tab to exit", 2f);
         }
 
-        UpdateState();
         _timeSincePawnChanged = new TimeSince(Time.time);
 
         if (_smoothPawnCameraChange == true)
@@ -194,6 +179,12 @@ public sealed class Player : MonoBehaviour
         bool pauseGame = _panels.HasActivePanel == true;
 
         Time.timeScale = pauseGame ? 0f : 1f;
+    }
+
+    private void ApplyCameraState(CameraState state)
+    {
+        _mainCamera.transform.SetPositionAndRotation(state.Position, state.Rotation);
+        _mainCamera.fieldOfView = state.FieldOfView;
     }
 
     public UI_InventoryScreen OpenInventory()

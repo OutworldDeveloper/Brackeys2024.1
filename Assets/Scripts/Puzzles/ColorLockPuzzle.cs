@@ -10,7 +10,6 @@ public class ColorLockPuzzle : Pawn
     [SerializeField] private ColorLockRotator[] _rotators;
     [SerializeField] private Material _defaultMaterial;
     [SerializeField] private Material _selectedMaterial;
-    [SerializeField] private Transform _camera;
     [SerializeField] private MoviePawn _successPawn;
 
     private int _selectedRotator;
@@ -19,16 +18,6 @@ public class ColorLockPuzzle : Pawn
     private void Start()
     {
         _door.Block();
-    }
-
-    public override Vector3 GetCameraPosition()
-    {
-        return _camera.position;
-    }
-
-    public override Quaternion GetCameraRotation()
-    {
-        return _camera.rotation;
     }
 
     public override void OnPossessed(Player player)
