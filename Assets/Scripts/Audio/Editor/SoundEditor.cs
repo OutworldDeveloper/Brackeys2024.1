@@ -14,22 +14,19 @@ public sealed class SoundEditor : Editor
 
         if (GUILayout.Button("Play Preview") == true)
         {
-            if (_previewSource == null)
-            {
-                _previewSource = new GameObject().AddComponent<AudioSource>();
-                _previewSource.gameObject.hideFlags = HideFlags.HideAndDontSave;
-                _previewSource.transform.position = SceneView.lastActiveSceneView.camera.transform.position;
-            }
-
+            _previewSource.transform.position = FindObjectOfType<AudioListener>().transform.position;
             (target as Sound).Play(_previewSource);
         }
     }
 
+    private void OnEnable()
+    {
+        _previewSource = new GameObject().AddComponent<AudioSource>();
+        _previewSource.gameObject.hideFlags = HideFlags.DontSave;
+    }
+
     private void OnDisable()
     {
-        if (_previewSource == null)
-            return;
-
         DestroyImmediate(_previewSource.gameObject);
     }
 
