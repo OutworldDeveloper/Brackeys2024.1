@@ -46,12 +46,15 @@ public sealed class SaveableComponents : MonoBehaviour
         serialziedObject.ApplyModifiedProperties();
     }
 
-#endif
-
     public void RemoveAt(int index)
     {
-        _saveableComponents.RemoveAt(index);
+        var serialziedObject = new UnityEditor.SerializedObject(this);
+        var componentsProperty = serialziedObject.FindProperty(nameof(_saveableComponents));
+        componentsProperty.DeleteArrayElementAtIndex(index);
+        serialziedObject.ApplyModifiedProperties();
     }
+
+#endif
 
     public SaveableComponentInfo[] GetAll()
     {
