@@ -3,28 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoorHandle : MonoBehaviour
+public sealed class DoorHandle : DoorAnimation
 {
 
-    [SerializeField] private Door _door;
     [SerializeField] private float _openAngle = -45f;
     [SerializeField] private float _animationDuration = 0.1f;
     [SerializeField] private Ease _ease = Ease.Linear;
 
     private Sequence _tween;
 
-    private void OnEnable()
+    public override void OnEvent(DoorEvent e)
     {
-        _door.OpeningAttempt += OnOpeningAttepmt;
-    }
+        if (e != DoorEvent.BeginOpening && e != DoorEvent.BeginOpening)
+            return;
 
-    private void OnDisable()
-    {
-        _door.OpeningAttempt -= OnOpeningAttepmt;
-    }
-
-    private void OnOpeningAttepmt(PlayerCharacter player, bool success)
-    {
         _tween?.Kill();
 
         _tween = DOTween.Sequence().

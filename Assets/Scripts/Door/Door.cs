@@ -1,9 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Alchemy.Inspector;
+using DG.Tweening;
 
+[HideScriptField]
 public sealed class Door : MonoBehaviour, IFirstLoadCallback
 {
 
@@ -12,23 +12,29 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     public event Action Opened;
     public event Action Closed;
     public event Action Closing;
-    public event Action<PlayerCharacter, bool> OpeningAttempt;
+    public event Action<bool> OpeningAttempt;
 
-    [SerializeField] private Collider _collision;
-    [SerializeField] private Transform _rotator;
-    [SerializeField, InlineEditor] private DoorAnimatorAnimator[] _doorAnimators;
-    [SerializeField] private float _animationDuration;
-    [SerializeField] private AnimationCurve _openAnimationCurve;
-    [SerializeField] private float _openAngle;
-    [SerializeField] private KeyItem _keyItem;
-    [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private Sound _openSound;
-    [SerializeField] private Sound _closeSound;
-    [SerializeField] private Sound _knockSound;
-    [SerializeField] private Sound _lockedSound;
-    [SerializeField] private float _openDelay;
+    [SerializeField, TabGroup("Animation")] private float _animationDuration = 1f;
+    [SerializeField, TabGroup("Animation")] private float _openDelay;
+    [SerializeField, TabGroup("Animation")] private AnimationCurve _openCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+    [SerializeField, TabGroup("Animation")] private float _closeDelay;
+    [SerializeField, TabGroup("Animation")] private AnimationCurve _closeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+    [SerializeField, TabGroup("Animation")] private DoorPart[] _parts;
+    [SerializeField, TabGroup("Animation")] private DoorAnimation[] _animations;
 
-    [SerializeField] private BoxCheck _blockersCheck;
+    [SerializeField, TabGroup("Audio")] private AudioSource _audioSource;
+    [SerializeField, TabGroup("Audio")] private Sound _openingSound;
+    [SerializeField, TabGroup("Audio")] private Sound _openSound;
+    [SerializeField, TabGroup("Audio")] private Sound _closeSound;
+    [SerializeField, TabGroup("Audio")] private Sound _knockSound;
+    [SerializeField, TabGroup("Audio")] private Sound _lockedSound;
+
+    [Range(0f, 1f)]
+    [SerializeField, TabGroup("Collision")] private float _collisionSynchTime;
+    [SerializeField, TabGroup("Collision")] private Collider _collision;
+    [SerializeField, TabGroup("Collision")] private BoxCheck _blockersCheck;
+
+    [SerializeField, TabGroup("Extra")] private KeyItem _keyItem;
 
     [Persistent] private bool _isOpen;
     private bool _isAnimating;
@@ -42,6 +48,9 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     public bool IsOpen => _isOpen;
     public bool IsLocked => _isLockedByKey == true;
     public bool IsBlocked => _blockedTimes > 0;
+    public bool IsAnimating => _isAnimating;
+    public bool IsOpening => _isAnimating == true && _isOpen == false;
+    public bool IsClosing => _isAnimating == true && _isOpen == true;
 
     public void OnFirstLoad()
     {
@@ -50,7 +59,37 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
     private void Start()
     {
-        SetRotation(_isOpen ? _openAngle : 0f);
+        SetT(_isOpen ? 1f : 0f);
+        SynchCollision();
+    }
+
+    private void Update()
+    {
+        if (_isAnimating == false)
+            return;
+
+        float delay = IsOpening ? _openDelay : _closeDelay;
+
+        if (_timeSinceAnimationStarted < delay)
+            return;
+
+        if (_timeSinceAnimationStarted > delay + _animationDuration)
+        {
+            _isAnimating = false;
+            _isOpen = !_isOpen;
+            OnAnimationFinished();
+        }
+        else
+        {
+            float t = (_timeSinceAnimationStarted - delay) / _animationDuration;
+            OnAnimating(t);
+
+            if (_isCollisionSynched == false && t > _collisionSynchTime)
+            {
+                _isCollisionSynched = true;
+                SynchCollision();
+            }
+        }
     }
 
     public void Open()
@@ -65,14 +104,13 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         _isAnimating = true;
         _isCollisionSynched = false;
 
-        _openSound.Play(_audioSource);
-
-        foreach (var animator in _doorAnimators)
-        {
-            animator.AnimateTo(true, _animationDuration);
-        }
+        OnAnimationStarted();
 
         Opening?.Invoke();
+
+        AnimationEvent(DoorEvent.BeginOpening);
+
+        _openingSound.Play(_audioSource);
     }
 
     public void Close()
@@ -87,10 +125,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         _isAnimating = true;
         _isCollisionSynched = false;
 
-        foreach (var animator in _doorAnimators)
-        {
-            animator.AnimateTo(false, _animationDuration);
-        }
+        OnAnimationStarted();
 
         Closing?.Invoke();
     }
@@ -106,27 +141,33 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
     public bool TryOpen()
     {
+        if (_isAnimating == true)
+            return false;
+
         if (_isOpen == true)
             return false;
 
         if (IsLocked == true)
         {
-            PlayLockedSound();
+            _lockedSound.Play(_audioSource);
             Notification.Show($"Locked!");
+            AnimationEvent(DoorEvent.FailedOpenAttempt);
             return false;
         }
 
         if (IsBlocked == true)
         {
-            PlayLockedSound();
-            Notification.Show($"Blocked!");
+            _lockedSound.Play(_audioSource);
+            Notification.Show($"Locked!");
+            AnimationEvent(DoorEvent.FailedOpenAttempt);
             return false;
         }
 
         if (_blockersCheck != null && _blockersCheck.Check<Movable>() == true)
         {
-            PlayLockedSound();
+            _lockedSound.Play(_audioSource);
             Notification.Show($"Blocked!");
+            AnimationEvent(DoorEvent.FailedOpenAttempt);
             return false;
         }
 
@@ -145,12 +186,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         _knockSound.Play(_audioSource);
     }
 
-    public void PlayLockedSound()
-    {
-        _lockedSound.Play(_audioSource);
-    }
-
-    public void Block()
+    public void Block() // IBlocker that will provide blocked sound and reason
     {
         _blockedTimes++;
     }
@@ -160,59 +196,86 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         _blockedTimes--;
     }
 
-    private void Update()
+    private void OnAnimating(float t)
     {
-        if (_isAnimating == false)
-            return;
+        AnimationCurve curve = IsOpening ? _openCurve : _closeCurve;
+        t = curve.Evaluate(t);
 
-        if (_isCollisionSynched == false && _timeSinceAnimationStarted > _animationDuration * 0.3f)
+        if (IsClosing == true)
+            t = 1 - t;
+
+        SetT(t);
+    }
+
+    private void OnAnimationStarted()
+    {
+        if (IsClosing == true)
         {
-            if (_collision != null)
-                _collision.enabled = _isOpen;
-
-            _isCollisionSynched = true;
-        }
-
-        float startAngle = _isOpen ? _openAngle : 0f;
-        float targetAngle = _isOpen ? 0f : _openAngle;
-
-        if (_timeSinceAnimationStarted < _animationDuration)
-        {
-            float t = _timeSinceAnimationStarted / _animationDuration;
-            float curvedT = _openAnimationCurve.Evaluate(t);
-            float angle = Mathf.Lerp(startAngle, targetAngle, curvedT);
-            SetRotation(angle);
+            Closing?.Invoke();
         }
         else
         {
-            SetRotation(targetAngle);
-            _isOpen = !_isOpen;
-            _isAnimating = false;
-
-            if (_isOpen == false)
-            {
-                _closeSound.Play(_audioSource);
-            }
-
-            if (_isOpen == true)
-                Opened?.Invoke();
-            else
-                Closed?.Invoke();
+            Opening?.Invoke();
+            _openSound.Play(_audioSource);
         }
     }
 
-    private void SetRotation(float angle)
+    private void OnAnimationFinished()
     {
-        if (_rotator == null)
+        if (_isOpen == true)
+        {
+            Opened?.Invoke();
+        }
+        else
+        {
+            Closed?.Invoke();
+            _closeSound.Play(_audioSource);
+        }
+    }
+
+    private void SetT(float t)
+    {
+        foreach (var part in _parts)
+        {
+            part.Set(t);
+        }
+    }
+
+    private void AnimationEvent(DoorEvent e)
+    {
+        foreach (var animation in _animations)
+        {
+            animation.OnEvent(e);
+        }
+    }
+
+    private void SynchCollision()
+    {
+        if (_collision == null)
             return;
 
-        _rotator.localRotation = Quaternion.Euler(0f, angle, 0f);
+        _collision.enabled = IsAnimating ? IsClosing : _isOpen;
     }
 
 }
 
-public abstract class DoorAnimatorAnimator : MonoBehaviour
+public abstract class DoorPart : MonoBehaviour
 {
-    public abstract void AnimateTo(bool open, float duration);
+    public abstract void Set(float t);
 
+}
+
+public abstract class DoorAnimation : MonoBehaviour
+{
+    public abstract void OnEvent(DoorEvent e);
+
+}
+
+public enum DoorEvent
+{
+    FailedOpenAttempt,
+    BeginOpening,
+    Opened,
+    BeginClosing,
+    Closed,
 }

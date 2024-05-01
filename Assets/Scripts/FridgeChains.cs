@@ -18,12 +18,12 @@ public sealed class FridgeChains : MonoBehaviour
 
     private void OnEnable()
     {
-        _door.OpeningAttempt += OnOpeningAttempt;
+        //_door.OpeningAttempt += OnOpeningAttempt;
     }
 
     private void OnDisable()
     {
-        _door.OpeningAttempt -= OnOpeningAttempt;
+        //_door.OpeningAttempt -= OnOpeningAttempt;
     }
 
     private void Start()
