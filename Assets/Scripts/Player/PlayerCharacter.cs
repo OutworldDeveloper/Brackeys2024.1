@@ -560,18 +560,6 @@ public sealed class PlayerCharacter : Pawn
                 _isAiming = false;
                 _timeSinceStopAiming = TimeSince.Now();
                 _armsAnimator.SetBool("is_aiming", false);
-
-                // Stop remaining recoil
-                if (false)
-                {
-                    _cameraTargetRotY += _currentRecoilX;
-                    _targetRecoilX = 0f;
-                    _currentRecoilX = 0f;
-
-                    _cameraTargetRotX -= _currentRecoilY;
-                    _targetRecoilY = 0f;
-                    _currentRecoilY = 0f;
-                }
             }
         }
     }

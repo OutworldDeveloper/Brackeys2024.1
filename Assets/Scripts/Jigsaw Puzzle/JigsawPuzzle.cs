@@ -7,8 +7,6 @@ using UnityEngine;
 public sealed class JigsawPuzzle : Pawn
 {
 
-    [field: SerializeField] public GameEvent Completed { get; private set; }
-
     [SerializeField] private Material _material;
     [SerializeField] private Texture2D _texture;
     [SerializeField] private int _size;
@@ -244,39 +242,6 @@ public sealed class JigsawPuzzle : Pawn
         meshRenderer.sharedMaterial.SetTexture("_PuzzleTexture", _texture);
 
         return cube.AddComponent<JigsawTile>().Init(index, new Vector2Int(x, y));
-    }
-
-}
-
-[Serializable]
-public struct GameEvent<T>
-{
-
-    public event Action<T> Action;
-
-    [SerializeField] private UnityEventDef _event;
-
-    public void Invoke(T argument)
-    {
-        _event.Invoke(argument);
-    }
-
-    [Serializable] 
-    private class UnityEventDef : UnityEngine.Events.UnityEvent<T> { }
-
-}
-
-[Serializable]
-public struct GameEvent
-{
-
-    public event Action Action;
-
-    [SerializeField] private UnityEngine.Events.UnityEvent _event;
-
-    public void Invoke()
-    {
-        _event.Invoke();
     }
 
 }

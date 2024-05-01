@@ -10,7 +10,7 @@ using UnityEngine.Rendering.Universal;
 public class VirtualCameraEditor : Editor
 {
 
-    private const string _previewTitle = "Virtual Camera preview";
+    private const string _previewTitle = "VirtualCamera preview";
 
     private Camera _previewCamera;
     private RenderTexture _previewRT;
@@ -26,8 +26,6 @@ public class VirtualCameraEditor : Editor
         _previewRT = new RenderTexture(400, 225, 16);
         _previewRT.Create();
 
-        EditorApplication.update += OnEditorUpdate;
-
         _previewOverlay = new DrawRenderTextureOverlay(_previewRT);
         _previewOverlay.displayName = _previewTitle;
         _previewOverlay.displayed = true;
@@ -36,28 +34,28 @@ public class VirtualCameraEditor : Editor
 
     private void OnDisable()
     {
-        DestroyImmediate(_previewCamera.gameObject);
-        _previewRT.Release();
+        if (_previewCamera.gameObject != null)
+            DestroyImmediate(_previewCamera.gameObject);
 
-        EditorApplication.update -= OnEditorUpdate;
+        if (_previewRT != null)
+        {
+            _previewRT.Release();
+            DestroyImmediate(_previewRT);
+        }
 
         SceneView.RemoveOverlayFromActiveView(_previewOverlay);
     }
 
-    private void OnEditorUpdate()
+    private void OnSceneGUI()
     {
+        if (Event.current.type != EventType.Repaint)
+            return;
+
         RedrawPreviewCamera();
     }
 
-    public override bool HasPreviewGUI()
-    {
-        return true;
-    }
-
-    public override GUIContent GetPreviewTitle()
-    {
-        return new GUIContent(_previewTitle);
-    }
+    public override bool HasPreviewGUI() => false;
+    public override GUIContent GetPreviewTitle() => new GUIContent(_previewTitle);
 
     public override void OnPreviewGUI(Rect r, GUIStyle background)
     {

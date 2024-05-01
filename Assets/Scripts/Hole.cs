@@ -23,9 +23,9 @@ public sealed class Hole : MonoBehaviour
     {
         throw new NotImplementedException();
 
-        if (IsItemExtracted == true)
-            return false;
-
+        //if (IsItemExtracted == true)
+        //    return false;
+        //
         //bool hasRope = player.Inventory.TryGetItemWithTag(_ropeItemTag, out Item ropeItem);
         //bool hasHook = player.Inventory.TryGetItemWithTag(_hookItemTag, out Item hookItem);
 

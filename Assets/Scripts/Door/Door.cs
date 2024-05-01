@@ -13,7 +13,6 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     public event Action Opened;
     public event Action Closed;
     public event Action Closing;
-    public event Action<bool> OpeningAttempt;
 
     [SerializeField, TabGroup("Animation")] private float _animationDuration = 1f;
     [SerializeField, TabGroup("Animation")] private float _openDelay;
@@ -45,7 +44,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     private int _blockedTimes;
     [Persistent] private bool _isLockedByKey; 
     private TimeSince _timeSinceLastKnocked = new TimeSince(float.NegativeInfinity);
-    private readonly List<IDoorBlocker> _blockers = new List<IDoorBlocker>();
+    private readonly List<DoorBlocker> _blockers = new List<DoorBlocker>();
 
     public bool IsOpen => _isOpen;
     public bool IsLocked => _isLockedByKey == true;
@@ -182,6 +181,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
             blockedSound.Play(_audioSource);
             Notification.Show(blocker.GetBlockReason());
+            blocker.OnBlockedOpening();
             AnimationEvent(DoorEvent.FailedOpenAttempt);
             return false;
         }
@@ -209,12 +209,12 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         _knockSound.Play(_audioSource);
     }
 
-    public void RegisterBlocker(IDoorBlocker blocker)
+    public void RegisterBlocker(DoorBlocker blocker)
     {
         _blockers.Add(blocker);
     }
 
-    public void UnregisterBlocker(IDoorBlocker blocker)
+    public void UnregisterBlocker(DoorBlocker blocker)
     {
         _blockers.Remove(blocker);
     }
@@ -317,16 +317,8 @@ public enum DoorEvent
     Closed,
 }
 
-public interface IDoorBlocker
-{
-    public bool IsActive();
-    public string GetBlockReason();
-    public bool HasCustomSound();
-    public Sound GetCustomSound();
 
-}
-
-public abstract class DoorBlocker : MonoBehaviour, IDoorBlocker
+public abstract class DoorBlocker : MonoBehaviour
 {
     public virtual bool IsActive() => true;
     public virtual string GetBlockReason() => $"Locked!";

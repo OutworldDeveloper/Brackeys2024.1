@@ -33,7 +33,6 @@ public class Zombie : MonoBehaviour
 
     [SerializeField] private float _speed = 2f;
     [SerializeField] private float _attackDistance = 2.25f;
-    [SerializeField] private float _grabDistance = 2.25f;
     [SerializeField] private float _attackLandDistance = 1.5f;
 
     [SerializeField] private Animator _animator;

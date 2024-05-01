@@ -6,8 +6,6 @@ using UnityEngine;
 public class UI_PanelsManager : MonoBehaviour
 {
 
-	public event Action Changed;
-
 	[SerializeField] private Transform _backgroundHidder;
 
     private readonly List<UI_Panel> _panelsStack = new List<UI_Panel>();

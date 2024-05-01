@@ -6,7 +6,7 @@ using System;
 using DG.Tweening;
 
 [DefaultExecutionOrder(Order.UI)]
-public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler
+public class UI_Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler
 {
 
     public event Action<UI_Slot> Selected;
@@ -95,20 +95,6 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
         _fakeSubstraction = 0;
         Refresh();
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        return;
-        switch (eventData.button)
-        {
-            case PointerEventData.InputButton.Left:
-                Selected?.Invoke(this);
-                break;
-            case PointerEventData.InputButton.Right:
-                SelectedAlt?.Invoke(this);
-                break;
-        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
