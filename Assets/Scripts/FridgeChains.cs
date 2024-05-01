@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class FridgeChains : MonoBehaviour
+public sealed class FridgeChains : DoorBlocker
 {
 
-    [SerializeField] private Door _door;
     [SerializeField] private ItemTag _keyTag;
     [SerializeField] private Sound _openingAttemptSound;
     [SerializeField] private Sound _unlockSound;
@@ -16,42 +15,27 @@ public sealed class FridgeChains : MonoBehaviour
 
     public bool IsUnlocked { get; private set; }
 
-    private void OnEnable()
-    {
-        //_door.OpeningAttempt += OnOpeningAttempt;
-    }
-
-    private void OnDisable()
-    {
-        //_door.OpeningAttempt -= OnOpeningAttempt;
-    }
-
     private void Start()
     {
-        _door.Block();
         _lockedGameObject.SetActive(true);
         _unlockedGameObject.SetActive(false);
     }
 
+    public override bool IsActive() => IsUnlocked == false;
+    public override string GetBlockReason() => "Chains block the door...";
+    public override bool HasCustomSound() => true;
+    public override Sound GetCustomSound() => _openingAttemptSound;
+
     public void TryUnlock(PlayerCharacter player)
     {
-        throw new NotImplementedException();
-        //if (player.Inventory.TryGetItemWithTag(_keyTag, out Item key) == false)
-        //    return;
-        //
-        //player.Inventory.RemoveAndDestroyItem(key);
-        _door.Unblock();
+        if (IsUnlocked == true)
+            return;
+
         IsUnlocked = true;
         _unlockSound.Play(_audioSource);
+
         _lockedGameObject.SetActive(false);
         _unlockedGameObject.SetActive(true);
-        return;
-    }
-
-    private void OnOpeningAttempt(PlayerCharacter player, bool success)
-    {
-        if (IsUnlocked == false)
-            _openingAttemptSound.Play(_audioSource);
     }
 
 }

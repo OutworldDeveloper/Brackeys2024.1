@@ -578,7 +578,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bbad34e8befb69419fa567b663684a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _door: {fileID: 919132149568210590}
   _keyTag: {fileID: 0}
   _openingAttemptSound: {fileID: 11400000, guid: 80f17e54e059c5c43956fd0a896b95f0,
     type: 2}
@@ -3805,6 +3804,7 @@ MonoBehaviour:
   _collision: {fileID: 0}
   _blockersCheck: {fileID: 0}
   _keyItem: {fileID: 0}
+  _initialBlockers: []
 --- !u!114 &919132149568210590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3881,6 +3881,8 @@ MonoBehaviour:
   _collision: {fileID: 0}
   _blockersCheck: {fileID: 0}
   _keyItem: {fileID: 0}
+  _initialBlockers:
+  - {fileID: 7004818562706604342}
 --- !u!4 &7685222103508935732 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: da97038b9ad225f42bfdcf95665b15f5,

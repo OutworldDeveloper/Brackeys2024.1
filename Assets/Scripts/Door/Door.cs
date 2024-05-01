@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Alchemy.Inspector;
 using DG.Tweening;
+using System.Collections.Generic;
 
 [HideScriptField]
 public sealed class Door : MonoBehaviour, IFirstLoadCallback
@@ -35,15 +36,16 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     [SerializeField, TabGroup("Collision")] private BoxCheck _blockersCheck;
 
     [SerializeField, TabGroup("Extra")] private KeyItem _keyItem;
+    [SerializeField, TabGroup("Extra")] private DoorBlocker[] _initialBlockers;
 
     [Persistent] private bool _isOpen;
     private bool _isAnimating;
     private bool _isCollisionSynched;
     private TimeSince _timeSinceAnimationStarted;
     private int _blockedTimes;
-    [Persistent] private bool _isLockedByKey;
-
+    [Persistent] private bool _isLockedByKey; 
     private TimeSince _timeSinceLastKnocked = new TimeSince(float.NegativeInfinity);
+    private readonly List<IDoorBlocker> _blockers = new List<IDoorBlocker>();
 
     public bool IsOpen => _isOpen;
     public bool IsLocked => _isLockedByKey == true;
@@ -59,6 +61,11 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
     private void Start()
     {
+        foreach (var blocker in _initialBlockers)
+        {
+            RegisterBlocker(blocker);
+        }
+
         SetT(_isOpen ? 1f : 0f);
         SynchCollision();
     }
@@ -163,6 +170,22 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
             return false;
         }
 
+        foreach (var blocker in _blockers)
+        {
+            if (blocker.IsActive() == false)
+                continue;
+
+            Sound blockedSound = _lockedSound;
+
+            if (blocker.HasCustomSound() == true)
+                blockedSound = blocker.GetCustomSound();
+
+            blockedSound.Play(_audioSource);
+            Notification.Show(blocker.GetBlockReason());
+            AnimationEvent(DoorEvent.FailedOpenAttempt);
+            return false;
+        }
+
         if (_blockersCheck != null && _blockersCheck.Check<Movable>() == true)
         {
             _lockedSound.Play(_audioSource);
@@ -184,6 +207,16 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
 
         SomeoneKnocked?.Invoke();
         _knockSound.Play(_audioSource);
+    }
+
+    public void RegisterBlocker(IDoorBlocker blocker)
+    {
+        _blockers.Add(blocker);
+    }
+
+    public void UnregisterBlocker(IDoorBlocker blocker)
+    {
+        _blockers.Remove(blocker);
     }
 
     public void Block() // IBlocker that will provide blocked sound and reason
@@ -212,11 +245,13 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         if (IsClosing == true)
         {
             Closing?.Invoke();
+            AnimationEvent(DoorEvent.BeginClosing);
         }
         else
         {
             Opening?.Invoke();
             _openSound.Play(_audioSource);
+            AnimationEvent(DoorEvent.BeginOpening);
         }
     }
 
@@ -225,11 +260,13 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         if (_isOpen == true)
         {
             Opened?.Invoke();
+            AnimationEvent(DoorEvent.Opened);
         }
         else
         {
             Closed?.Invoke();
             _closeSound.Play(_audioSource);
+            AnimationEvent(DoorEvent.Closed);
         }
     }
 
@@ -278,4 +315,23 @@ public enum DoorEvent
     Opened,
     BeginClosing,
     Closed,
+}
+
+public interface IDoorBlocker
+{
+    public bool IsActive();
+    public string GetBlockReason();
+    public bool HasCustomSound();
+    public Sound GetCustomSound();
+
+}
+
+public abstract class DoorBlocker : MonoBehaviour, IDoorBlocker
+{
+    public virtual bool IsActive() => true;
+    public virtual string GetBlockReason() => $"Locked!";
+    public virtual bool HasCustomSound() => false;
+    public virtual Sound GetCustomSound() => null;
+    public virtual void OnBlockedOpening() { }
+
 }
