@@ -34120,10 +34120,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 1608595079}
-  <Completed>k__BackingField:
-    _event:
-      m_PersistentCalls:
-        m_Calls: []
   _material: {fileID: 2100000, guid: c35e7a08df89a8d439fb194c5b4823c7, type: 2}
   _texture: {fileID: 2800000, guid: 0409305500e4d9a4bafe67380ec4136f, type: 3}
   _size: 4
@@ -35081,10 +35077,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 1014276455}
-  <Completed>k__BackingField:
-    _event:
-      m_PersistentCalls:
-        m_Calls: []
   _material: {fileID: 2100000, guid: c35e7a08df89a8d439fb194c5b4823c7, type: 2}
   _texture: {fileID: 2800000, guid: 76fdb361bee275147978f6ab96ce31a9, type: 3}
   _size: 4
@@ -38399,10 +38391,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 2141982442}
-  <Completed>k__BackingField:
-    _event:
-      m_PersistentCalls:
-        m_Calls: []
   _material: {fileID: 2100000, guid: c35e7a08df89a8d439fb194c5b4823c7, type: 2}
   _texture: {fileID: 2800000, guid: ca4486c43734e82468305eb615089607, type: 3}
   _size: 4

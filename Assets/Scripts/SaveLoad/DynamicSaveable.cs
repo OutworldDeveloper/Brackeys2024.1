@@ -40,17 +40,14 @@ public class DynamicSaveable : MonoBehaviour
 
         if (gameObject.scene == default)
         {
-            _selfPrefab = PrefabUtility.FindPrefabRoot(gameObject);
+            _selfPrefab = gameObject;
         }
         else
         {
             _selfPrefab = PrefabUtility.GetCorrespondingObjectFromSource(gameObject);
 
-            if (_hasSceneID == false)
-            {
-                _sceneID = Guid.NewGuid().ToString();
-                _hasSceneID = true;
-            }
+            _sceneID = GlobalObjectId.GetGlobalObjectIdSlow(gameObject).ToString();
+            _hasSceneID = true;
         }
 
         _prefabPath = AssetDatabase.GetAssetPath(_selfPrefab);

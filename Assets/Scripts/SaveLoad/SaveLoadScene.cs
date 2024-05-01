@@ -101,6 +101,7 @@ public class SaveLoadScene : MonoBehaviour
             }
         }
 
+        Physics.SyncTransforms();
         _timeSinceSceneLoaded = TimeSince.Now();
     }
 

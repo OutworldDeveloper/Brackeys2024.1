@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [RequireComponent(typeof(SaveableComponents))]
 public class StaticSaveable : MonoBehaviour
@@ -11,21 +14,21 @@ public class StaticSaveable : MonoBehaviour
 
     public string SceneGuid => _sceneGuid;
 
+#if UNITY_EDITOR
     private void OnValidate()
     {
-        //Debug.Log("Update");
+        if (Application.isPlaying == true)
+            return;
 
         if (gameObject.scene.IsValid() == false)
         {
-            //Debug.Log("We're a prefab");
             _sceneGuid = null;
             return;
         }
 
-#if UNITY_EDITOR
-        _sceneGuid = UnityEditor.GlobalObjectId.GetGlobalObjectIdSlow(gameObject).ToString();
-#endif
+        _sceneGuid = GlobalObjectId.GetGlobalObjectIdSlow(gameObject).ToString();
     }
+#endif
 
 }
 
