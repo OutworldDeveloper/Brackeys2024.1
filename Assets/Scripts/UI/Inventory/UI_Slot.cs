@@ -6,7 +6,7 @@ using System;
 using DG.Tweening;
 
 [DefaultExecutionOrder(Order.UI)]
-public class UI_Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler
+public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler
 {
 
     public event Action<UI_Slot> Selected;
@@ -126,5 +126,7 @@ public class UI_Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                 break;
         }
     }
+
+    public void OnPointerClick(PointerEventData eventData) { }
 
 }
