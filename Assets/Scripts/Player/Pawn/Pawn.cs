@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Pawn : MonoBehaviour
@@ -6,9 +6,12 @@ public abstract class Pawn : MonoBehaviour
 
     [SerializeField] private VirtualCamera _virtualCamera;
 
+    private readonly List<PawnAction> _actions = new List<PawnAction>();
+
     public bool WantsUnpossess { get; private set; }
     public Player Player { get; private set; }
     public virtual bool ShowCursor => false;
+    public bool HasActions => _actions.Count > 0;
     protected VirtualCamera VirtualCamera => _virtualCamera;
 
     public virtual CameraState GetCameraState()
@@ -45,6 +48,16 @@ public abstract class Pawn : MonoBehaviour
     public virtual bool CanUnpossessAtWill()
     {
         return true;
+    }
+
+    public PawnAction[] GetActions()
+    {
+        return _actions.ToArray();
+    }
+
+    protected void RegisterAction(PawnAction action)
+    {
+        _actions.Add(action);
     }
 
 }

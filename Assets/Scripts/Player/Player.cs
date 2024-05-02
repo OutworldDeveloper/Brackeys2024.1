@@ -116,19 +116,9 @@ public sealed class Player : MonoBehaviour
         if (_currentPawn == pawn)
             return;
 
-        //if (_currentPawn != null)
-        //{
-        //    ApplyCameraState(_currentPawn.GetCameraState());
-        //}
-
         _currentPawn?.OnUnpossessed();
         _currentPawn = pawn;
         _currentPawn.OnPossessed(this);
-
-        if (_currentPawn.CanUnpossessAtWill() && _currentPawn != _character)
-        {
-            //Notification.Show("Press Tab to exit", 2f);
-        }
 
         _timeSincePawnChanged = new TimeSince(Time.time);
 

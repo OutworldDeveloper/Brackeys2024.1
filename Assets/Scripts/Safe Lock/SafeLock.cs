@@ -20,13 +20,16 @@ public sealed class SafeLock : Pawn
     private void Start()
     {
         _targetDoor.Block();
+
+        RegisterAction(new PawnAction("Select", KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D));
+        RegisterAction(new PawnAction("Press", KeyCode.F));
+        RegisterAction(new PawnAction("Back", KeyCode.Escape));
     }
 
     public override void OnPossessed(Player player)
     {
         base.OnPossessed(player);
         SelectButton(0, false);
-        Notification.Show("Press Tab to exit. WASD to move.", 999f);
     }
 
     public override void OnUnpossessed()

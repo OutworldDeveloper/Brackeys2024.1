@@ -18,6 +18,10 @@ public class ColorLockPuzzle : Pawn
     private void Start()
     {
         _door.Block();
+        RegisterAction(new PawnAction("Select color", KeyCode.W, KeyCode.S));
+        RegisterAction(new PawnAction("Select number", KeyCode.A, KeyCode.D));
+        RegisterAction(new PawnAction("Submit", KeyCode.F));
+        RegisterAction(new PawnAction("Back", KeyCode.Escape));
     }
 
     public override void OnPossessed(Player player)

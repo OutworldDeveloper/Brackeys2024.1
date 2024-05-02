@@ -128,6 +128,10 @@ public sealed class JigsawPuzzle : Pawn
     {
         _selectorTransform = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
         _selectorTransform.localScale = Vector3.one * 0.05f;
+
+        RegisterAction(new PawnAction("Select", KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D));
+        RegisterAction(new PawnAction("Move", KeyCode.F));
+        RegisterAction(new PawnAction("Back", KeyCode.Escape));
     }
 
     public override void InputTick()
