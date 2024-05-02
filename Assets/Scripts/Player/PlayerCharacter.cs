@@ -220,6 +220,10 @@ public sealed class PlayerCharacter : Pawn
         };
     }
 
+    private float _stepsTimer;
+    [SerializeField] private Sound _stepSound;
+    [SerializeField] private AudioSource _stepSource;
+
     private void Update()
     {
         // Camera shake
@@ -248,6 +252,16 @@ public sealed class PlayerCharacter : Pawn
             x = Mathf.Lerp(-3f, 3f, (localDelayedVelocity.z + 2f) / 4f),
             z = Mathf.Lerp(-moveRotationX, moveRotationX, (localDelayedVelocity.x + 2f) / 4f),
         });
+
+        // Steps
+        _stepsTimer += _delayedVelocity.magnitude / 2f * 2f * Time.deltaTime;
+
+        if (_stepsTimer > 1f)
+        {
+            _stepsTimer = 0f;
+            if (_controller.isGrounded == true)
+                _stepSound.Play(_stepSource);
+        }
 
         // Weapon Equipment
         switch (_weaponState.Current)

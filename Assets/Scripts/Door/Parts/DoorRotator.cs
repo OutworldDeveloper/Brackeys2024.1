@@ -8,7 +8,7 @@ public sealed class DoorRotator : DoorPart
 
     public override void Set(float t)
     {
-        float angle = Mathf.Lerp(0f, _openedAngle, t);
+        float angle = Mathf.LerpUnclamped(0f, _openedAngle, t);
         transform.localEulerAngles = GetEuler(angle);
     }
 
