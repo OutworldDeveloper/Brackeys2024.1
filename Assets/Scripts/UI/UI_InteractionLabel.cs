@@ -12,7 +12,7 @@ public sealed class UI_InteractionLabel : MonoBehaviour
 
     public void SetKeyCode(KeyCode keyCode)
     {
-        _buttonLabel.text = $"[{keyCode}]";
+        _buttonLabel.text = keyCode.ToString();
     }
 
     public void SetInteractionText(string text)
