@@ -268,7 +268,7 @@ public sealed class PlayerCharacter : Pawn
         {
             case WeaponState.NoWeapon:
                 {
-                    bool shouldEquip = _equipment.WeaponSlot.IsEmpty == false && IsPossesed == true;
+                    bool shouldEquip = _equipment.WeaponSlot.IsEmpty == false && IsPossesed == true && _grip.IsHolding == false;
                     if (shouldEquip == true)
                         _weaponState.Set(WeaponState.Equipping);
                 }
@@ -283,7 +283,7 @@ public sealed class PlayerCharacter : Pawn
 
             case WeaponState.Ready:
                 {
-                    bool shouldUnequip = _equipment.WeaponSlot.IsEmpty;
+                    bool shouldUnequip = _equipment.WeaponSlot.IsEmpty || IsPossesed == false || _grip.IsHolding == true;
 
                     if (shouldUnequip == true)
                         _weaponState.Set(WeaponState.Unequipping);
@@ -432,7 +432,6 @@ public sealed class PlayerCharacter : Pawn
     {
         base.OnUnpossessed();
         _velocityXZ = Vector3.zero;
-        _weaponState.Set(WeaponState.Unequipping);
     }
 
     public void Warp(Vector3 position)
