@@ -10,7 +10,7 @@ public class SaveGameStation : MonoBehaviour
         character.Player.OpenItemSelection(new SaveItemSelector(character));
     }
 
-    private sealed class SaveItemSelector : IItemSelector
+    private sealed class SaveItemSelector : ItemSelector
     {
 
         private readonly PlayerCharacter _playerCharacter;
@@ -20,12 +20,12 @@ public class SaveGameStation : MonoBehaviour
             _playerCharacter = playerCharacter;
         }
 
-        public bool CanAccept(IReadOnlyStack stack)
+        public override bool CanAccept(IReadOnlyStack stack)
         {
             return true;
         }
 
-        public void Select(ItemStack stack)
+        public override void Select(ItemStack stack)
         {
             _playerCharacter.Player.OpenSaveScreen();
         }

@@ -35,7 +35,7 @@ public sealed class ToggleDoorInteraction : Interaction
         }
     }
 
-    private sealed class KeySelector : IItemSelector
+    private sealed class KeySelector : ItemSelector
     {
 
         private readonly Door _door;
@@ -45,15 +45,20 @@ public sealed class ToggleDoorInteraction : Interaction
             _door = door;
         }
 
-        public bool CanAccept(IReadOnlyStack stack)
+        public override bool CanAccept(IReadOnlyStack stack)
         {
             return stack.Item is KeyItem;
         }
 
-        public void Select(ItemStack stack)
+        public override void Select(ItemStack stack)
         {
             _door.TryUnlock(stack);
             _door.TryOpen();
+        }
+
+        public override string GetRejectionReason(IReadOnlyStack stack)
+        {
+            return "Won't open";
         }
 
     }

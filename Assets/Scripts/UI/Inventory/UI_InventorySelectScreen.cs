@@ -6,11 +6,11 @@ using UnityEngine;
 public sealed class UI_InventorySelectScreen : UI_InventoryScreen
 {
 
-    private IItemSelector _itemSelector;
+    private ItemSelector _itemSelector;
 
     protected override bool ShowDestroyOption => false;
 
-    public void SetSelector(IItemSelector itemSelector)
+    public void SetSelector(ItemSelector itemSelector)
     {
         _itemSelector = itemSelector;
     }
@@ -39,7 +39,10 @@ public sealed class UI_InventorySelectScreen : UI_InventoryScreen
             return;
 
         if (CanAccept(slot) == false)
+        {
+            Notification.Show(_itemSelector.GetRejectionReason(slot.TargetSlot.Stack), 1.25f);
             return;
+        }
 
         _itemSelector.Select(slot.TargetSlot.GetStack());
         CloseAndDestroy();
@@ -47,9 +50,13 @@ public sealed class UI_InventorySelectScreen : UI_InventoryScreen
 
 }
 
-public interface IItemSelector
+public abstract class ItemSelector
 {
-    public bool CanAccept(IReadOnlyStack stack);
-    public void Select(ItemStack stack);
+
+    public const string DEFAULT_REJECTION_TEXT = "Won't work";
+
+    public abstract bool CanAccept(IReadOnlyStack stack);
+    public abstract void Select(ItemStack stack);
+    public virtual string GetRejectionReason(IReadOnlyStack stack) => DEFAULT_REJECTION_TEXT;
 
 }

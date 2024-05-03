@@ -17,6 +17,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
     [SerializeField, TabGroup("Animation")] private float _animationDuration = 1f;
     [SerializeField, TabGroup("Animation")] private float _openDelay;
     [SerializeField, TabGroup("Animation")] private AnimationCurve _openCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+    [SerializeField, TabGroup("Animation")] private float _animationDurationClose = 1f;
     [SerializeField, TabGroup("Animation")] private float _closeDelay;
     [SerializeField, TabGroup("Animation")] private AnimationCurve _closeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
     [SerializeField, TabGroup("Animation")] private DoorPart[] _parts;
@@ -74,12 +75,13 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         if (_isAnimating == false)
             return;
 
+        float animationDuration = IsOpening ? _animationDuration : _animationDurationClose;
         float delay = IsOpening ? _openDelay : _closeDelay;
 
         if (_timeSinceAnimationStarted < delay)
             return;
 
-        if (_timeSinceAnimationStarted > delay + _animationDuration)
+        if (_timeSinceAnimationStarted > delay + animationDuration)
         {
             _isAnimating = false;
             _isOpen = !_isOpen;
@@ -87,7 +89,7 @@ public sealed class Door : MonoBehaviour, IFirstLoadCallback
         }
         else
         {
-            float t = (_timeSinceAnimationStarted - delay) / _animationDuration;
+            float t = (_timeSinceAnimationStarted - delay) / animationDuration;
             OnAnimating(t);
 
             if (_isCollisionSynched == false && t > _collisionSynchTime)

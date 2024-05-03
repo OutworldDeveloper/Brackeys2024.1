@@ -18,7 +18,7 @@ public sealed class FeedBenInteraction : Interaction
         player.Player.OpenItemSelection(new PizzaSelector(_ben));
     }
 
-    private sealed class PizzaSelector : IItemSelector
+    private sealed class PizzaSelector : ItemSelector
     {
 
         private readonly Ben _ben;
@@ -28,15 +28,20 @@ public sealed class FeedBenInteraction : Interaction
             _ben = ben;
         }
 
-        public bool CanAccept(IReadOnlyStack stack)
+        public override bool CanAccept(IReadOnlyStack stack)
         {
             return _ben.CanEat(stack);
         }
 
-        public void Select(ItemStack stack)
+        public override void Select(ItemStack stack)
         {
             var foodStack = stack.Take(1);
             _ben.TryFeed(foodStack);
+        }
+
+        public override string GetRejectionReason(IReadOnlyStack stack)
+        {
+            return "I don't think he... it... can eat that";
         }
 
     }

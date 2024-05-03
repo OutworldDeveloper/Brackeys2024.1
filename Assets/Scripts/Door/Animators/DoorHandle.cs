@@ -14,7 +14,7 @@ public sealed class DoorHandle : DoorAnimation
 
     public override void OnEvent(DoorEvent e)
     {
-        if (e != DoorEvent.BeginOpening && e != DoorEvent.BeginOpening)
+        if (e != DoorEvent.BeginOpening && e != DoorEvent.FailedOpenAttempt)
             return;
 
         _tween?.Kill();

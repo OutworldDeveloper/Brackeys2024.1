@@ -184,7 +184,7 @@ public sealed class Player : MonoBehaviour
         return inventoryScreen;
     }
 
-    public UI_InventorySelectScreen OpenItemSelection(IItemSelector selector)
+    public UI_InventorySelectScreen OpenItemSelection(ItemSelector selector)
     {
         var selectionScreen = Panels.InstantiateAndOpenFrom(_itemSelectionScreen);
         selectionScreen.SetTarget(_character);
