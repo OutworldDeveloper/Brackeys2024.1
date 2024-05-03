@@ -22,11 +22,13 @@ public sealed class PawnAction
     public void Enable()
     {
         IsActive = true;
+        StateChanged?.Invoke();
     }
 
     public void Disable()
     {
         IsActive = false;
+        StateChanged?.Invoke();
     }
 
 }

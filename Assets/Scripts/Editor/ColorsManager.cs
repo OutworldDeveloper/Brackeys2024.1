@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Presets;
 using UnityEngine;
 
 [FilePath("Tools/Colors.foo", FilePathAttribute.Location.ProjectFolder)]
