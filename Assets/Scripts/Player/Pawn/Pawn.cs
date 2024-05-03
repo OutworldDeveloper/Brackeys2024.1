@@ -13,6 +13,7 @@ public abstract class Pawn : MonoBehaviour
     public virtual bool ShowCursor => false;
     public bool HasActions => _actions.Count > 0;
     protected VirtualCamera VirtualCamera => _virtualCamera;
+    public bool IsPossesed => Player != null;
 
     public virtual CameraState GetCameraState()
     {

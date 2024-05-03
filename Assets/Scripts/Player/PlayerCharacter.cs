@@ -268,7 +268,7 @@ public sealed class PlayerCharacter : Pawn
         {
             case WeaponState.NoWeapon:
                 {
-                    bool shouldEquip = _equipment.WeaponSlot.IsEmpty == false;
+                    bool shouldEquip = _equipment.WeaponSlot.IsEmpty == false && IsPossesed == true;
                     if (shouldEquip == true)
                         _weaponState.Set(WeaponState.Equipping);
                 }
@@ -432,6 +432,7 @@ public sealed class PlayerCharacter : Pawn
     {
         base.OnUnpossessed();
         _velocityXZ = Vector3.zero;
+        _weaponState.Set(WeaponState.Unequipping);
     }
 
     public void Warp(Vector3 position)

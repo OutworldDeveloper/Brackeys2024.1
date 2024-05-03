@@ -38,6 +38,9 @@ public sealed class InspectionPawn : Pawn
     private void Start()
     {
         _light.enabled = false;
+
+        RegisterAction(new PawnAction("Rotate", KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D));
+        RegisterAction(new PawnAction("Back", KeyCode.Escape));
     }
 
     public void SetTarget(Inspectable target, bool noAnimation = false)
@@ -80,7 +83,7 @@ public sealed class InspectionPawn : Pawn
         _light.enabled = true;
 
         _targetData.Init();
-        _targetData.SetLayers(LayerMask.NameToLayer("Inspected"));
+        _targetData.SetLayers(LayerMask.NameToLayer("Weapons")); // Inspected
     }
 
     public override void OnUnpossessed()
@@ -170,7 +173,7 @@ public sealed class TargetData
 {
   
     private readonly GameObject _target;
-    private readonly List<GameObject> _layerTargets = new List<GameObject>();
+    private readonly List<MeshRenderer> _meshRenderers = new List<MeshRenderer>();
     private readonly Dictionary<GameObject, int> _originalLayers = new Dictionary<GameObject, int>();
 
     public TargetData(GameObject target)
@@ -184,9 +187,9 @@ public sealed class TargetData
 
         void Capture(GameObject gameObject)
         {
-            if (gameObject.GetComponent<MeshRenderer>() != null)
+            if (gameObject.TryGetComponent(out MeshRenderer meshRenderer) == true)
             {
-                _layerTargets.Add(gameObject);
+                _meshRenderers.Add(meshRenderer);
                 _originalLayers.Add(gameObject, gameObject.layer);
             }
 
@@ -199,17 +202,21 @@ public sealed class TargetData
 
     public void RestoreLayers()
     {
-        foreach (var layerTarget in _layerTargets)
+        foreach (var meshRenderer in _meshRenderers)
         {
-            layerTarget.layer = _originalLayers[layerTarget];
+            meshRenderer.gameObject.layer = _originalLayers[meshRenderer.gameObject];
+
+            meshRenderer.receiveShadows = true;
         }
     }
 
     public void SetLayers(int layer)
     {
-        foreach (var layerTarget in _layerTargets)
+        foreach (var meshRenderer in _meshRenderers)
         {
-            layerTarget.layer = layer;
+            meshRenderer.gameObject.layer = layer;
+
+            meshRenderer.receiveShadows = false;
         }
     }
 
