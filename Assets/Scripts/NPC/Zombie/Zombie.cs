@@ -7,7 +7,7 @@ using UnityEngine.Animations.Rigging;
 
 [SelectionBase]
 [RequireComponent(typeof(NavMeshAgent))]
-public class Zombie : MonoBehaviour
+public class Zombie : MonoBehaviour, IFirstLoadCallback
 {
 
     public enum Action
@@ -20,6 +20,8 @@ public class Zombie : MonoBehaviour
         Afk,
         Jump,
         PostJumpDelay,
+        Sleeping,
+        WakingUp,
     }
 
     public enum ThinkState
@@ -56,6 +58,9 @@ public class Zombie : MonoBehaviour
 
     [SerializeField] private AnimationCurve _jumpCurve;
 
+    [SerializeField] private bool _startSleeping;
+    [SerializeField] private bool _wakesOnDamage;
+
     private NavMeshAgent _agent;
     private PlayerCharacter _target;
 
@@ -75,6 +80,8 @@ public class Zombie : MonoBehaviour
 
     private EnumState<ThinkState> _thinkState = new EnumState<ThinkState>();
     private EnumCall<ThinkState> _thinkCall;
+
+    [Persistent] private bool _isSleeping;
 
     public bool IsDead => _health <= 0f;
     public bool HasTarget => _target != null;
@@ -96,7 +103,9 @@ public class Zombie : MonoBehaviour
             AddCallback(Action.Attack, OnAttackActionStart).
             AddCallback(Action.Hurt, OnHurtActionStart).
             AddCallback(Action.Roar, OnRoarActionStart).
-            AddCallback(Action.Jump, OnJumpActionStart);
+            AddCallback(Action.Jump, OnJumpActionStart).
+            AddCallback(Action.Sleeping, OnSleepingActionStart).
+            AddCallback(Action.WakingUp, OnWakingUpActionStart);
 
         _updateCall = _currentAction.AddCall().
             AddCallback(Action.None, OnNoneActionUpdate).
@@ -104,7 +113,8 @@ public class Zombie : MonoBehaviour
             AddCallback(Action.Hurt, OnHurtActionUpdate).
             AddCallback(Action.Roar, OnRoarActionUpdate).
             AddCallback(Action.Jump, OnJumpActionUpdate).
-            AddCallback(Action.PostJumpDelay, OnPostJumpDelayActionUpdate);
+            AddCallback(Action.PostJumpDelay, OnPostJumpDelayActionUpdate).
+            AddCallback(Action.WakingUp, OnWakingUpActionUpdate);
 
         _thinkCall = _thinkState.AddCall().
             AddCallback(ThinkState.NoTarget, OnNoTargetThink).
@@ -119,12 +129,23 @@ public class Zombie : MonoBehaviour
         _soundsSensor.Perceived += OnSoundPerceived;
     }
 
+    public void OnFirstLoad()
+    {
+        _isSleeping = _startSleeping;
+    }
+
     private void Start()
     {
         if (IsDead == true)
         {
-            _animator.Play("dead");
             SetDead();
+        }
+        else
+        {
+            if (_isSleeping == true)
+            {
+                _currentAction.Set(Action.Sleeping);
+            }
         }
     }
 
@@ -153,9 +174,19 @@ public class Zombie : MonoBehaviour
 
         if (IsDead == false)
         {
-            if (Randomize.Chance(1) == true && _currentAction.GetTimeSinceLast(Action.Hurt) > 0.4f)
+            bool shouldStagger =
+                _currentAction.GetTimeSinceLast(Action.Hurt) > 0.4f &&
+                damage > 10f &&
+                _currentAction != Action.Sleeping;
+
+            if (shouldStagger == true)
             {
                 _currentAction.Set(Action.Hurt);
+            }
+
+            if (_currentAction == Action.Sleeping && _wakesOnDamage == true)
+            {
+                _currentAction.Set(Action.WakingUp);
             }
         }
         else
@@ -167,6 +198,11 @@ public class Zombie : MonoBehaviour
 
     private void OnSoundPerceived(SoundEvent soundEvent)
     {
+        if (_currentAction == Action.Sleeping)
+        {
+            _currentAction.Set(Action.WakingUp); 
+        }
+
         if (_thinkState != ThinkState.NoTarget)
             return;
 
@@ -594,6 +630,26 @@ public class Zombie : MonoBehaviour
         _currentAction.Set(Action.None);
     }
 
+    private void OnSleepingActionStart()
+    {
+        _agent.enabled = false;
+        _playerBlocker.enabled = false;
+        _animator.Play("sleeping");
+    }
+
+    private void OnWakingUpActionStart()
+    {
+        _agent.enabled = true;
+        _playerBlocker.enabled = true;
+        _animator.CrossFade("waking", 0.1f);
+    }
+
+    private void OnWakingUpActionUpdate()
+    {
+        if (_currentAction.TimeSinceLastChange > 1f)
+            _currentAction.Set(Action.None);
+    }
+
     private void RotateTo(Vector3 direction, float speed)
     {
         transform.forward = Vector3.RotateTowards(transform.forward, direction, speed * Time.deltaTime, 0f);
@@ -616,6 +672,8 @@ public class Zombie : MonoBehaviour
 
     private void SetDead()
     {
+        _health = 0f;
+        _animator.Play("dead");
         _agent.enabled = false;
         _playerBlocker.enabled = false;
     }
