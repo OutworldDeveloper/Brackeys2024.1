@@ -547,7 +547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1408b99c10fe924eb1c0b3fa9cdae08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animationDuration: 0.65
+  _animationDuration: 2
   _openDelay: 0.25
   _openCurve:
     serializedVersion: 2
@@ -562,22 +562,40 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.40949857
-      value: 0.26587674
-      inSlope: 1.4891948
-      outSlope: 1.4891948
+      time: 0.50224006
+      value: 1.0752563
+      inSlope: 0.000003984927
+      outSlope: 0.000003984927
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
+      outWeight: 0.51732874
+    - serializedVersion: 3
+      time: 0.6876027
+      value: 0.962503
+      inSlope: -0.017271183
+      outSlope: -0.017271183
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.78606606
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.6111193
-      value: 0.7499254
-      inSlope: 1.6321325
-      outSlope: 1.6321325
+      time: 0.86026007
+      value: 1.0285436
+      inSlope: -0.021650719
+      outSlope: -0.021650719
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 1
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.99798363
+      value: 0.999304
+      inSlope: -0.05570233
+      outSlope: -0.05570233
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
@@ -591,6 +609,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _animationDurationClose: 0.65
   _closeDelay: 0
   _closeCurve:
     serializedVersion: 2
@@ -609,6 +628,15 @@ MonoBehaviour:
       value: 0.6186014
       inSlope: 1.6321325
       outSlope: 1.6321325
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.90881705
+      value: 1.0439358
+      inSlope: 0.6580282
+      outSlope: 0.6580282
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -639,6 +667,7 @@ MonoBehaviour:
   _collision: {fileID: 0}
   _blockersCheck: {fileID: 0}
   _keyItem: {fileID: 0}
+  _initialBlockers: []
 --- !u!114 &3488621354253516600
 MonoBehaviour:
   m_ObjectHideFlags: 0
