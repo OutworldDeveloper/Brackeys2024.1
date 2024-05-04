@@ -4,9 +4,8 @@
 public sealed class ItemStack : IReadOnlyStack
 {
 
-    public event Action Changed;
-    // CountChanged
-    // AttributesChanged
+    public event Action CountChanged;
+    public event Action AttributesChanged;
 
     public ItemStack(Item definition, int count = 1)
     {
@@ -55,7 +54,7 @@ public sealed class ItemStack : IReadOnlyStack
         Item = stack.Item;
         Attributes = stack.Attributes;
 
-        Changed?.Invoke();
+        CountChanged?.Invoke();
     }
 
     public ItemStack Take(int amount)
@@ -68,7 +67,7 @@ public sealed class ItemStack : IReadOnlyStack
         Count -= amount;
         var result = new ItemStack(Item, Attributes.Copy(), amount);
 
-        Changed?.Invoke();
+        CountChanged?.Invoke();
 
         return result;
     }
@@ -81,7 +80,7 @@ public sealed class ItemStack : IReadOnlyStack
     public void SetAttribute<T>(ItemAttribute<T> attribute, T value) where T : struct
     {
         Attributes.Set(attribute, value);
-        Changed?.Invoke();
+        AttributesChanged?.Invoke();
     }
 
     public bool HasAttribute<T>(ItemAttribute<T> attribute) where T : struct

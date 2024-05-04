@@ -17,6 +17,7 @@ public class UI_AmmoCount : MonoBehaviour
     {
         _weaponSlot = _character.GetComponent<Equipment>().WeaponSlot;
         _weaponSlot.Changed += OnWeaponSlotChanged;
+        _weaponSlot.AttributesChanged += OnWeaponSlotAttributesChanged;
         _character.Inventory.Changed += OnInventoryChanged;
     }
 
@@ -26,6 +27,11 @@ public class UI_AmmoCount : MonoBehaviour
     }
 
     private void OnWeaponSlotChanged(ItemSlot slot)
+    {
+        Refresh();
+    }
+
+    private void OnWeaponSlotAttributesChanged(ItemSlot obj)
     {
         Refresh();
     }

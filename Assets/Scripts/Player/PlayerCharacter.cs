@@ -123,11 +123,10 @@ public sealed class PlayerCharacter : Pawn
 
         _equipment.Initialize();
 
-        _equipment.WeaponSlot.Changed += ItemSlot =>
+        _equipment.WeaponSlot.ItemChanged += ItemSlot =>
         {
-            //if (_weaponState.Current != WeaponState.NoWeapon)
-            //    _weaponState.Set(WeaponState.Unequipping);
-            // throw new NotImplementedException();
+            if (_weaponState.Current != WeaponState.NoWeapon)
+                _weaponState.Set(WeaponState.Unequipping);
         };
     }
 

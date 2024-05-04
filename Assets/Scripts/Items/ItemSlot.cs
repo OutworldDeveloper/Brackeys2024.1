@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -7,6 +6,10 @@ public class ItemSlot
 {
 
     public event Action<ItemSlot> Changed;
+
+    public event Action<ItemSlot> ItemChanged;
+    public event Action<ItemSlot> CountChanged;
+    public event Action<ItemSlot> AttributesChanged;
 
     public readonly MonoBehaviour Owner;
     public readonly string SlotName;
@@ -66,10 +69,10 @@ public class ItemSlot
         if (IsEmpty == true)
         {
             _stack = stack;
-
-            _stack.Changed += OnStackChanged;
-
+            _stack.CountChanged += OnStackCountChanged;
+            _stack.AttributesChanged += OnStackAttributesChanged;
             Changed?.Invoke(this);
+            ItemChanged?.Invoke(this);
             return true;
         }
 
@@ -79,6 +82,7 @@ public class ItemSlot
 
         _stack.Add(stack);
         Changed?.Invoke(this);
+        CountChanged?.Invoke(this);
         return true;
     }
 
@@ -96,18 +100,35 @@ public class ItemSlot
         //}
 
         Changed?.Invoke(this);
+        CountChanged?.Invoke(this);
         return result;
     }
 
-    private void OnStackChanged()
+    private void OnStackCountChanged()
     {
         if (_stack.Count <= 0)
         {
-            _stack.Changed -= OnStackChanged;
-            _stack = null;
+            Clear();
         }
+        else
+        {
+            CountChanged?.Invoke(this);
+        }
+    }
 
+    private void OnStackAttributesChanged()
+    {
+        AttributesChanged?.Invoke(this);
+    }
+
+    private void Clear()
+    {
+        Debug.Assert(_stack != null, "Attempting to clear an empty slot");
+        _stack.CountChanged -= OnStackCountChanged;
+        _stack.AttributesChanged -= OnStackAttributesChanged;
+        _stack = null;
         Changed?.Invoke(this);
+        ItemChanged?.Invoke(this);
     }
 
     public override string ToString()
