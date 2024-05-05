@@ -113,12 +113,14 @@ public class ItemSlot
         else
         {
             CountChanged?.Invoke(this);
+            Changed?.Invoke(this);
         }
     }
 
     private void OnStackAttributesChanged()
     {
         AttributesChanged?.Invoke(this);
+        Changed?.Invoke(this);
     }
 
     private void Clear()

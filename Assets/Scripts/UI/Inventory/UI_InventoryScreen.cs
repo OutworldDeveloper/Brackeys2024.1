@@ -11,7 +11,7 @@ public class UI_InventoryScreen : UI_Panel
 {
 
     [SerializeField] private UI_InventoryGrid _inventoryGrid;
-    [SerializeField] private UI_Slot _weaponSlot;
+    [SerializeField] private UI_InventoryGrid _hotbarGrid;
     [SerializeField] private RectTransform _itemMovePreviewGO;
     [SerializeField] private Image _itemMovePreview;
     [SerializeField] private TextMeshProUGUI _itemsCountPreview;
@@ -46,14 +46,14 @@ public class UI_InventoryScreen : UI_Panel
     public void SetTarget(PlayerCharacter character)
     {
         Character = character;
-        _inventoryGrid.SetTarget(character.GetComponent<Inventory>());
-        _weaponSlot.SetTarget(character.GetComponent<Equipment>().WeaponSlot);
+        _inventoryGrid.SetTarget(character.Inventory);
+        _hotbarGrid.SetTarget(character.Equipment);
     }
 
     protected virtual void Start()
     {
         RegisterGrid(_inventoryGrid);
-        RegisterSlot(_weaponSlot);
+        RegisterGrid(_hotbarGrid);
 
         IsContextMenuOpen = false;
     }
@@ -148,11 +148,6 @@ public class UI_InventoryScreen : UI_Panel
 
             if (actions.Count > 0)
                 IsContextMenuOpen = true;
-
-            //if (slot.TargetSlot.IsEmpty == false && slot.TargetSlot.Stack.Count > 1)
-            //{
-            //    StartMove(slot, slot.TargetSlot.Stack.Count / 2);
-            //}
         }
         else
         {
@@ -181,14 +176,14 @@ public class UI_InventoryScreen : UI_Panel
 
     protected virtual void HandleQuickAction(UI_Slot slot) 
     {
-        if (slot.TargetSlot == Character.GetComponent<Equipment>().WeaponSlot)
+        if (slot.TargetSlot.Owner == Character.Equipment)
         {
             InventoryManager.TryTransfer(slot.TargetSlot, Character.Inventory, slot.TargetSlot.Stack.Count);
         }
 
         if (slot.TargetSlot.Owner == Character.Inventory && slot.TargetSlot.Stack.Item is WeaponItem)
         {
-            InventoryManager.TryTransfer(slot.TargetSlot, Character.GetComponent<Equipment>().WeaponSlot, 1);
+            InventoryManager.TryTransfer(slot.TargetSlot, Character.Equipment, 1);
         }
     }
 
@@ -202,7 +197,7 @@ public class UI_InventoryScreen : UI_Panel
             actions.Add(new ItemAction("Split", () => StartMove(slot, slot.TargetSlot.Stack.Count / 2)));
         }
 
-        if (slot.TargetSlot == Character.GetComponent<Equipment>().WeaponSlot)
+        if (slot.TargetSlot.Owner == Character.Equipment)
         {
             actions.Add(new ItemAction("Unequip", () => 
                 InventoryManager.TryTransfer(slot.TargetSlot, Character.Inventory, slot.TargetSlot.Stack.Count)));
@@ -211,7 +206,7 @@ public class UI_InventoryScreen : UI_Panel
         if (slot.TargetSlot.Owner == Character.Inventory && slot.TargetSlot.Stack.Item is WeaponItem)
         {
             actions.Add(new ItemAction("Equip", () =>
-                InventoryManager.TryTransfer(slot.TargetSlot, Character.GetComponent<Equipment>().WeaponSlot, 1)));
+                InventoryManager.TryTransfer(slot.TargetSlot, Character.Equipment, 1)));
         }
 
         if (ShowDestroyOption == true)
@@ -272,17 +267,22 @@ public class UI_InventoryScreen : UI_Panel
 
     private void OnSlotHovered(UI_Slot slot)
     {
-        _selectedNameLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
-        _selectedDescriptionLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
+        //_selectedNameLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
+        //_selectedDescriptionLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
 
-        if (slot.TargetSlot.IsEmpty == false)
+        if (slot == null || slot.TargetSlot.IsEmpty)
+        {
+            _selectedNameLabel.text = string.Empty;
+            _selectedDescriptionLabel.text = string.Empty;
+        }
+        else
         {
             _selectedNameLabel.text = slot.TargetSlot.Stack.Item.DisplayName;
             _selectedDescriptionLabel.text = slot.TargetSlot.Stack.Item.Description;
 
             if (slot.TargetSlot.Stack.Item is WeaponItem weapon)
             {
-                _selectedDescriptionLabel.text += $"\nHas a maximum ammo capacity of {weapon.MaxAmmo}.";
+                _selectedDescriptionLabel.text += $" Has a maximum ammo capacity of {weapon.MaxAmmo}.";
             }
         }
     }

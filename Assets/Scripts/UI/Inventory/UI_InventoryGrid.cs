@@ -33,7 +33,8 @@ public class UI_InventoryGrid : MonoBehaviour
             slotUI.Selected += OnSlotSelected;
             slotUI.SelectedAlt += OnSlotSelectedAlt;
             slotUI.Hovered += OnSlotHovered;
-            slotUI.SetTarget(_inventory[i]);
+            slotUI.Exited += OnSlotExited;
+            slotUI.SetTarget(_inventory[i], i);
             _slots.Add(slotUI);
         }
     }
@@ -41,6 +42,11 @@ public class UI_InventoryGrid : MonoBehaviour
     private void OnSlotHovered(UI_Slot slotUI)
     {
         SlotHovered?.Invoke(slotUI);
+    }
+
+    private void OnSlotExited(UI_Slot slotUI)
+    {
+        SlotHovered?.Invoke(null);
     }
 
     private void OnSlotSelectedAlt(UI_Slot slotUI)

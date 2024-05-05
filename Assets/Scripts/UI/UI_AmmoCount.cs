@@ -11,27 +11,30 @@ public class UI_AmmoCount : MonoBehaviour
     [SerializeField] private GameObject _counterParent;
     [SerializeField] private TextMeshProUGUI _ammoLabel;
 
-    private ItemSlot _weaponSlot;
+    private ItemSlot _targetSlot;
 
     private void Awake()
     {
-        _weaponSlot = _character.GetComponent<Equipment>().WeaponSlot;
-        _weaponSlot.Changed += OnWeaponSlotChanged;
-        _weaponSlot.AttributesChanged += OnWeaponSlotAttributesChanged;
+        _character.Equipment.ActiveSlotChanged += OnActiveSlotChanged;
         _character.Inventory.Changed += OnInventoryChanged;
     }
 
     private void Start()
     {
-        Refresh();
+        OnActiveSlotChanged(-1, _character.Equipment.ActiveSlotIndex);
     }
 
-    private void OnWeaponSlotChanged(ItemSlot slot)
+    private void OnActiveSlotChanged(int previousIndex, int index)
     {
+        if (_targetSlot != null)
+            _targetSlot.Changed -= OnActiveSlotChanged;
+
+        _targetSlot = _character.Equipment.ActiveSlot;
+        _targetSlot.Changed += OnActiveSlotChanged;
         Refresh();
     }
 
-    private void OnWeaponSlotAttributesChanged(ItemSlot obj)
+    private void OnActiveSlotChanged(ItemSlot slot)
     {
         Refresh();
     }
@@ -43,14 +46,20 @@ public class UI_AmmoCount : MonoBehaviour
 
     private void Refresh()
     {
-        _counterParent.gameObject.SetActive(_weaponSlot.IsEmpty == false);
-
-        if (_weaponSlot.IsEmpty == true)
+        if (_targetSlot == null) // Preventing crashes
             return;
 
-        WeaponItem weapon = _weaponSlot.Stack.Item as WeaponItem;
+        _counterParent.gameObject.SetActive(_targetSlot.IsEmpty == false);
 
-        int loadedCount = _weaponSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO);
+        if (_targetSlot.IsEmpty == true)
+            return;
+
+        if (_targetSlot.Stack.Item is WeaponItem == false)
+            return;
+
+        WeaponItem weapon = _targetSlot.Stack.Item as WeaponItem;
+
+        int loadedCount = _targetSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO);
         int inventoryCount = _character.Inventory.GetAmountOf(weapon.AmmoItem);
         _ammoLabel.text = $"{loadedCount} / <size=30>{inventoryCount}</size>";
     }

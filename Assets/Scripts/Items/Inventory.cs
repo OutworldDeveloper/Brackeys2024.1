@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(Order.BEFORE_PLAYER_CHARACTER)]
 public class Inventory : MonoBehaviour, ICustomSaveable
 {
+
     public event Action Changed;
 
     [SerializeField] private int _slotsCount;
@@ -19,9 +21,14 @@ public class Inventory : MonoBehaviour, ICustomSaveable
 
         for (int i = 0; i < _slots.Length; i++)
         {
-            _slots[i] = new ItemSlot(this, $"Inventory{i}");
+            _slots[i] = CreateSlot(i);
             _slots[i].Changed += OnSlotChanged;
         }
+    }
+
+    protected virtual ItemSlot CreateSlot(int index)
+    {
+        return new ItemSlot(this, $"Inventory{index}");
     }
 
     private void OnSlotChanged(ItemSlot slot)

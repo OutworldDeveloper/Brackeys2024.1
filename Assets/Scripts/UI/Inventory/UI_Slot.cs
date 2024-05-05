@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
-using DG.Tweening;
 
 [DefaultExecutionOrder(Order.UI)]
 public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler
@@ -12,6 +11,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     public event Action<UI_Slot> Selected;
     public event Action<UI_Slot> SelectedAlt;
     public event Action<UI_Slot> Hovered;
+    public event Action<UI_Slot> Exited;
 
     [SerializeField] private Image _itemImage;
     [SerializeField] private TextMeshProUGUI _numberLabel;
@@ -19,15 +19,21 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] private Color _borderColor;
     [SerializeField] private Color _borderColorHighlighted;
 
+    [Header("Optional")]
+    [SerializeField] private TextMeshProUGUI _indexLabel;
+
     private int _fakeSubstraction;
 
     public ItemSlot TargetSlot { get; private set; }
 
-    public void SetTarget(ItemSlot slot)
+    public void SetTarget(ItemSlot slot, int index)
     {
         TargetSlot = slot;
         TargetSlot.Changed += OnTargetSlotChanged;
         OnTargetSlotChanged(TargetSlot);
+
+        if(_indexLabel != null)
+            _indexLabel.text = (index + 1).ToString();
     }
 
     private void OnValidate()
@@ -56,7 +62,7 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
     private void Refresh()
     {
-        bool showSlot = false; // || _isHidden > 0;
+        bool showSlot = false;
 
         if (TargetSlot.IsEmpty == false)
         {
@@ -83,6 +89,10 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
         _itemImage.gameObject.SetActive(showSlot);
         _numberLabel.gameObject.SetActive(showSlot);
+
+
+        if (_indexLabel != null)
+            _indexLabel.gameObject.SetActive(!showSlot);
     }
 
     public void SetFakeSubstraction(int amount)
@@ -99,19 +109,14 @@ public class UI_Slot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        //transform.DOScale(1.2f, 0.2f).From(1f).SetLoops(2, LoopType.Yoyo).SetUpdate(true);
-        //_border.rectTransform.DOScale(1.15f, 0.1f).From(1f).SetUpdate(true);
-        //_borderImage.DOColor(_borderColorHighlighted, 0.1f).From(_borderColor).SetUpdate(true);
         _borderImage.color = _borderColorHighlighted;
-
         Hovered?.Invoke(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        //_border.rectTransform.DOScale(1f, 0.1f).From(1.15f).SetUpdate(true);
-        //_borderImage.DOColor(_borderColor, 0.1f).From(_borderColorHighlighted).SetUpdate(true);
         _borderImage.color = _borderColor;
+        Exited?.Invoke(this);
     }
 
     public void OnPointerUp(PointerEventData eventData)

@@ -26015,7 +26015,7 @@ GameObject:
   - component: {fileID: 668565593}
   - component: {fileID: 668565592}
   - component: {fileID: 668565594}
-  - component: {fileID: 668565595}
+  - component: {fileID: 668565597}
   - component: {fileID: 668565596}
   m_Layer: 3
   m_Name: PlayerCharacter
@@ -26174,12 +26174,13 @@ MonoBehaviour:
   _aimingFieldOfView: 50
   _fieldOfView: 70
   _armsAnimator: {fileID: 1455822952}
-  _equipment: {fileID: 668565595}
+  _equipment: {fileID: 668565597}
   _interactionKeys: 660000006500000062000000
+  _hotbarKeys: 3100000032000000
   _weaponSwayFrequency: 5
   _weaponSwayAmplitudeX: 0.015
   _weaponSwayAmplitudeY: 0.02
-  _shakeStrenght: 0
+  _shakeStrenght: 1
   _stepSound: {fileID: 11400000, guid: 887c145de95171b4e9415e0521e310b4, type: 2}
   _stepSource: {fileID: 281710616}
 --- !u!95 &668565588
@@ -26275,8 +26276,8 @@ MonoBehaviour:
   _saveableComponents:
   - Component: {fileID: 668565594}
     Guid: dcb8cf61-97d7-407e-8381-25d9b5d37d5b
-  - Component: {fileID: 668565595}
-    Guid: d7410645-62be-48a7-828d-dc137ef556f3
+  - Component: {fileID: 668565597}
+    Guid: 4aa8c598-d449-492b-ba35-333433ad3135
 --- !u!114 &668565594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26289,19 +26290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f181140cedf040b49ae1eb60c88bce43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slotsCount: 12
---- !u!114 &668565595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668565581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4379a97244534942b8e7f51a45df5b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _slotsCount: 8
 --- !u!114 &668565596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26344,6 +26333,19 @@ MonoBehaviour:
   _rotationSpeed: 1
   _rotationMouseSpeed: {x: 2.5, y: 3.5}
   _light: {fileID: 2001612254}
+--- !u!114 &668565597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668565581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4379a97244534942b8e7f51a45df5b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slotsCount: 2
 --- !u!1 &671588622
 GameObject:
   m_ObjectHideFlags: 0

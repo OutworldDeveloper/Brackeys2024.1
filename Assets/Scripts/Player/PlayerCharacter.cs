@@ -40,6 +40,7 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private Equipment _equipment;
 
     [SerializeField] private KeyCode[] _interactionKeys;
+    [SerializeField] private KeyCode[] _hotbarKeys;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -71,7 +72,7 @@ public sealed class PlayerCharacter : Pawn
     private float _cameraTargetRotX;
     private float _cameraTargetRotY;
 
-    private EnumState<WeaponState> _weaponState = new EnumState<WeaponState>();
+    private readonly EnumState<WeaponState> _weaponState = new EnumState<WeaponState>();
 
     private bool _isReloadPointReached;
 
@@ -79,6 +80,7 @@ public sealed class PlayerCharacter : Pawn
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
+    public Equipment Equipment => _equipment;
     public Grip Grip => _grip;
     public bool IsDead { get; private set; }
     public float MaxHealth => _maxHealth;
@@ -94,40 +96,30 @@ public sealed class PlayerCharacter : Pawn
         Player.Possess(_inspectionPawn);
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (Mathf.Abs(hit.moveDirection.y) < 0.01f)
-        {
-            if (hit.gameObject.TryGetComponent<Rigidbody>(out var rb) == true)
-            {
-                rb.AddForce(_velocityXZ * 25f);
-            }
-        }
-
-        if (hit.moveDirection.y > 0.01f && _velocityY > 0f)
-            _velocityY = 0f;
-
-        if (Mathf.Abs(hit.moveDirection.y) < 0.01f && hit.gameObject.CompareTag(_stairsTag) == true && _isCrouching == false)
-        {
-            _lastStairsTouchFrame = Time.frameCount;
-            _isTouchingStairs = true;
-            _controller.stepOffset = 1.5f;
-        }
-    }
-
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
-
         _weaponState.StateChanged += OnWeaponStateChanged;
 
-        _equipment.Initialize();
-
-        _equipment.WeaponSlot.ItemChanged += ItemSlot =>
+        _equipment.ActiveSlotChanged += (previousIndex, index) =>
         {
             if (_weaponState.Current != WeaponState.NoWeapon)
                 _weaponState.Set(WeaponState.Unequipping);
         };
+
+        for (int i = 0; i < _equipment.SlotsCount; i++)
+        {
+            _equipment[i].ItemChanged += OnAnyEquipmentSlotChanged;
+        }
+    }
+
+    private void OnAnyEquipmentSlotChanged(ItemSlot slot)
+    {
+        if (slot != _equipment.ActiveSlot)
+            return;
+
+        if (_weaponState.Current != WeaponState.NoWeapon)
+            _weaponState.Set(WeaponState.Unequipping);
     }
 
     private void Start()
@@ -161,6 +153,14 @@ public sealed class PlayerCharacter : Pawn
             _interactor.TryPerform(i);
         }
 
+        for (int i = 0; i < _hotbarKeys.Length; i++)
+        {
+            if (Input.GetKeyDown(_hotbarKeys[i]) == false)
+                continue;
+
+            _equipment.SetActiveSlot(i);
+        }
+
         if (Input.GetKeyDown(KeyCode.Tab) == true)
         {
             if (CanOpenInventory() == true)
@@ -177,19 +177,19 @@ public sealed class PlayerCharacter : Pawn
         if (Input.GetKeyDown(KeyCode.Mouse0) == true)
         {
             if (CanShoot() == true &&
-                _equipment.WeaponSlot.Stack.Item is WeaponItem weapon && 
+                _equipment.ActiveSlot.Stack.Item is WeaponItem weapon && 
                 _timeSinceLastShoot > weapon.Cooldown &&
-                _equipment.WeaponSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO) > 0)
+                _equipment.ActiveSlot.Stack.Attributes.Get(WeaponItem.LOADED_AMMO) > 0)
             {
                 _timeSinceLastShoot = TimeSince.Now();
 
-                weapon.Shoot(_equipment.WeaponSlot.GetStack(), _head.transform);
+                weapon.Shoot(_equipment.ActiveSlot.GetStack(), _head.transform);
                
                 _targetRecoilY += Randomize.Float(weapon.VerticalRecoil);
                 _targetRecoilX += Randomize.Float(weapon.HorizontalRecoil) * Randomize.Sign();
 
-                _equipment.WeaponSlot.Stack.SetAttribute(WeaponItem.LOADED_AMMO, 
-                    _equipment.WeaponSlot.Stack.GetAttribute(WeaponItem.LOADED_AMMO) - 1);
+                _equipment.ActiveSlot.Stack.SetAttribute(WeaponItem.LOADED_AMMO, 
+                    _equipment.ActiveSlot.Stack.GetAttribute(WeaponItem.LOADED_AMMO) - 1);
 
                 _armsAnimator.CrossFadeInFixedTime($"shoot{_weaponHolder.ActiveWeapon.AnimationSet}", 0.02f, 0);
                 _weaponHolder.ActiveWeapon.OnAttack(_head.transform.position, _head.transform.forward);
@@ -267,7 +267,12 @@ public sealed class PlayerCharacter : Pawn
         {
             case WeaponState.NoWeapon:
                 {
-                    bool shouldEquip = _equipment.WeaponSlot.IsEmpty == false && IsPossesed == true && _grip.IsHolding == false;
+                    bool shouldEquip = 
+                        _equipment.ActiveSlot.IsEmpty == false && 
+                        _equipment.ActiveSlot.Stack.Item is WeaponItem &&
+                        IsPossesed == true && 
+                        _grip.IsHolding == false;
+
                     if (shouldEquip == true)
                         _weaponState.Set(WeaponState.Equipping);
                 }
@@ -282,7 +287,7 @@ public sealed class PlayerCharacter : Pawn
 
             case WeaponState.Ready:
                 {
-                    bool shouldUnequip = _equipment.WeaponSlot.IsEmpty || IsPossesed == false || _grip.IsHolding == true;
+                    bool shouldUnequip = _equipment.ActiveSlot.IsEmpty || IsPossesed == false || _grip.IsHolding == true;
 
                     if (shouldUnequip == true)
                         _weaponState.Set(WeaponState.Unequipping);
@@ -298,7 +303,7 @@ public sealed class PlayerCharacter : Pawn
             case WeaponState.Reloading:
                 {
                     // Temp fix
-                    bool shouldUnequip = _equipment.WeaponSlot.IsEmpty;
+                    bool shouldUnequip = _equipment.ActiveSlot.IsEmpty;
 
                     if (shouldUnequip == true)
                         _weaponState.Set(WeaponState.Unequipping);
@@ -308,7 +313,7 @@ public sealed class PlayerCharacter : Pawn
                     {
                         _isReloadPointReached = true;
 
-                        ItemStack stack = _equipment.WeaponSlot.GetStack();
+                        ItemStack stack = _equipment.ActiveSlot.GetStack();
                         WeaponItem weapon = stack.Item as WeaponItem;
 
                         int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
@@ -380,6 +385,27 @@ public sealed class PlayerCharacter : Pawn
         }
     }
 
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (Mathf.Abs(hit.moveDirection.y) < 0.01f)
+        {
+            if (hit.gameObject.TryGetComponent<Rigidbody>(out var rb) == true)
+            {
+                rb.AddForce(_velocityXZ * 25f);
+            }
+        }
+
+        if (hit.moveDirection.y > 0.01f && _velocityY > 0f)
+            _velocityY = 0f;
+
+        if (Mathf.Abs(hit.moveDirection.y) < 0.01f && hit.gameObject.CompareTag(_stairsTag) == true && _isCrouching == false)
+        {
+            _lastStairsTouchFrame = Time.frameCount;
+            _isTouchingStairs = true;
+            _controller.stepOffset = 1.5f;
+        }
+    }
+
     private void OnWeaponStateChanged(WeaponState newState)
     {
         switch (newState)
@@ -389,7 +415,7 @@ public sealed class PlayerCharacter : Pawn
                 _armsAnimator.SetInteger("current_weapon", 0);
                 break;
             case WeaponState.Equipping:
-                _weaponHolder.Equip((_equipment.WeaponSlot.Stack.Item as WeaponItem).WeaponModel);
+                _weaponHolder.Equip((_equipment.ActiveSlot.Stack.Item as WeaponItem).WeaponModel);
                 _armsAnimator.SetInteger("current_weapon", _weaponHolder.ActiveWeapon.AnimationSet);
                 break;
             case WeaponState.Ready:
@@ -407,10 +433,10 @@ public sealed class PlayerCharacter : Pawn
 
     private void TryReload()
     {
-        if (_equipment.WeaponSlot.IsEmpty == true)
+        if (_equipment.ActiveSlot.IsEmpty == true)
             return;
 
-        ItemStack stack = _equipment.WeaponSlot.GetStack();
+        ItemStack stack = _equipment.ActiveSlot.GetStack();
         WeaponItem weapon = stack.Item as WeaponItem;
 
         int currentCount = stack.GetAttribute(WeaponItem.LOADED_AMMO);
@@ -839,7 +865,7 @@ public sealed class PlayerCharacter : Pawn
         return
             IsDead == false &&
             _controller.isGrounded == true &&
-            _equipment.WeaponSlot.IsEmpty == false &&
+            _equipment.ActiveSlot.IsEmpty == false &&
             _weaponState.Current == WeaponState.Ready &&
             _timeSinceStopAiming > 0.35f;
     }

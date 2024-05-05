@@ -88,6 +88,36 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1853529003872044878, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853529003872044878, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853529003872044878, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853529003872044878, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853529003872044878, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853529003872044878, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2342658363034746407, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -455,6 +485,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2369639705988137930 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7781431433043317602, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 5413208455337906344}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21e2d590071021f409bec60d53a74f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3696759638458198093 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8670013290560354533, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
@@ -499,13 +541,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <HidePanelsBelow>k__BackingField: 0
   _inventoryGrid: {fileID: 3696759638458198093}
+  _hotbarGrid: {fileID: 2369639705988137930}
   _weaponSlot: {fileID: 8862533572431386870}
   _itemMovePreviewGO: {fileID: 6561584454519928416}
   _itemMovePreview: {fileID: 732868963447667593}
   _itemsCountPreview: {fileID: 9216613989315209292}
   _selectedNameLabel: {fileID: 1702381893242212554}
   _selectedDescriptionLabel: {fileID: 1994459250533796860}
-  _itemsTest: []
   _contextMenuBackground: {fileID: 728974922049956184}
   _itemActionsMenu: {fileID: 5224661453171698646}
   _itemContextButtonPrefab:
