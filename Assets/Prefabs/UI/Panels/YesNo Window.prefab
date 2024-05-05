@@ -999,6 +999,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <HidePanelsBelow>k__BackingField: 0
+  <RequirePause>k__BackingField: 1
+  <HideBackground>k__BackingField: 1
   _questionLabel: {fileID: 9155534043268831430}
   _descriptionLabel: {fileID: 2397186899899770675}
   _confirmButton: {fileID: 8400188855721420691}

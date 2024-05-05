@@ -9758,6 +9758,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0c2af19d3021e4b8fc8a821c6c8cd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <HidePanelsBelow>k__BackingField: 0
+  <RequirePause>k__BackingField: 1
   <HideBackground>k__BackingField: 1
   _saveSlots: {fileID: 1690717890006473829}
   _yesNoWindow:

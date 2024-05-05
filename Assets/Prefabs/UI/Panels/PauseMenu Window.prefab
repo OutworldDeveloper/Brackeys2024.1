@@ -3002,6 +3002,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff73bd564f3e5b94b8c1477f6353f2c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <HidePanelsBelow>k__BackingField: 0
+  <RequirePause>k__BackingField: 1
   <HideBackground>k__BackingField: 1
   _mainPanel: {fileID: 8919810437956372060}
   _buttonsPanel: {fileID: 959787708692838170}

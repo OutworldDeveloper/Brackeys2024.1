@@ -469,6 +469,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <HidePanelsBelow>k__BackingField: 1
+  <RequirePause>k__BackingField: 1
+  <HideBackground>k__BackingField: 0
   _loadGameScreen:
     _asset: {fileID: 1590336014870968091, guid: 7c37eab4fd54e6a46ad7076af28d574c,
       type: 3}

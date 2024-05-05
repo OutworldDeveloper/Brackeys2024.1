@@ -5,7 +5,9 @@ using UnityEngine;
 public class UI_Panel : MonoBehaviour
 {
 
-    [field: SerializeField] public bool HidePanelsBelow { get; private set; }
+    [field: SerializeField] public bool HidePanelsBelow { get; private set; } = false;
+    [field: SerializeField] public bool RequirePause { get; private set; } = true;
+    [field: SerializeField] public bool HideBackground { get; private set; } = true;
 
     public UI_PanelsManager Owner { get; private set; }
 

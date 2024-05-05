@@ -540,9 +540,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <HidePanelsBelow>k__BackingField: 0
+  <RequirePause>k__BackingField: 0
+  <HideBackground>k__BackingField: 0
   _inventoryGrid: {fileID: 3696759638458198093}
   _hotbarGrid: {fileID: 2369639705988137930}
-  _weaponSlot: {fileID: 8862533572431386870}
   _itemMovePreviewGO: {fileID: 6561584454519928416}
   _itemMovePreview: {fileID: 732868963447667593}
   _itemsCountPreview: {fileID: 9216613989315209292}
@@ -553,18 +554,6 @@ MonoBehaviour:
   _itemContextButtonPrefab:
     _asset: {fileID: 4066342004266936578, guid: 8c96d78b03abb41449eb9102a35d1057,
       type: 3}
---- !u!114 &8862533572431386870 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3594329061711775838, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5413208455337906344}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c23d2a3a17c0a864cb2ce4f64c35c237, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &9216613989315209292 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3816917230592588004, guid: ca0b9b0c96f5c8d459b5fef5c9cda6a3,

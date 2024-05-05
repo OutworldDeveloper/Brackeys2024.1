@@ -44,20 +44,43 @@ public class UI_PanelsManager : MonoBehaviour
 
     private void RefreshView()
     {
-		bool shouldHidePanelsBelow = false;
+        // Disable everything
+		_backgroundHidder.SetParent(null, false);
+        _backgroundHidder.gameObject.SetActive(false);
 
-		for (int i = _panelsStack.Count - 1; i >= 0; i--)
+        for (int i = 0; i < _panelsStack.Count; i++)
 		{
-			UI_Panel inspectedPanel = _panelsStack[i];
+			_panelsStack[i].gameObject.SetActive(false);
+        }
 
-			inspectedPanel.gameObject.SetActive(shouldHidePanelsBelow == false);
+        for (int i = _panelsStack.Count - 1; i >= 0; i--)
+        {
+            UI_Panel inspectedPanel = _panelsStack[i];
 
+			inspectedPanel.gameObject.SetActive(true);
+
+			if (inspectedPanel.HideBackground == true)
+			{
+                _backgroundHidder.SetParent(transform, false);
+                _backgroundHidder.SetSiblingIndex(_panelsStack.Count - i - 1);
+                _backgroundHidder.gameObject.SetActive(true);
+            }
+
+			// If a panel hides panels below, it basically acts like the last panel
 			if (inspectedPanel.HidePanelsBelow == true)
-				shouldHidePanelsBelow = true;
+				return;
+        }
+	}
+
+	public bool RequirePause()
+	{
+		for (int i = 0; i < _panelsStack.Count; i++)
+		{
+			if (_panelsStack[i].RequirePause == true)
+				return true;
 		}
 
-		_backgroundHidder.gameObject.SetActive(HasActivePanel);
-		_backgroundHidder.SetSiblingIndex(_panelsStack.Count - 1);
+		return false;
 	}
 
 }

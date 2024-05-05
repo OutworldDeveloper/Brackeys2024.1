@@ -166,7 +166,7 @@ public sealed class Player : MonoBehaviour
         Cursor.visible = showCursor;
         Cursor.lockState = showCursor ? CursorLockMode.None : CursorLockMode.Locked;
 
-        bool pauseGame = _panels.HasActivePanel == true;
+        bool pauseGame = _panels.RequirePause();
 
         Time.timeScale = pauseGame ? 0f : 1f;
     }
