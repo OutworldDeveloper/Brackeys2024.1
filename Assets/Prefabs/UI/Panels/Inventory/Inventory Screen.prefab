@@ -737,6 +737,9 @@ MonoBehaviour:
   _itemContextButtonPrefab:
     _asset: {fileID: 4066342004266936578, guid: 8c96d78b03abb41449eb9102a35d1057,
       type: 3}
+  _yesNoWindowPrefab:
+    _asset: {fileID: 1478400666999962575, guid: d11756c919c16fc4b8b3d821c28feb27,
+      type: 3}
 --- !u!1 &4467125925545380040
 GameObject:
   m_ObjectHideFlags: 0

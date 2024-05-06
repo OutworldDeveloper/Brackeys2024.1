@@ -1,3 +1,4 @@
+using Alchemy.Inspector;
 using DG.Tweening;
 using System;
 using System.Collections;
@@ -7,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(Order.UI)]
+[DisableAlchemyEditor]
 public class UI_InventoryScreen : UI_Panel
 {
 
@@ -22,6 +24,7 @@ public class UI_InventoryScreen : UI_Panel
     [SerializeField] private GameObject _contextMenuBackground;
     [SerializeField] private RectTransform _itemActionsMenu;
     [SerializeField] private Prefab<UI_ItemActionButton> _itemContextButtonPrefab;
+    [SerializeField] private Prefab<UI_YesNoWindow> _yesNoWindowPrefab;
 
     private StackMoveInfo _currentMove;
 
@@ -56,6 +59,9 @@ public class UI_InventoryScreen : UI_Panel
         RegisterGrid(_hotbarGrid);
 
         IsContextMenuOpen = false;
+
+        _selectedNameLabel.text = string.Empty;
+        _selectedDescriptionLabel.text = string.Empty;
     }
 
     private void Update()
@@ -212,7 +218,14 @@ public class UI_InventoryScreen : UI_Panel
         if (ShowDestroyOption == true)
         {
             actions.Add(new ItemAction("Destroy", () =>
-                InventoryManager.TryDestroyStack(slot.TargetSlot, slot.TargetSlot.Stack.Count)));
+            {
+                Owner.InstantiateAndOpenFrom(_yesNoWindowPrefab).
+                    Setup(
+                    $"Destroy {slot.TargetSlot.Stack.Item.DisplayName}?", 
+                    "This action cannot be undone.",
+                    () => InventoryManager.TryDestroyStack(slot.TargetSlot, slot.TargetSlot.Stack.Count),
+                    true);
+            }));
         }
     }
 
@@ -270,6 +283,9 @@ public class UI_InventoryScreen : UI_Panel
         //_selectedNameLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
         //_selectedDescriptionLabel.gameObject.SetActive(slot.TargetSlot.IsEmpty == false);
 
+        if (IsMovingStack == true)
+            return;
+
         if (slot == null || slot.TargetSlot.IsEmpty)
         {
             _selectedNameLabel.text = string.Empty;
@@ -289,14 +305,6 @@ public class UI_InventoryScreen : UI_Panel
 
     public override void InputUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) == true)
-        {
-            if (IsContextMenuOpen == true)
-            {
-                //IsContextMenuOpen = false;
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.Tab) == true)
         {
             CloseAndDestroy();
