@@ -14,7 +14,7 @@ public class UI_PawnActionsGuide : MonoBehaviour
 
     private void Awake()
     {
-        _player.PawnChanged += OnPawnChanged;
+        _player.PawnStack.ActivePawnChanged += OnPawnChanged;
         _parent.gameObject.SetActive(false);
     }
 

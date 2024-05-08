@@ -25822,7 +25822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 668565586}
-  _camera: {fileID: 330585545}
+  _head: {fileID: 423207318}
   _interactableLayer:
     serializedVersion: 2
     m_Bits: 193

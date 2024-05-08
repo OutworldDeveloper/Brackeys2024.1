@@ -9,7 +9,7 @@ public sealed class JigsawPuzzleInteraction : Interaction
 
     public override void Perform(PlayerCharacter player)
     {
-        player.Player.Possess(_jigsawPuzzle);
+        player.Player.PawnStack.Push(_jigsawPuzzle);
     }
 
 }

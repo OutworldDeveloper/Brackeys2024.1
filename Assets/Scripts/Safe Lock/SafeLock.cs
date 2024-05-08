@@ -26,20 +26,20 @@ public sealed class SafeLock : Pawn
         RegisterAction(new PawnAction("Back", KeyCode.Escape));
     }
 
-    public override void OnPossessed(Player player)
+    public override void OnReceivePlayerControl()
     {
-        base.OnPossessed(player);
+        base.OnReceivePlayerControl();
         SelectButton(0, false);
     }
 
-    public override void OnUnpossessed()
+    public override void OnLostPlayerControl()
     {
-        base.OnUnpossessed();
+        base.OnLostPlayerControl();
         SelectButton(-1);
         _currentEnteredCode = string.Empty;
     }
 
-    public override void PossessedTick()
+    public override void InputTick()
     {
         if (_timeSinceLastPress < 0.2f)
             return;
@@ -64,6 +64,10 @@ public sealed class SafeLock : Pawn
 
     private void PressSelectedButton()
     {
+        _timeSinceLastPress = new TimeSince(Time.time);
+        _buttons[_selectedButtonIndex].OnPressed();
+        _pressSound.Play(_audioSource);
+
         switch (_selectedButtonIndex)
         {
             case 9:
@@ -82,10 +86,6 @@ public sealed class SafeLock : Pawn
                 Notification.Show(_currentEnteredCode.ToString(), 0.5f);
                 break;
         }
-
-        _buttons[_selectedButtonIndex].OnPressed();
-        _pressSound?.Play(_audioSource);
-        _timeSinceLastPress = new TimeSince(Time.time);
     }
 
     private void SubmitCode(string code)
@@ -95,7 +95,7 @@ public sealed class SafeLock : Pawn
             _targetDoor.Unblock();
             IsOpen = true;
             _targetDoor.Open();
-            Unpossess();
+            RemoveFromStack();
         }
     }
 

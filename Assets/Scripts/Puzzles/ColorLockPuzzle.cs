@@ -24,16 +24,16 @@ public class ColorLockPuzzle : Pawn
         RegisterAction(new PawnAction("Back", KeyCode.Escape));
     }
 
-    public override void OnPossessed(Player player)
+    public override void OnReceivePlayerControl()
     {
-        base.OnPossessed(player);
+        base.OnReceivePlayerControl();
         _selectedRotator = _rotators.Length - 1;
         _rotators[_selectedRotator].SetMaterial(_selectedMaterial);
     }
 
-    public override void OnUnpossessed()
+    public override void OnLostPlayerControl()
     {
-        base.OnUnpossessed();
+        base.OnLostPlayerControl();
         _rotators[_selectedRotator].SetMaterial(_defaultMaterial);
     }
 
@@ -107,7 +107,8 @@ public class ColorLockPuzzle : Pawn
 
         _door.Unblock();
         _door.TryOpen();
-        Player.Possess(_successPawn);
+        Player.PawnStack.Push(_successPawn);
+        RemoveFromStack();
     }
 
     private void OnRotatorSelectionChanged(int previous, int current)

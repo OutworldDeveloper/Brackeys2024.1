@@ -56,9 +56,9 @@ public sealed class InspectionPawn : Pawn
         _noAnimation = noAnimation;
     }
 
-    public override void OnPossessed(Player player)
+    public override void OnReceivePlayerControl()
     {
-        base.OnPossessed(player);
+        base.OnReceivePlayerControl();
 
         _timeSinceLastPossess = TimeSince.Now();
 
@@ -86,9 +86,9 @@ public sealed class InspectionPawn : Pawn
         _targetData.SetLayers(LayerMask.NameToLayer("Weapons")); // Inspected
     }
 
-    public override void OnUnpossessed()
+    public override void OnLostPlayerControl()
     {
-        base.OnUnpossessed();
+        base.OnLostPlayerControl();
 
         _introTween.Kill();
 

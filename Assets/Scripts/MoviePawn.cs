@@ -14,23 +14,26 @@ public class MoviePawn : Pawn
         _duration = duration;
     }
 
-    public override bool CanUnpossessAtWill()
+    public override bool CanRemoveAtWill()
     {
         return false;
     }
 
-    public override void OnPossessed(Player player)
+    public override void OnReceivePlayerControl()
     {
-        base.OnPossessed(player);
+        base.OnReceivePlayerControl();
         _timeUntilUnpossess = new TimeUntil(Time.time + _duration);
     }
 
-    public override void PossessedTick()
+    private void Update()
     {
-        if (_timeUntilUnpossess < 0f)
-        {
-            Unpossess();
-        }
+        if (IsPossesed == false)
+            return;
+
+        if (_timeUntilUnpossess > 0f)
+            return;
+
+        RemoveFromStack();
     }
 
 }

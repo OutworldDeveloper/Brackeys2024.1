@@ -93,7 +93,7 @@ public sealed class PlayerCharacter : Pawn
     public void Inspect(Inspectable target, bool noAnimation = false)
     {
         _inspectionPawn.SetTarget(target, noAnimation);
-        Player.Possess(_inspectionPawn);
+        Player.PawnStack.Push(_inspectionPawn);
     }
 
     private void Awake()
@@ -453,9 +453,9 @@ public sealed class PlayerCharacter : Pawn
         _weaponState.Set(WeaponState.Reloading);
     }
 
-    public override void OnUnpossessed()
+    public override void OnLostPlayerControl()
     {
-        base.OnUnpossessed();
+        base.OnLostPlayerControl();
         _velocityXZ = Vector3.zero;
     }
 

@@ -9,7 +9,7 @@ public sealed class PlayerInteraction : MonoBehaviour
     public event Action TargetChanged;
 
     [SerializeField] private PlayerCharacter _player;
-    [SerializeField] private Camera _camera;
+    [SerializeField] private Transform _head;
     [SerializeField] private LayerMask _interactableLayer;
     [SerializeField] private float _minInteractionRange = 0.75f;
     [SerializeField] private float _interactionRange = 2.5f;
@@ -87,7 +87,7 @@ public sealed class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = new Ray(_head.transform.position, _head.transform.forward);
 
         Debug.DrawRay(ray.origin, ray.direction * GetInteractionRange(ray), Color.blue);
 

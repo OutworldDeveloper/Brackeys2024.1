@@ -15,14 +15,14 @@ public sealed class UI_InspectionPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        _player.PawnChanged += OnPawnChanged;
+        _player.PawnStack.ActivePawnChanged += OnPawnChanged;
         _actionLabel.gameObject.SetActive(false);
         _buttonLabel.text = "[F]";
     }
 
     private void OnDisable()
     {
-        _player.PawnChanged -= OnPawnChanged;
+        _player.PawnStack.ActivePawnChanged -= OnPawnChanged;
 
         if (_inspector != null)
             _inspector.ActionSelected -= OnActionSelected;

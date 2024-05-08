@@ -52,7 +52,7 @@ public sealed class FinalDoor : MonoBehaviour
         Delayed.Do(() =>
         {
             _door.Open();
-            FindObjectOfType<Player>().Possess(_moviePawn);
+            FindObjectOfType<Player>().PawnStack.Push(_moviePawn);
         }, 1.25f);
     }
 

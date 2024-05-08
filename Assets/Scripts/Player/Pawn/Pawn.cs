@@ -8,12 +8,11 @@ public abstract class Pawn : MonoBehaviour
 
     private readonly List<PawnAction> _actions = new List<PawnAction>();
 
-    public bool WantsUnpossess { get; private set; }
     public Player Player { get; private set; }
     public virtual bool ShowCursor => false;
     public bool HasActions => _actions.Count > 0;
     protected VirtualCamera VirtualCamera => _virtualCamera;
-    public bool IsPossesed => Player != null;
+    public bool IsPossesed => Player != null && Player.PawnStack.ActivePawn == this;
 
     public virtual CameraState GetCameraState()
     {
@@ -26,27 +25,24 @@ public abstract class Pawn : MonoBehaviour
         return false;
     }
 
-    public virtual void PossessedTick() { }
-
-    public virtual void OnPossessed(Player player)
+    public virtual void OnAddedToStack(Player player)
     {
         Player = player;
-        WantsUnpossess = false;
     }
+
+    public virtual void OnRemovedFromStack(Player player) { }
+
+    public void RemoveFromStack()
+    {
+        Player.PawnStack.Remove(this);
+    }
+
+    public virtual void OnReceivePlayerControl() { }
+    public virtual void OnLostPlayerControl() { }
 
     public virtual void InputTick() { }
 
-    public virtual void OnUnpossessed()
-    {
-        Player = null;
-    }
-
-    protected void Unpossess()
-    {
-        WantsUnpossess = true;
-    }
-
-    public virtual bool CanUnpossessAtWill()
+    public virtual bool CanRemoveAtWill()
     {
         return true;
     }
