@@ -5,6 +5,7 @@ public abstract class Pawn : MonoBehaviour
 {
 
     [SerializeField] private VirtualCamera _virtualCamera;
+    [SerializeField] private CameraTransition _transition;
 
     private readonly List<PawnAction> _actions = new List<PawnAction>();
 
@@ -13,6 +14,7 @@ public abstract class Pawn : MonoBehaviour
     public bool HasActions => _actions.Count > 0;
     protected VirtualCamera VirtualCamera => _virtualCamera;
     public bool IsPossesed => Player != null && Player.PawnStack.ActivePawn == this;
+    public CameraTransition CameraTransition => _transition;
 
     public virtual CameraState GetCameraState()
     {
@@ -57,4 +59,11 @@ public abstract class Pawn : MonoBehaviour
         _actions.Add(action);
     }
 
+}
+
+public enum CameraTransition
+{
+    None,
+    Fade,
+    Move
 }

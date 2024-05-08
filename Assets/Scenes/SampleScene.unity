@@ -1517,6 +1517,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 0}
+  _transition: 0
   _duration: 4.5
 --- !u!4 &48906891
 Transform:
@@ -4415,7 +4416,6 @@ MonoBehaviour:
   _character: {fileID: 668565586}
   _mainCamera: {fileID: 330585545}
   _hud: {fileID: 987699145}
-  _smoothPawnCameraChange: 0
   _pauseMenu:
     _asset: {fileID: 8109117418742987306, guid: 47694bd9525175d489f8ea89e7e51755,
       type: 3}
@@ -4433,6 +4433,30 @@ MonoBehaviour:
       type: 3}
   _blurVolume: {fileID: 716291999}
   _panels: {fileID: 1975297824}
+  _cameraTransitionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &141088137
 Transform:
   m_ObjectHideFlags: 0
@@ -25843,6 +25867,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 423207319}
+  _transition: 0
   _head: {fileID: 423207318}
   _interactor: {fileID: 668565585}
   _grip: {fileID: 668565589}
@@ -26043,6 +26068,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 423207319}
+  _transition: 0
   _inAnimationDuration: 0.85
   _inEase:
     serializedVersion: 2
@@ -34568,6 +34594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 0}
+  _transition: 0
   _finalTrigger: {fileID: 883969307}
   _audioSource: {fileID: 1562680719}
   _finalDoor: {fileID: 6898263042487767858}
@@ -37374,6 +37401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 0}
+  _transition: 0
   _duration: 2
 --- !u!43 &968748096
 Mesh:
@@ -61337,6 +61365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 766536468}
+  _transition: 0
   _door: {fileID: 1683917178}
   _rotators:
   - {fileID: 13625252}
@@ -61410,6 +61439,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 1115400400}
+  _transition: 0
   _duration: 1.7
 --- !u!43 &1550077398
 Mesh:
@@ -64734,6 +64764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 1608595079}
+  _transition: 0
   _material: {fileID: 2100000, guid: c35e7a08df89a8d439fb194c5b4823c7, type: 2}
   _texture: {fileID: 2800000, guid: 0409305500e4d9a4bafe67380ec4136f, type: 3}
   _size: 4
@@ -66060,6 +66091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 1014276455}
+  _transition: 2
   _material: {fileID: 2100000, guid: c35e7a08df89a8d439fb194c5b4823c7, type: 2}
   _texture: {fileID: 2800000, guid: 76fdb361bee275147978f6ab96ce31a9, type: 3}
   _size: 4
@@ -73385,6 +73417,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _virtualCamera: {fileID: 2141982442}
+  _transition: 1
   _material: {fileID: 2100000, guid: c35e7a08df89a8d439fb194c5b4823c7, type: 2}
   _texture: {fileID: 2800000, guid: ca4486c43734e82468305eb615089607, type: 3}
   _size: 4

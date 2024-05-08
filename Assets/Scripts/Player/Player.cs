@@ -12,7 +12,6 @@ public sealed class Player : MonoBehaviour
     [SerializeField] private PlayerCharacter _character;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _hud;
-    [SerializeField] private bool _smoothPawnCameraChange;
     [SerializeField] private Prefab<UI_PauseMenu> _pauseMenu;
     [SerializeField] private Prefab<UI_InventoryScreen> _inventoryScreen;
     [SerializeField] private Prefab<UI_Panel> _deathScreen;
@@ -21,6 +20,11 @@ public sealed class Player : MonoBehaviour
 
     [SerializeField] private Volume _blurVolume;
     [SerializeField] private UI_PanelsManager _panels;
+
+    [SerializeField] private AnimationCurve _cameraTransitionCurve;
+
+    private CameraState _currentState;
+    private CameraState _lastCameraState;
 
     public UI_PanelsManager Panels => _panels;
     public PawnStack PawnStack { get; private set; }
@@ -56,10 +60,19 @@ public sealed class Player : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_smoothPawnCameraChange == true && PawnStack.TimeSinceLastActivePawnChange < 0.2f)
+        if (PawnStack.ActivePawn.CameraTransition == CameraTransition.Fade && PawnStack.TimeSinceLastActivePawnChange < 0.2f)
             return;
 
-        ApplyCameraState(PawnStack.ActivePawn.GetCameraState());
+        CameraState cameraState = PawnStack.ActivePawn.GetCameraState();
+
+        if (PawnStack.ActivePawn.CameraTransition == CameraTransition.Move && PawnStack.TimeSinceLastActivePawnChange < 0.4f)
+        {
+            float t = PawnStack.TimeSinceLastActivePawnChange / 0.4f;
+            t = _cameraTransitionCurve.Evaluate(t);
+            cameraState = CameraState.Lerp(_lastCameraState, cameraState, t);
+        }
+
+        ApplyCameraState(cameraState);
 
         _blurVolume.enabled = PawnStack.ActivePawn.GetBlurStatus(out float targetBlurDistance);
 
@@ -90,7 +103,9 @@ public sealed class Player : MonoBehaviour
 
     private void OnActivePawnChanged(Pawn activePawn)
     {
-        if (_smoothPawnCameraChange == true)
+        _lastCameraState = _currentState;
+
+        if (activePawn.CameraTransition == CameraTransition.Fade)
             ScreenFade.FadeOutFor(0.2f);
     }
 
@@ -130,6 +145,8 @@ public sealed class Player : MonoBehaviour
     {
         _mainCamera.transform.SetPositionAndRotation(state.Position, state.Rotation);
         _mainCamera.fieldOfView = state.FieldOfView;
+
+        _currentState = state;
     }
 
     public UI_InventoryScreen OpenInventory()
