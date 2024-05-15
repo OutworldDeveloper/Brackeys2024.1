@@ -136,12 +136,6 @@ public sealed class PlayerCharacter : Pawn
     {
         _currentInput = GatherInput();
 
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            _useMouseSmoothing = !_useMouseSmoothing;
-            Notification.ShowDebug($"_useMouseSmoothing: {_useMouseSmoothing}");
-        }
-
         for (int i = 0; i < _interactionKeys.Length; i++)
         {
             if (Input.GetKeyDown(_interactionKeys[i]) == false)
@@ -350,7 +344,7 @@ public sealed class PlayerCharacter : Pawn
         float targetFov = _isAiming ? _aimingFieldOfView : _fieldOfView;
         VirtualCamera.FieldOfView = Mathf.Lerp(VirtualCamera.FieldOfView, targetFov, Time.deltaTime * 5f);
 
-        // Get posture head height
+        // Update head position
         if (_timeSinceLastPostureChange < _crouchAnimationDuration)
         {
             var previousHeight = _isCrouching ? _defaultCameraHeight : _crouchedCameraHeight;
@@ -453,12 +447,6 @@ public sealed class PlayerCharacter : Pawn
         _weaponState.Set(WeaponState.Reloading);
     }
 
-    public override void OnLostPlayerControl()
-    {
-        base.OnLostPlayerControl();
-        _velocityXZ = Vector3.zero;
-    }
-
     public void Warp(Vector3 position)
     {
         transform.position = position;
@@ -521,49 +509,12 @@ public sealed class PlayerCharacter : Pawn
         }
     }
 
-    private const int _mouseFramesCount = 4;
-    private readonly Vector2[] _mouseFrameHistory = new Vector2[_mouseFramesCount];
-    private bool _useMouseSmoothing = false;
-
-    private Vector2 _mouseAccumulator;
-
     private PlayerInput GatherInput()
     {
         var playerInput = new PlayerInput();
 
-        Vector2 currentRawMouseInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-
-        for (int i = 0; i < _mouseFramesCount - 1; i++)
-        {
-            _mouseFrameHistory[i] = _mouseFrameHistory[i + 1];
-        }
-
-        _mouseFrameHistory[_mouseFramesCount - 1] = currentRawMouseInput;
-
-        Vector2 average = Vector2.zero;
-
-        foreach (var frameData in _mouseFrameHistory)
-        {
-            average += frameData;
-        }
-
-        average /= _mouseFramesCount;
-
-        if (_useMouseSmoothing == true)
-        {
-            //playerInput.MouseX = average.x * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-            //playerInput.MouseY = average.y * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-
-            _mouseAccumulator = Vector2.Lerp(_mouseAccumulator, currentRawMouseInput, 0.5f);
-
-            playerInput.MouseX = _mouseAccumulator.x * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-            playerInput.MouseY = _mouseAccumulator.y * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-        }
-        else
-        {
-            playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-            playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
-        }
+        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
+        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value * GetMouseSensetivityMultiplier();
 
         playerInput.Direction = new FlatVector()
         {

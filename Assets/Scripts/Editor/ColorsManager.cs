@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[FilePath("Tools/Colors.foo", FilePathAttribute.Location.ProjectFolder)]
+[FilePath("Tools/Colors", FilePathAttribute.Location.ProjectFolder)]
 public class ColorsManager : ScriptableSingleton<ColorsManager>
 {
 
