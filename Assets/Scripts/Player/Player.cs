@@ -60,12 +60,12 @@ public sealed class Player : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (PawnStack.ActivePawn.CameraTransition == CameraTransition.Fade && PawnStack.TimeSinceLastActivePawnChange < 0.2f)
+        if (PawnStack.CameraTransition == CameraTransition.Fade && PawnStack.TimeSinceLastActivePawnChange < 0.2f)
             return;
 
         CameraState cameraState = PawnStack.ActivePawn.GetCameraState();
 
-        if (PawnStack.ActivePawn.CameraTransition == CameraTransition.Move && PawnStack.TimeSinceLastActivePawnChange < 0.4f)
+        if (PawnStack.CameraTransition == CameraTransition.Move && PawnStack.TimeSinceLastActivePawnChange < 0.4f)
         {
             float t = PawnStack.TimeSinceLastActivePawnChange / 0.4f;
             t = _cameraTransitionCurve.Evaluate(t);
@@ -105,7 +105,7 @@ public sealed class Player : MonoBehaviour
     {
         _lastCameraState = _currentState;
 
-        if (activePawn.CameraTransition == CameraTransition.Fade)
+        if (PawnStack.CameraTransition == CameraTransition.Fade)
             ScreenFade.FadeOutFor(0.2f);
     }
 
@@ -186,11 +186,15 @@ public sealed class PawnStack
         _defaultPawn = defaultPawn;
         _defaultPawn.OnAddedToStack(player);
         _defaultPawn.OnReceivePlayerControl();
+
+        CameraTransition = defaultPawn.CameraTransition;
     }
 
     public Pawn ActivePawn => _stack.Count > 0 ? _stack[^1] : _defaultPawn;
     public bool IsStackEmpty => _stack.Count == 0;
     public TimeSince TimeSinceLastActivePawnChange { get; private set; } = TimeSince.Never;
+
+    public CameraTransition CameraTransition { get; private set; }
 
     public void Push(Pawn pawn)
     {
@@ -201,6 +205,7 @@ public sealed class PawnStack
         pawn.OnReceivePlayerControl();
 
         TimeSinceLastActivePawnChange = TimeSince.Now();
+        CameraTransition = pawn.CameraTransition;
         ActivePawnChanged?.Invoke(ActivePawn);
     }
 
@@ -220,6 +225,7 @@ public sealed class PawnStack
         {
             ActivePawn.OnReceivePlayerControl();
             TimeSinceLastActivePawnChange = TimeSince.Now();
+            CameraTransition = pawn.CameraTransition;
             ActivePawnChanged?.Invoke(ActivePawn);
         }
     }
@@ -235,6 +241,7 @@ public sealed class PawnStack
         for (int i = _stack.Count - 1; i >= 0; i--)
         {
             _stack[i].OnRemovedFromStack(_player);
+            CameraTransition = _stack[i].CameraTransition; // Not sure if this is correct
         }
 
         ActivePawn.OnReceivePlayerControl();

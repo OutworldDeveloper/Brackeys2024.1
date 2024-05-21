@@ -209,8 +209,24 @@ public class Zombie : MonoBehaviour, IFirstLoadCallback
         _thinkState.Set(ThinkState.InvestigateSound);
     }
 
+    private TimeSince _timeSinceTargetLost;
+
     private void Update()
     {
+        if (HasTarget == true)
+        {
+            if (_sensor.HasTarget(_target.gameObject) == true)
+            {
+                _timeSinceTargetLost = TimeSince.Now();
+            }
+
+            if (_timeSinceTargetLost > 5f)
+            {
+                _target = null;
+                _thinkState.Set(ThinkState.NoTarget);
+            }
+        }
+
         float targetWeight = _target == null ? 0f : IsDead == true ? 0f : _isSprinting == true ? 0f : 1f;
         _headTargetingConstraint.weight = Mathf.Lerp(_headTargetingConstraint.weight, targetWeight, 4f * Time.deltaTime);
         _bodyTargetingConstraint.weight = Mathf.Lerp(_bodyTargetingConstraint.weight, targetWeight * 0.45f, 4f * Time.deltaTime);

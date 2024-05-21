@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -55,6 +56,11 @@ public class Sensor : MonoBehaviour
         }
 
         return null;
+    }
+
+    public bool HasTarget(GameObject gameObject)
+    {
+        return _targets.Contains(gameObject);
     }
 
     private void Update()
