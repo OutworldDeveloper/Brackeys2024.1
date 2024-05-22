@@ -6,8 +6,7 @@ using UnityEngine;
 public class UI_PawnAction : MonoBehaviour
 {
 
-    [SerializeField] private TextMeshProUGUI _mainKeyLabel;
-    [SerializeField] private OptionalKey[] _optionalKeys;
+    [SerializeField] private UI_KeyHint[] _keyHints;
     [SerializeField] private TextMeshProUGUI _actionLabel;
 
     private PawnAction _targetAction;
@@ -17,15 +16,18 @@ public class UI_PawnAction : MonoBehaviour
         _targetAction = action;
         _targetAction.StateChanged += OnActionStateChanged;
 
-        _mainKeyLabel.text = action.Key.ToString();
         _actionLabel.text = action.Description;
 
-        for (int i = 0; i < _optionalKeys.Length; i++)
+        _keyHints[0].Show(action.Key);
+
+        for (int i = 1; i < _keyHints.Length; i++)
         {
-            bool isValidKey = i < action.AdditionalKeys.Length;
-            _optionalKeys[i].Button.SetActive(isValidKey);
+            bool isValidKey = i - 1 < action.AdditionalKeys.Length;
+
+            _keyHints[i].gameObject.SetActive(isValidKey);
+
             if (isValidKey == true)
-                _optionalKeys[i].Label.text = action.AdditionalKeys[i].ToString();
+                _keyHints[i].Show(action.AdditionalKeys[i - 1]);
         }
     }
 
@@ -37,13 +39,6 @@ public class UI_PawnAction : MonoBehaviour
     private void OnDestroy()
     {
         _targetAction.StateChanged -= OnActionStateChanged;
-    }
-
-    [Serializable]
-    private struct OptionalKey
-    {
-        public GameObject Button;
-        public TextMeshProUGUI Label;
     }
 
 }

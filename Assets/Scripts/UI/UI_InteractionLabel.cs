@@ -7,12 +7,12 @@ using System;
 public sealed class UI_InteractionLabel : MonoBehaviour
 {
 
-    [SerializeField] private TMP_Text _buttonLabel;
+    [SerializeField] private UI_KeyHint _keyHint;
     [SerializeField] private TMP_Text _interactionLabel;
 
     public void SetKeyCode(KeyCode keyCode)
     {
-        _buttonLabel.text = keyCode.ToString();
+        _keyHint.Show(keyCode);
     }
 
     public void SetInteractionText(string text)
