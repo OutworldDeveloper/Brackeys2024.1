@@ -17,7 +17,6 @@ public sealed class PlayerCharacter : Pawn
     [SerializeField] private float _mouseSensitivity;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
-    [SerializeField] private float _respawnTime = 5f;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -30,7 +29,6 @@ public sealed class PlayerCharacter : Pawn
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
     public bool IsDead { get; private set; }
-    public float RespawnTime => _respawnTime;
 
     private void Awake()
     {
@@ -52,7 +50,6 @@ public sealed class PlayerCharacter : Pawn
         _timeSinceLastDeath = new TimeSince(Time.time);
         Died?.Invoke();
         GetComponent<Animator>()?.SetBool("dead", true);
-        _modifiers.Clear();
     }
 
     public void Respawn()
@@ -113,7 +110,7 @@ public sealed class PlayerCharacter : Pawn
 
     private void UpdateDead()
     {
-        if (_timeSinceLastDeath > _respawnTime)
+        if (_timeSinceLastDeath > 5f)
             Respawn();
     }
 
