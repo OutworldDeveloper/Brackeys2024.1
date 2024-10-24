@@ -28,9 +28,10 @@ public sealed class DeathVolume : MonoBehaviour
         _character.Respawned -= OnCharacterRespawned;
     }
 
-    private void OnCharacterDied()
+    private void OnCharacterDied(DeathType deathType)
     {
-        _volume.weight = 1f;
+        if (deathType == DeathType.Physical)
+            Delayed.Do(() => _volume.weight = 1f, 0.1f);
     }
 
     private void OnCharacterRespawned()

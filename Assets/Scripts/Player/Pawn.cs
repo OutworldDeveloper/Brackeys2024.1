@@ -7,12 +7,16 @@ public abstract class Pawn : MonoBehaviour
 
     public abstract Vector3 GetCameraPosition();
     public abstract Quaternion GetCameraRotation();
+
     public virtual void PossessedTick() { }
 
     public virtual void OnPossessed(Player player)
     {
         Player = player;
+        WantsUnpossess = false;
     }
+
+    public virtual void InputTick() { }
 
     public virtual void OnUnpossessed()
     {
@@ -22,6 +26,11 @@ public abstract class Pawn : MonoBehaviour
     protected void Unpossess()
     {
         WantsUnpossess = true;
+    }
+
+    public virtual bool CanUnpossessAtWill()
+    {
+        return true;
     }
 
 }

@@ -2,21 +2,32 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInteraction))]
 public sealed class PlayerCharacter : Pawn
 {
 
-    public event Action Died;
+    public event Action<DeathType> Died;
     public event Action Respawned;
+    public event Action Damaged;
 
     [SerializeField] private Transform _head;
     [SerializeField] private PlayerInteraction _interactor;
+    [SerializeField] private Grip _grip;
     [SerializeField] private Inventory _inventory;
-    [SerializeField] private float _mouseSensitivity;
+    [SerializeField] private FloatParameter _mouseSensitivity;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
+    [SerializeField] private float _respawnTime = 2f;
+    [SerializeField] private float _maxHealth = 5f;
+    [SerializeField] private bool _allowJumping;
+    [SerializeField] private bool _allowCrouching;
+    [SerializeField] private float _crouchedCameraHeight = -0.75f;
+    [SerializeField] private AnimationCurve _crouchAnimation;
+    [SerializeField] private AnimationCurve _uncrouchAnimation;
+    [SerializeField] private float _crouchAnimationDuration = 0.45f;
+    [SerializeField] private LayerMask _uncrouchLayerMask;
+    [SerializeField] private float _crouchedControllerSize = 1.25f;
 
     private CharacterController _controller;
     private Vector3 _velocityXZ;
@@ -25,10 +36,23 @@ public sealed class PlayerCharacter : Pawn
     private Vector3 _spawnPosition;
     private Quaternion _spawnRotation;
     private readonly List<CharacterModifier> _modifiers = new List<CharacterModifier>();
+    private TimeSince _timeSinceLastDamage = new TimeSince(float.NegativeInfinity);
+    private PlayerInput _currentInput;
+
+    private float _defaultCameraHeight;
+    private bool _isCrouching;
+    private TimeSince _timeSinceLastPostureChange = new TimeSince(float.NegativeInfinity);
 
     public PlayerInteraction Interactor => _interactor;
     public Inventory Inventory => _inventory;
+    public Grip Grip => _grip;
     public bool IsDead { get; private set; }
+    public float RespawnTime => _respawnTime;
+    public float MaxHealth => _maxHealth;
+    public float Health { get; private set; }
+    public Vector3 HorizontalVelocity => _velocityXZ;
+    public bool IsGrounded => _controller.isGrounded;
+    public bool IsCrouching => _isCrouching;
 
     private void Awake()
     {
@@ -37,56 +61,161 @@ public sealed class PlayerCharacter : Pawn
 
     private void Start()
     {
+        _defaultCameraHeight = _head.localPosition.y;
+
+        Health = _maxHealth;
+
         _spawnPosition = transform.position;
         _spawnRotation = transform.rotation;
 
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        ApplyModifier(new SpawnBlockModifier(), 0.4f);
     }
 
-    public void Kill()
+    public override void InputTick()
     {
+        _currentInput = GatherInput();
+    }
+
+    private void Update()
+    {
+        // Modifiers
+        for (int i = _modifiers.Count - 1; i >= 0; i--)
+        {
+            var modifier = _modifiers[i];
+
+            if (modifier.IsInfinite == false && modifier.TimeUntilExpires < 0)
+            {
+                _modifiers.RemoveAt(i);
+            }
+            else
+            {
+                modifier.Tick();
+            }
+        }
+
+        // Crouching
+        if (_isCrouching == false)
+        {
+            if (_currentInput.WantsCrouch == true && CanCrouch() == true)
+            {
+                Crouch();
+            }
+        }
+        else
+        {
+            var shouldUncrouch = _currentInput.WantsCrouch == false || CanCrouch() == false;
+
+            if (shouldUncrouch == true && CanUncrouch())
+            {
+                Stand();
+            }
+        }
+
+        // Update camera
+        if (_timeSinceLastPostureChange < _crouchAnimationDuration)
+        {
+            var targetHeight = _isCrouching ? _crouchedCameraHeight : _defaultCameraHeight;
+            var t = _timeSinceLastPostureChange / _crouchAnimationDuration;
+            var animationCurve = _isCrouching ? _crouchAnimation : _uncrouchAnimation;
+            t = animationCurve.Evaluate(t);
+            _head.localPosition = new Vector3()
+            {
+                x = _head.localPosition.x,
+                y = Mathf.Lerp(_head.localPosition.y, targetHeight, t),
+                z = _head.localPosition.z
+            };
+        }
+
+        if (IsDead == true && _timeSinceLastDeath > _respawnTime)
+        {
+            Respawn();
+        }
+
+        if (IsDead == false && _timeSinceLastDamage > 10f)
+        {
+            Health = Mathf.Min(Health + Time.deltaTime, _maxHealth);
+        }
+
+        UpdateRotation(_currentInput);
+        UpdateMovement(_currentInput);
+
+        if (CanInteract() == true && _currentInput.WantsInteract == true)
+        {
+            _interactor.TryPerform(_currentInput.InteractionIndex);
+        }
+
+        _currentInput.Clear();
+    }
+
+    public override void OnUnpossessed()
+    {
+        base.OnUnpossessed();
+        _velocityXZ = Vector3.zero;
+    }
+
+    public void Kill(DeathType type)
+    {
+        _velocityXZ = Vector3.zero;
         IsDead = true;
         _timeSinceLastDeath = new TimeSince(Time.time);
-        Died?.Invoke();
-        GetComponent<Animator>()?.SetBool("dead", true);
+        Died?.Invoke(type);
+        GetComponent<Animator>().SetBool("dead", true);
+        _modifiers.Clear();
     }
 
     public void Respawn()
     {
-        IsDead = false;
-        Respawned?.Invoke();
-        GetComponent<Animator>()?.SetBool("dead", false);
+        GetComponent<Animator>().SetBool("dead", false);
+
+        _velocityXZ = Vector3.zero;
+        _velocityY = 0f;
+
         transform.position = _spawnPosition;
         transform.rotation = _spawnRotation;
+        Physics.SyncTransforms();
+
         _head.localRotation = Quaternion.identity;
+        Health = _maxHealth;
+
+        ApplyModifier(new SpawnBlockModifier(), 0.4f);
+
+        IsDead = false;
+        Respawned?.Invoke();
     }
 
-    public void ApplyModifier(CharacterModifier modifier, float duration)
+    public T ApplyModifier<T>(T modifier, float duration) where T : CharacterModifier
     {
-        modifier.Init(duration);
+        modifier.Init(this, duration);
         _modifiers.Add(modifier);
+        return modifier;
     }
 
-    public override void PossessedTick()
+    public void TryRemoveModifier(CharacterModifier modifier) 
+    {
+        _modifiers.Remove(modifier);
+    }
+
+    public void ApplyDamage(float damage)
     {
         if (IsDead == true)
+            return;
+
+        _timeSinceLastDamage = new TimeSince(Time.time);
+        Health = Mathf.Max(0f, Health - damage);
+        Damaged?.Invoke();
+
+        if (Health <= 0f)
         {
-            UpdateDead();
+            Kill(DeathType.Psionic);
         }
-        else
-        {
-            var input = GatherInput();
-            UpdateAlive(input);
-        }     
     }
 
     private PlayerInput GatherInput()
     {
         var playerInput = new PlayerInput();
 
-        playerInput.MouseX = Input.GetAxis("Mouse X") * _mouseSensitivity * 100f;
-        playerInput.MouseY = Input.GetAxis("Mouse Y") * _mouseSensitivity * 100f;
+        playerInput.MouseX = Input.GetAxisRaw("Mouse X") * _mouseSensitivity.Value;
+        playerInput.MouseY = Input.GetAxisRaw("Mouse Y") * _mouseSensitivity.Value;
 
         playerInput.Direction = new FlatVector()
         {
@@ -105,47 +234,9 @@ public sealed class PlayerCharacter : Pawn
         else
             playerInput.InteractionIndex = -1;
 
+        playerInput.WantsCrouch = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
+
         return playerInput;
-    }
-
-    private void UpdateDead()
-    {
-        if (_timeSinceLastDeath > 5f)
-            Respawn();
-    }
-
-    private void UpdateAlive(PlayerInput input)
-    {
-        for (int i = _modifiers.Count - 1; i >= 0; i--)
-        {
-            var modifier = _modifiers[i];
-
-            if (modifier.TimeUntilExpires < 0)
-            {
-                _modifiers.RemoveAt(i);
-            }
-        }
-
-        UpdateRotation(input);
-        UpdateMovement(input);
-
-        if (CanInteract() == true && input.WantsInteract == true)
-        {
-            _interactor.TryPerform(input.InteractionIndex);
-        }
-
-        const bool canThrowItems = false;
-        if (Input.GetKeyDown(KeyCode.Q) == true && canThrowItems == true)
-        {
-            var items = _inventory.Content;
-            if (items.Length > 0)
-            {
-                var item = items[0];
-                _inventory.RemoveItem(item);
-                item.transform.position = _head.position;
-                item.Push(_head.forward * 250f + _velocityXZ * 45f);
-            }
-        }
     }
 
     private void UpdateRotation(PlayerInput input)
@@ -153,8 +244,8 @@ public sealed class PlayerCharacter : Pawn
         if (CanRotateHead() == false)
             return;
 
-        var yRotation = transform.eulerAngles.y + input.MouseX * Time.deltaTime;
-        var xRotation = _head.localEulerAngles.x - input.MouseY * Time.deltaTime;
+        var yRotation = transform.eulerAngles.y + input.MouseX;
+        var xRotation = _head.localEulerAngles.x - input.MouseY;
         xRotation = ClampAngle(xRotation, -70f, 70f);
 
         transform.eulerAngles = new Vector3(0f, yRotation, 0f);
@@ -173,7 +264,7 @@ public sealed class PlayerCharacter : Pawn
         Vector3 desiredVelocity = CanWalk() ?
             transform.TransformDirection(input.Direction) * GetSpeed() :
             Vector3.zero;
-        
+
         _velocityXZ = Vector3.MoveTowards(_velocityXZ, desiredVelocity, 25f * Time.deltaTime);
 
         if (_controller.isGrounded == true)
@@ -197,13 +288,45 @@ public sealed class PlayerCharacter : Pawn
         _controller.Move(finalMove);
     }
 
+    private void Crouch()
+    {
+        _isCrouching = true;
+        _timeSinceLastPostureChange = new TimeSince(Time.time);
+
+        // temp
+        _controller.height = _crouchedControllerSize;
+        _controller.center = new Vector3(_controller.center.x, _controller.height / 2f, _controller.center.z);
+    }
+
+    private void Stand()
+    {
+        _isCrouching = false;
+        _timeSinceLastPostureChange = new TimeSince(Time.time);
+
+        // temp
+        _controller.height = 2f;
+        _controller.center = new Vector3(_controller.center.x, _controller.height / 2f, _controller.center.z);
+    }
+
     private bool CanRotateHead()
     {
+        if (IsDead == true)
+            return false;
+
+        foreach (var modifier in _modifiers)
+        {
+            if (modifier.CanRotateCamera() == false)
+                return false;
+        }
+
         return true;
     }
 
     private bool CanInteract()
     {
+        if (IsDead == true)
+            return false;
+
         foreach (var modifier in _modifiers)
         {
             if (modifier.CanInteract() == false)
@@ -215,18 +338,24 @@ public sealed class PlayerCharacter : Pawn
 
     private bool CanJump()
     {
+        if (IsDead == true)
+            return false;
+
+        if (_isCrouching == true)
+            return false;
+
         foreach (var modifier in _modifiers)
         {
             if (modifier.CanJump() == false)
                 return false;
         }
 
-        return true;
+        return _allowJumping;
     }
 
     private bool CanWalk()
     {
-        return true;
+        return IsDead == false;
     }
 
     private float GetSpeed()
@@ -235,23 +364,43 @@ public sealed class PlayerCharacter : Pawn
 
         foreach (var modifier in _modifiers)
         {
-            var modifierMultipler = modifier.GetSpeedMultipler();
+            var modifierMultipler = modifier.GetSpeedMultiplier();
             multipler = Mathf.Min(multipler, modifierMultipler);
         }
 
         multipler = Mathf.Max(0f, multipler);
-        return _speed * multipler;
+
+        var crouchMultipler = _isCrouching ? 0.4f : 1f;
+
+        return _speed * multipler * crouchMultipler;
     }
 
-    public override Vector3 GetCameraPosition()
+    public bool CanCrouch()
     {
-        return _head.position;
+        if (_allowCrouching == false)
+            return false;
+
+        foreach (var modifier in _modifiers)
+        {
+            if (modifier.CanCrouch() == false)
+                return false;
+        }
+
+        return true && _timeSinceLastPostureChange > _crouchAnimationDuration && _controller.isGrounded == true && IsDead == false;
     }
 
-    public override Quaternion GetCameraRotation()
+    public bool CanUncrouch()
     {
-        return _head.rotation;
+        return 
+            _timeSinceLastPostureChange > _crouchAnimationDuration && 
+            Physics.CheckCapsule(
+                transform.position + Vector3.up * _controller.radius,
+                transform.position + Vector3.up * 2f - Vector3.up * _controller.radius,
+                _controller.radius, _uncrouchLayerMask) == false;
     }
+
+    public override Vector3 GetCameraPosition() => _head.position;
+    public override Quaternion GetCameraRotation() => _head.rotation;
 
     private struct PlayerInput
     {
@@ -260,22 +409,73 @@ public sealed class PlayerCharacter : Pawn
         public FlatVector Direction;
         public bool WantsJump;
         public int InteractionIndex;
+        public bool WantsCrouch;
+        
         public bool WantsInteract => InteractionIndex != -1;
+
+        public void Clear()
+        {
+            MouseX = 0;
+            MouseY = 0;
+            Direction = FlatVector.zero;
+            WantsJump = false;
+            InteractionIndex = -1;
+            WantsCrouch = false;
+        }
+
     }
 
 }
 
+public enum DeathType
+{
+    Physical,
+    Psionic
+}
+
 public abstract class CharacterModifier
 {
+    public PlayerCharacter Character { get; private set; }
     public TimeUntil TimeUntilExpires { get; private set; }
+    public bool IsInfinite { get; private set; }
 
-    public void Init(float duration)
+    public void Init(PlayerCharacter character, float duration)
     {
+        Character = character;
         TimeUntilExpires = new TimeUntil(Time.time + duration);
+        IsInfinite = duration < 0f;
     }
 
-    public virtual float GetSpeedMultipler() => 1f;
+    public virtual float GetSpeedMultiplier() => 1f;
     public virtual bool CanInteract() => true;
     public virtual bool CanJump() => true;
+    public virtual bool CanCrouch() => true;
+    public virtual bool CanRotateCamera() => true;
+    public virtual void Tick() { }
+
+}
+
+public sealed class SpawnBlockModifier : CharacterModifier
+{
+
+    public override bool CanInteract()
+    {
+        return true;
+    }
+
+    public override bool CanJump()
+    {
+        return false;
+    }
+
+    public override bool CanCrouch()
+    {
+        return false;
+    }
+
+    public override float GetSpeedMultiplier()
+    {
+        return 0f;
+    }
 
 }

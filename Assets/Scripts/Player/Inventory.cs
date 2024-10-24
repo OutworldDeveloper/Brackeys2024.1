@@ -11,7 +11,7 @@ public class Inventory : MonoBehaviour
 
     private readonly List<Item> _items = new List<Item>();
 
-    public Item[] Content => _items.ToArray();
+    public Item[] Items => _items.ToArray();
 
     public bool HasItemWithTag(ItemTag tag)
     {
@@ -24,17 +24,26 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
+    public bool HasItem(Item item)
+    {
+        foreach (var checkItem in _items)
+        {
+            if (checkItem == item)
+                return true;
+        }
+
+        return false;
+    }
+
     public void AddItem(Item item)
     {
         _items.Add(item);
-        item.OnPickedUp();
         ItemAdded?.Invoke(item);
     }
 
     public void RemoveItem(Item item)
     {
         _items.Remove(item);
-        item.OnDropped();
         ItemRemoved?.Invoke(item);
     }
 

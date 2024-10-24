@@ -34,11 +34,13 @@ public sealed class NotificationUI : MonoBehaviour
         _currentSequence?.Kill();
 
         _currentSequence = DOTween.Sequence();
-        _currentSequence.
-            Join(_label.DOFade(1f, 0.4f).From(0f)).
-            Join(_label.rectTransform.
-                DOLocalMoveY(_label.rectTransform.localPosition.y, 0.2f).
-                From(_label.rectTransform.localPosition.y - 25f));
+        //_currentSequence.
+        //    Join(_label.DOFade(1f, 0.4f).From(0f)).
+        //    Join(_label.rectTransform.
+        //        DOLocalMoveY(_label.rectTransform.localPosition.y, 0.2f).
+        //        From(_label.rectTransform.localPosition.y - 25f));
+
+        _currentSequence.Join(_label.DOFade(1f, 0.4f).From(0f));
     }
 
     private void Update()
@@ -65,9 +67,17 @@ public static class Notification
 
     public static event Action<Info> Event;
 
-    public static void Do(string text, float duration = 1f)
+    public static void Show(string text, float duration = 1f)
     {
         Event?.Invoke(new Info(text, duration));
+    }
+
+    public static void ShowDebug(string text, float duration = 1f)
+    {
+        if (Application.isEditor == true)
+        {
+            Show($"[Debug] {text}", duration);
+        }
     }
 
     public readonly struct Info

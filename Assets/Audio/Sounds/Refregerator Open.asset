@@ -13,4 +13,9 @@ MonoBehaviour:
   m_Name: Refregerator Open
   m_EditorClassIdentifier: 
   _clips:
-  - {fileID: 8300000, guid: db1d803c31647ec41a47743d9a732871, type: 3}
+  - {fileID: 8300000, guid: ce22587fd6f39074991e7390656c7b36, type: 3}
+  _pitchMin: 1
+  _pitchMax: 1
+  _volumeMin: 0.65
+  _volumeMax: 0.7
+  _group: {fileID: 8961078316356824809, guid: 928a5f6a3b3c4444aa1181218bc2b74b, type: 2}

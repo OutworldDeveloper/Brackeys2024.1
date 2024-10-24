@@ -5,6 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Code")]
 public sealed class Code : ScriptableObject
 {
-    [field: SerializeField] public int Value { get; private set; }
+    [field: SerializeField] public string Value { get; private set; }
 
 }

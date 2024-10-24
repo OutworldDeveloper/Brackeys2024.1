@@ -7,14 +7,25 @@ public sealed class Ben : MonoBehaviour
 {
 
     private const float answerDelay = 1.0f;
-    private const float textDelay = 1.84f;
+    private const float textDelay = 2.25f;
     private const float feedDelay = 0.5f;
 
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private Sound _hungrySound;
     [SerializeField] private Sound _happySound;
+    [SerializeField] private Sound _killSelfAdviceSound;
+    [SerializeField] private Sound _goodbyeSound;
+    [SerializeField] private Sound _screamSound;
+    [SerializeField] private Sound _pohuiSound;
     [SerializeField] private ItemTag _foodTag;
     [SerializeField] private Code _codeReward;
+
+    [SerializeField] private SafeLock _safeLock;
+    [SerializeField] private Door _trapSwitch;
+    [SerializeField] private PlayerTrigger _trapRoomTrigger;
+    [SerializeField] private Door _finalDoor;
+
+    private TimeSince _timeSinceLastSpoke = new TimeSince(float.NegativeInfinity);
 
     public ItemTag FoodTag => _foodTag;
     public bool IsHungry { get; private set; } = true;
@@ -34,15 +45,14 @@ public sealed class Ben : MonoBehaviour
         if (IsHungry == false)
             return false;
 
-        foreach (var item in character.Inventory.Content)
+        foreach (var item in character.Inventory.Items)
         {
             if (item.HasTag(_foodTag) == false)
                 continue;
 
             character.Inventory.RemoveItem(item);
-            item.Destroy();
             IsHungry = false;
-            SayCode();
+            TrySayNextAdvice(true);
             return true;
         }
 
@@ -54,19 +64,79 @@ public sealed class Ben : MonoBehaviour
     {
         if (IsHungry == true)
         {
-            Delayed.Do(() => _hungrySound.Play(_audioSource), answerDelay);
-            Delayed.Do(() => Notification.Do("Is he... hungry?", 1.5f), textDelay);
+            TrySay(_hungrySound, "Is he... hungry?", 1.5f);
+            return;
         }
-        else
+
+        if (IsAngryGhostNear(out var ghost) == true)
         {
-            SayCode();
+            Delayed.Do(() => MakeGhostLeave(ghost), answerDelay);
+            return;
         }
+
+        TrySayNextAdvice();
     }
 
-    private void SayCode()
+    private void TrySayNextAdvice(bool ignoreCooldown = false)
     {
-        Delayed.Do(() => _happySound.Play(_audioSource), answerDelay);
-        Delayed.Do(() => Notification.Do($"Is he saying... {_codeReward.Value}?", 2.5f), textDelay);
+        if (Random.Range(0, 1000) == 0)
+        {
+            TrySay(_pohuiSound, $"?");
+            return;
+        }
+
+        if (_finalDoor.IsOpen == true)
+        {
+            TrySay(_goodbyeSound, $"Is he saying... goodbye?");
+            return;
+        }
+
+        if (_safeLock.IsOpen == false)
+        {
+            TrySay(_happySound, $"Is he saying... {_codeReward.Value}?", ignoreCooldown: ignoreCooldown);
+            return;
+        }
+
+        if (_trapSwitch.IsOpen == true && _trapRoomTrigger.EverVisited == false)
+        {
+            TrySay(_killSelfAdviceSound, "When there is not enough time, dying might be the only option.", 3f, ignoreCooldown);
+            // If you don't have enough time, why not kill yourself?
+            // When there is not enough time, dying might be the only option.
+            // Don't be afraid of the ghost, he might be useful right now
+            return;
+        }
+
+        //SayNothing();
+    }
+
+    private void MakeGhostLeave(Ghost ghost)
+    {
+        Delayed.Do(ghost.StartRespawning, 0.5f);
+        _screamSound.Play(_audioSource);
+    }
+
+    private bool IsAngryGhostNear(out Ghost ghost)
+    {
+        ghost = FindObjectOfType<Ghost>();
+
+        if (ghost == null)
+            return false;
+
+        if (Vector3.Distance(ghost.transform.position, transform.position) > 7f)
+            return false;
+
+        return true;
+    }
+
+    private void TrySay(Sound sound, string text, float notificationDuration = 2.5f, bool ignoreCooldown = false)
+    {
+        if (_timeSinceLastSpoke < 3.4f && ignoreCooldown == false)
+            return;
+
+        _timeSinceLastSpoke = new TimeSince(Time.time);
+
+        Delayed.Do(() => sound.Play(_audioSource), answerDelay);
+        Delayed.Do(() => Notification.Show(text, notificationDuration), textDelay);
     }
 
 }

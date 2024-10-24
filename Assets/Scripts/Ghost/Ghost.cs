@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,44 +8,182 @@ using UnityEngine.AI;
 public sealed class Ghost : MonoBehaviour
 {
 
-    [SerializeField] private PlayerCharacter _player;
+    [SerializeField] private float _respawnTime;
+    [SerializeField] private AudioSource _ambientAudioSource;
+    [SerializeField] private AudioSource _damageAudioSource;
+    [SerializeField] private LayerMask _attackLayerMask;
 
     private NavMeshAgent _agent;
-    private State _state = State.Chasing;
+    private GhostState _state = GhostState.Idle;
+    private PlayerCharacter _target;
+    private TimeUntil _timeUntilRespawn;
+    private Vector3 _startPosition;
+    private Quaternion _startRotation;
+    private GhostChaseTargetModifier _currentChaseModifier;
 
-    public void StartChase()
-    {
-
-    }
+    public GhostState State => _state;
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
     }
 
+    private void Start()
+    {
+        _ambientAudioSource.volume = 0f;
+        _damageAudioSource.volume = 0f;
+        _startPosition = transform.position;
+        _startRotation = transform.rotation;
+    }
+
     private void Update()
     {
         switch (_state)
         {
-            case State.Idle: UpdateIdle(); break;
-            case State.Chasing: UpdateChasing(); break;
+            case GhostState.Idle: UpdateIdle(); break;
+            case GhostState.Chasing: UpdateChasing(); break;
+            case GhostState.Respawning: UpdateRespawning(); break;
         }
     }
 
-    private void UpdateIdle()
+    public void StartChase(PlayerCharacter target)
     {
+        _target = target;
+        _target.Died += OnTargetDied;
+        _currentChaseModifier = _target.ApplyModifier(new GhostChaseTargetModifier(this), -1f);
+        _state = GhostState.Chasing;
+    }
 
+    public void StartRespawning()
+    {
+        if (_state == GhostState.Respawning)
+            return;
+
+        _agent.ResetPath();
+        _timeUntilRespawn = new TimeUntil(Time.time + _respawnTime); 
+        _state = GhostState.Respawning;
+    }
+
+    private void UpdateIdle()   
+    {
+        if (_ambientAudioSource.volume > 0f)
+        {
+            _ambientAudioSource.volume -= Time.deltaTime;
+        }
     }
 
     private void UpdateChasing()
     {
-        _agent.SetDestination(_player.transform.position);
+        bool isPlayerVisible = !Physics.Linecast(transform.position + Vector3.up, _target.transform.position + Vector3.up, _attackLayerMask);
+
+        if (_currentChaseModifier != null)
+            _currentChaseModifier.IsPlayerVisible = isPlayerVisible;
+
+        _agent.stoppingDistance = 1f;
+        _agent.SetDestination(_target.transform.position);
+
+        float targetDistance = Vector3.Distance(_target.transform.position, transform.position);
+
+        if (targetDistance < 2.75f && isPlayerVisible == true)
+        {
+            _target.ApplyDamage(1.1f * Time.deltaTime);
+            _damageAudioSource.volume = Mathf.Min(1f, _damageAudioSource.volume + Time.deltaTime * 1f);
+
+            if (targetDistance < 0.4f)
+            {
+                _target.Kill(DeathType.Psionic);
+            }
+        }
+        else
+        {
+            _damageAudioSource.volume = Mathf.Max(0f, _damageAudioSource.volume - Time.deltaTime * 0.5f);
+        }
+
+        if (_ambientAudioSource.volume < 1f)
+        {
+            _ambientAudioSource.volume += Time.deltaTime;
+        }
     }
 
-    private enum State
+    private void OnTargetDied(DeathType deathType)
     {
-        Idle,
-        Chasing,
+        StartRespawning();
+    }
+
+    private void UpdateRespawning()
+    {
+        if (_timeUntilRespawn < 0)
+        {
+            RespawnNow();
+        }
+    }
+
+    private void RespawnNow()
+    {
+        _damageAudioSource.volume = 0f;
+        _state = GhostState.Idle;
+        _agent.ResetPath();
+        _agent.Warp(_startPosition);
+        transform.rotation = _startRotation;
+
+        if (_currentChaseModifier != null)
+            _target.TryRemoveModifier(_currentChaseModifier);
+    }
+
+}
+
+public enum GhostState
+{
+    Idle,
+    Chasing,
+    Respawning,
+}
+
+public sealed class GhostChaseTargetModifier : CharacterModifier
+{
+
+    private const float _minSpeedMultiplier = 0.1f;
+
+    private readonly Ghost _ghost;
+    private float _currentSpeedMultiplier = 1f;
+    private float _currentGhostDistance;
+
+    public bool IsPlayerVisible { get; set; }
+
+    public GhostChaseTargetModifier(Ghost ghost)
+    {
+        _ghost = ghost;
+    }
+
+    public override void Tick()
+    {
+        _currentGhostDistance = GetDistanceToGhost();
+
+        if (_currentGhostDistance < 4f && IsPlayerVisible == true)
+        {
+            if (_currentSpeedMultiplier > _minSpeedMultiplier)
+                _currentSpeedMultiplier -= Time.deltaTime * 0.15f;
+        }
+        else
+        {
+            if (_currentSpeedMultiplier < 1f)
+                _currentSpeedMultiplier += Time.deltaTime * 0.5f;
+        }
+    }
+
+    public override bool CanJump()
+    {
+        return _currentGhostDistance > 3f;
+    }
+
+    public override float GetSpeedMultiplier()
+    {
+        return _currentSpeedMultiplier;
+    }
+
+    private float GetDistanceToGhost()
+    {
+        return Vector3.Distance(_ghost.transform.position, Character.transform.position);
     }
 
 }

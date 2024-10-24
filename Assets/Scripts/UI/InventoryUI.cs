@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,7 @@ public sealed class InventoryUI : MonoBehaviour
     {
         _player.Inventory.ItemAdded += OnItemAdded;
         _player.Inventory.ItemRemoved += OnItemRemoved;
+        Refresh();
     }
 
     private void OnDisable()
@@ -24,6 +26,9 @@ public sealed class InventoryUI : MonoBehaviour
 
     private void OnItemAdded(Item item)
     {
+        if (_itemDisplays.ContainsKey(item) == true) // Do not create visuals for already existing item
+            return;
+
         var display = Instantiate(_itemDisplayPrefab, transform, false);
         display.Init(item);
         _itemDisplays.Add(item, display);
@@ -31,11 +36,30 @@ public sealed class InventoryUI : MonoBehaviour
 
     private void OnItemRemoved(Item item)
     {
+        if (_player.Inventory.HasItem(item) == true) // Do not do anything if we still have item
+            return;
+
         if (_itemDisplays.TryGetValue(item, out var display) == false)
             return;
 
         _itemDisplays.Remove(item);
         Destroy(display.gameObject);
     }
+
+    private void Refresh()
+    {
+        foreach (var itemDisplay in _itemDisplays.Values)
+        {
+            Destroy(itemDisplay.gameObject);
+        }
+
+        _itemDisplays.Clear();
+
+        foreach (var item in _player.Inventory.Items)
+        {
+            OnItemAdded(item);
+        }
+    }
+
 
 }
