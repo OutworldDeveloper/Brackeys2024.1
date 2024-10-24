@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Cascade4Split: {x: 0.06626807, y: 0.13706294, z: 0.23389997}
   m_CascadeBorder: 0.89300406
   m_ShadowDepthBias: 1
-  m_ShadowNormalBias: 0.25
+  m_ShadowNormalBias: 1
   m_AnyShadowsSupported: 1
   m_SoftShadowsSupported: 1
   m_ConservativeEnclosingSphere: 0
@@ -102,7 +102,7 @@ MonoBehaviour:
   m_PrefilterSSAOSampleCountHigh: 0
   m_PrefilterDBufferMRT1: 1
   m_PrefilterDBufferMRT2: 1
-  m_PrefilterDBufferMRT3: 0
+  m_PrefilterDBufferMRT3: 1
   m_PrefilterScreenCoord: 1
   m_PrefilterNativeRenderPass: 1
   m_ShaderVariantLogLevel: 0
